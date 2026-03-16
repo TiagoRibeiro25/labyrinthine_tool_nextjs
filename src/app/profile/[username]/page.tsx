@@ -2,10 +2,10 @@ import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
-import { FaSteam, FaDiscord } from "react-icons/fa6";
+import { FaSteam, FaDiscord, FaUserGroup, FaShirt } from "react-icons/fa6";
 import { authOptions } from "../../../lib/auth";
 import { db } from "../../../db";
-import { users, friendRequests } from "../../../db/schema";
+import { users, friendRequests, userCosmetics } from "../../../db/schema";
 import { eq, or, and } from "drizzle-orm";
 import FriendActions from "../../../components/FriendActions";
 import EditProfileButton from "../../../components/EditProfileButton";
@@ -79,6 +79,28 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         }
     }
 
+    // Get Friends Count
+    const friendsResult = await db
+        .select({ id: friendRequests.id })
+        .from(friendRequests)
+        .where(
+            and(
+                or(
+                    eq(friendRequests.senderId, targetUser.id),
+                    eq(friendRequests.receiverId, targetUser.id),
+                ),
+                eq(friendRequests.status, "accepted"),
+            ),
+        );
+    const friendsCount = friendsResult.length;
+
+    // Get Unlocked Cosmetics Count
+    const unlockedCosmeticsResult = await db
+        .select({ id: userCosmetics.id })
+        .from(userCosmetics)
+        .where(eq(userCosmetics.userId, targetUser.id));
+    const unlockedCount = unlockedCosmeticsResult.length;
+
     return (
         <main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
             <div className="w-full max-w-4xl bg-black/80 backdrop-blur-md border border-neutral-800 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative overflow-hidden flex flex-col">
@@ -148,10 +170,17 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                         </div>
 
                         {/* Bio / Member Since */}
-                        <p className="text-sm text-neutral-500 font-medium tracking-wide mb-8">
-                            Surviving the fog since{" "}
-                            {targetUser.createdAt.toLocaleDateString()}
-                        </p>
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8 mb-8">
+                            <p className="text-sm text-neutral-500 font-medium tracking-wide">
+                                Surviving the fog since{" "}
+                                {targetUser.createdAt.toLocaleDateString()}
+                            </p>
+                            <div className="flex items-center gap-2 text-sm text-neutral-400 font-bold tracking-widest uppercase bg-neutral-900/50 px-3 py-1 rounded-sm border border-neutral-800">
+                                <FaUserGroup className="text-neutral-500" />
+                                {friendsCount}{" "}
+                                {friendsCount === 1 ? "Friend" : "Friends"}
+                            </div>
+                        </div>
 
                         {/* Social Links Panel */}
                         <div className="bg-black/50 border border-neutral-800 p-5 rounded-sm">
@@ -202,19 +231,31 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
                         {/* Cosmetics Preview Panel */}
                         <div className="mt-8 bg-black/50 border border-neutral-800 p-5 rounded-sm">
-                            <div className="flex justify-between items-center border-b border-neutral-800/50 pb-2 mb-4">
-                                <h3 className="text-xs font-bold text-neutral-600 uppercase tracking-widest">
-                                    Showcase
+                            <div className="flex justify-between items-end border-b border-neutral-800/50 pb-2 mb-4">
+                                <h3 className="text-xs font-bold text-neutral-600 uppercase tracking-widest flex items-center gap-2">
+                                    <FaShirt /> Collection
                                 </h3>
-                                <span className="text-[10px] text-neutral-500 uppercase tracking-widest font-semibold bg-neutral-900 px-2 py-0.5 rounded-sm border border-neutral-800">
-                                    Coming Soon
+                                <span className="text-xs font-bold text-emerald-500 tracking-widest">
+                                    {unlockedCount} Unlocked
                                 </span>
                             </div>
-                            <div className="flex justify-center items-center h-24 border border-dashed border-neutral-800 rounded-sm">
-                                <p className="text-sm text-neutral-600 font-medium italic">
-                                    Cosmetics showcase is shrouded in fog...
-                                </p>
-                            </div>
+
+                            <Link
+                                href={`/profile/${targetUser.username}/missing`}
+                                className="w-full flex items-center justify-between p-4 bg-neutral-900/30 border border-neutral-800 rounded-sm hover:bg-neutral-800/60 hover:border-neutral-500 transition-all duration-300 group"
+                            >
+                                <div className="flex flex-col text-left">
+                                    <span className="text-sm font-bold text-neutral-200 uppercase tracking-widest group-hover:text-white transition-colors">
+                                        Missing Cosmetics
+                                    </span>
+                                    <span className="text-xs text-neutral-500 font-medium italic mt-1">
+                                        View items yet to be discovered
+                                    </span>
+                                </div>
+                                <span className="text-neutral-600 group-hover:translate-x-1 group-hover:text-neutral-400 transition-all">
+                                    &rarr;
+                                </span>
+                            </Link>
                         </div>
                     </div>
                 </div>

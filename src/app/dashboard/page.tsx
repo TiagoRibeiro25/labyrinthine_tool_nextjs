@@ -2,7 +2,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { FaMagnifyingGlass, FaArrowLeft, FaUserGroup } from "react-icons/fa6";
+import {
+    FaMagnifyingGlass,
+    FaArrowLeft,
+    FaUserGroup,
+    FaShirt,
+} from "react-icons/fa6";
 import LogoutButton from "../../components/LogoutButton";
 import { db } from "../../db";
 import { users } from "../../db/schema";
@@ -46,7 +51,7 @@ export default async function DashboardPage() {
                     Your cosmetics dashboard is currently under construction.
                 </p>
 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+                <div className="flex flex-wrap items-center justify-center gap-4 mb-10">
                     <Link
                         href={`/profile/${targetUser.username}`}
                         className="group inline-flex items-center justify-center gap-3 px-8 py-3 rounded-sm bg-neutral-900 text-neutral-100 font-bold text-sm uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]"
@@ -68,6 +73,14 @@ export default async function DashboardPage() {
                     >
                         <FaUserGroup className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300 transition-colors" />
                         Connections
+                    </Link>
+
+                    <Link
+                        href="/cosmetics"
+                        className="group inline-flex items-center justify-center gap-3 px-8 py-3 rounded-sm bg-neutral-900/50 text-neutral-300 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:border-neutral-500 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+                    >
+                        <FaShirt className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300 transition-colors" />
+                        Wardrobe
                     </Link>
                 </div>
 
