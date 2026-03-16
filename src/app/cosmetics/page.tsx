@@ -37,7 +37,7 @@ export default async function CosmeticsPage() {
                     The Wardrobe
                 </h1>
                 <p className="text-sm sm:text-base text-neutral-400 font-medium tracking-wide mb-8 max-w-2xl">
-                    Keep track of your hard-earned items from the fog. Click on
+                    Keep track of your hard earned items from the fog. Click on
                     a cosmetic to toggle its locked or unlocked status.
                 </p>
                 <Link
