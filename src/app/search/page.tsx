@@ -85,7 +85,7 @@ export default function SearchPage() {
                     />
                 </div>
 
-                <div className="flex-1 min-h-[300px]">
+                <div className="flex-1 min-h-75">
                     {loading && (
                         <div className="w-full h-full flex flex-col items-center justify-center space-y-4 py-12">
                             <span className="relative flex h-4 w-4">
@@ -104,13 +104,17 @@ export default function SearchPage() {
                         </div>
                     )}
 
-                    {!loading && !error && results.length === 0 && debouncedQuery && (
-                        <div className="w-full text-center py-12 border border-dashed border-neutral-800 rounded-sm">
-                            <p className="text-neutral-500 font-medium italic">
-                                No survivors found matching &quot;{debouncedQuery}&quot;.
-                            </p>
-                        </div>
-                    )}
+                    {!loading &&
+                        !error &&
+                        results.length === 0 &&
+                        debouncedQuery && (
+                            <div className="w-full text-center py-12 border border-dashed border-neutral-800 rounded-sm">
+                                <p className="text-neutral-500 font-medium italic">
+                                    No survivors found matching &quot;
+                                    {debouncedQuery}&quot;.
+                                </p>
+                            </div>
+                        )}
 
                     {!loading && results.length > 0 && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

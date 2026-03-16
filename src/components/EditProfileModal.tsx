@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { FaXmark } from "react-icons/fa6";
 
 const availableAvatars = ["1", "2", "3"];
 
@@ -44,7 +45,7 @@ export default function EditProfileModal({
 
     if (!isOpen) return null;
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         setError("");
@@ -95,22 +96,10 @@ export default function EditProfileModal({
             <div className="w-full max-w-md bg-neutral-950 border border-neutral-800 border-t-4 border-t-neutral-600 p-6 sm:p-8 shadow-2xl relative">
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-neutral-500 hover:text-neutral-300 transition-colors"
+                    className="absolute top-4 right-4 text-neutral-500 hover:text-neutral-300 transition-colors cursor-pointer"
                     disabled={loading}
                 >
-                    <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                        />
-                    </svg>
+                    <FaXmark className="w-6 h-6" />
                 </button>
 
                 <h2 className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-100 to-neutral-500 uppercase mb-6">
@@ -183,14 +172,14 @@ export default function EditProfileModal({
                             type="button"
                             onClick={onClose}
                             disabled={loading}
-                            className="flex-1 px-6 py-3 rounded-sm bg-neutral-900/50 text-neutral-400 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:text-neutral-200 transition-all duration-300 disabled:opacity-50"
+                            className="flex-1 px-6 py-3 rounded-sm bg-neutral-900/50 text-neutral-400 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:text-neutral-200 transition-all duration-300 disabled:opacity-50 cursor-pointer"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 px-6 py-3 rounded-sm bg-neutral-800 text-neutral-100 font-bold text-sm uppercase tracking-widest border border-neutral-600 hover:bg-neutral-700 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.05)] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] disabled:opacity-50"
+                            className="flex-1 px-6 py-3 rounded-sm bg-neutral-800 text-neutral-100 font-bold text-sm uppercase tracking-widest border border-neutral-600 hover:bg-neutral-700 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.05)] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] disabled:opacity-50 cursor-pointer"
                         >
                             {loading ? "Saving..." : "Save Changes"}
                         </button>

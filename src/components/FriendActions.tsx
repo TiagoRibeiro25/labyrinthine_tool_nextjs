@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { FaUserPlus, FaUserXmark } from "react-icons/fa6";
 
 type FriendStatus = "none" | "pending_sent" | "pending_received" | "friends";
 
@@ -84,19 +85,7 @@ export default function FriendActions({
                 disabled={loading}
                 className="w-full mt-4 flex items-center justify-center gap-2 px-6 py-3 rounded-sm bg-neutral-900 text-neutral-200 font-bold text-sm uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 4v16m8-8H4"
-                    />
-                </svg>
+                <FaUserPlus className="w-4 h-4" />
                 {loading ? "Sending..." : "Add Friend"}
             </button>
         );
@@ -142,19 +131,7 @@ export default function FriendActions({
                 disabled={loading}
                 className="w-full mt-4 flex items-center justify-center gap-2 px-6 py-3 rounded-sm bg-neutral-900/50 text-neutral-400 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-red-950/30 hover:text-red-500 hover:border-red-900 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                    />
-                </svg>
+                <FaUserXmark className="w-4 h-4" />
                 {loading ? "Removing..." : "Remove Friend"}
             </button>
         );

@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { FaMagnifyingGlass, FaArrowLeft } from "react-icons/fa6";
 import LogoutButton from "../../components/LogoutButton";
 import { db } from "../../db";
 import { users } from "../../db/schema";
@@ -57,19 +58,7 @@ export default async function DashboardPage() {
                         href="/search"
                         className="group inline-flex items-center justify-center gap-3 px-8 py-3 rounded-sm bg-neutral-900/50 text-neutral-300 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:border-neutral-500 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]"
                     >
-                        <svg
-                            className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300 transition-colors"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                            />
-                        </svg>
+                        <FaMagnifyingGlass className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300 transition-colors" />
                         Find Survivors
                     </Link>
                 </div>
@@ -79,19 +68,7 @@ export default async function DashboardPage() {
                         href="/"
                         className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-sm bg-neutral-900 text-neutral-100 font-bold text-base uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:-translate-y-1 active:translate-y-0 w-full sm:w-auto"
                     >
-                        <svg
-                            className="w-5 h-5 group-hover:-translate-x-1 transition-transform"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                            />
-                        </svg>
+                        <FaArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                         Return to Home
                     </Link>
                     <LogoutButton />

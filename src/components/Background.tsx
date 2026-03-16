@@ -15,10 +15,20 @@ const Background: FC<PropsWithChildren> = ({ children }) => {
         case "/signup":
             backgroundImage = "/images/candle.webp";
             break;
+        case "/dashboard":
+            backgroundImage = "/images/chap1.jpg";
+            break;
+        case "/search":
+        case pathname.match(/^\/profile\/[^\/]+$/)?.input: // Matches /profile/:username
+            backgroundImage = "/images/house.jpg";
+            break;
         default:
             backgroundImage = "/images/do_not_enter.png";
             break;
     }
+
+    // For debugging purposes
+    console.log(`Current pathname: ${pathname}`);
 
     return (
         <div

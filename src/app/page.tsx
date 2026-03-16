@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { FaSteam } from "react-icons/fa6";
+import { FaSteam, FaKey, FaLayerGroup } from "react-icons/fa6";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../lib/auth";
 import PlayerCount from "../components/PlayerCount";
 
 export default async function Home() {
     const session = await getServerSession(authOptions);
+
     return (
         <main className="min-h-screen text-neutral-200 selection:bg-neutral-800/50 selection:text-neutral-200 flex flex-col items-center pb-12 relative z-10">
             {/* --- Hero Content --- */}
@@ -59,19 +60,7 @@ export default async function Home() {
                             href="/dashboard"
                             className="group flex items-center justify-center gap-3 px-8 sm:px-10 py-3 sm:py-4 rounded-sm bg-neutral-900 text-neutral-100 font-bold text-base sm:text-lg uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:-translate-y-1 active:translate-y-0 w-full sm:w-auto"
                         >
-                            <svg
-                                className="w-6 h-6 group-hover:scale-110 transition-transform"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                                />
-                            </svg>
+                            <FaLayerGroup className="w-6 h-6 group-hover:scale-110 transition-transform" />
                             Dashboard
                         </Link>
                     ) : (
@@ -79,19 +68,7 @@ export default async function Home() {
                             href="/login"
                             className="group flex items-center justify-center gap-3 px-8 sm:px-10 py-3 sm:py-4 rounded-sm bg-neutral-900 text-neutral-100 font-bold text-base sm:text-lg uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:-translate-y-1 active:translate-y-0 w-full sm:w-auto"
                         >
-                            <svg
-                                className="w-6 h-6 group-hover:scale-110 transition-transform"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
-                                />
-                            </svg>
+                            <FaKey className="w-6 h-6 group-hover:scale-110 transition-transform" />
                             Sign In
                         </Link>
                     )}
