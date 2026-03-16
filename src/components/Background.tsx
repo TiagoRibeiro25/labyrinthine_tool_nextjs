@@ -20,6 +20,7 @@ const Background: FC<PropsWithChildren> = ({ children }) => {
             break;
         case "/search":
         case pathname.match(/^\/profile\/[^\/]+$/)?.input: // Matches /profile/:username
+        case "/friends":
             backgroundImage = "/images/house.jpg";
             break;
         default:

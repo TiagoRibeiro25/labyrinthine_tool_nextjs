@@ -42,5 +42,5 @@ export async function proxy(req: NextRequest) {
 
 // Specify the paths that the middleware will run on.
 export const config = {
-    matcher: ["/dashboard/:path*", "/login", "/signup"],
+    matcher: ["/dashboard/:path*", "/friends/:path*", "/login", "/signup"],
 };

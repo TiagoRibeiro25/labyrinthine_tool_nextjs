@@ -141,7 +141,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                                 {targetUser.username}
                             </h1>
                             {targetUser.isAdministrator && (
-                                <span className="px-2 py-1 bg-red-950/50 text-red-400 text-[10px] font-bold uppercase tracking-widest border border-red-900/50 rounded-sm mb-1">
+                                <span className="px-3 py-1 bg-red-900 text-red-100 text-[10px] font-black uppercase tracking-widest border border-red-500 rounded-sm mb-1 shadow-[0_0_10px_rgba(220,38,38,0.3)]">
                                     Admin
                                 </span>
                             )}

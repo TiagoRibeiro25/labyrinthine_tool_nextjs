@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { FaMagnifyingGlass, FaArrowLeft } from "react-icons/fa6";
+import { FaMagnifyingGlass, FaArrowLeft, FaUserGroup } from "react-icons/fa6";
 import LogoutButton from "../../components/LogoutButton";
 import { db } from "../../db";
 import { users } from "../../db/schema";
@@ -60,6 +60,14 @@ export default async function DashboardPage() {
                     >
                         <FaMagnifyingGlass className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300 transition-colors" />
                         Find Survivors
+                    </Link>
+
+                    <Link
+                        href="/friends"
+                        className="group inline-flex items-center justify-center gap-3 px-8 py-3 rounded-sm bg-neutral-900/50 text-neutral-300 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:border-neutral-500 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+                    >
+                        <FaUserGroup className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300 transition-colors" />
+                        Connections
                     </Link>
                 </div>
 

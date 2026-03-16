@@ -138,11 +138,56 @@ export async function POST(req: Request) {
 
         // ACTION: REJECT OR REMOVE FRIEND
         if (action === "reject" || action === "remove") {
-            if (!requestId) {
+            if (!requestId && !receiverUsername) {
                 return NextResponse.json(
-                    { message: "Request ID is required." },
+                    { message: "Request ID or receiver username is required." },
                     { status: 400 },
                 );
+            }
+
+            let targetRequestId = requestId;
+
+            if (!targetRequestId && receiverUsername) {
+                const receiverResult = await db
+                    .select()
+                    .from(users)
+                    .where(eq(users.username, receiverUsername))
+                    .limit(1);
+
+                const receiver = receiverResult[0];
+
+                if (!receiver) {
+                    return NextResponse.json(
+                        { message: "User not found." },
+                        { status: 404 },
+                    );
+                }
+
+                const existingRequest = await db
+                    .select()
+                    .from(friendRequests)
+                    .where(
+                        or(
+                            and(
+                                eq(friendRequests.senderId, senderId),
+                                eq(friendRequests.receiverId, receiver.id),
+                            ),
+                            and(
+                                eq(friendRequests.senderId, receiver.id),
+                                eq(friendRequests.receiverId, senderId),
+                            ),
+                        ),
+                    )
+                    .limit(1);
+
+                if (existingRequest.length === 0) {
+                    return NextResponse.json(
+                        { message: "Friend request not found." },
+                        { status: 404 },
+                    );
+                }
+
+                targetRequestId = existingRequest[0].id;
             }
 
             // Delete the request (either reject pending or remove accepted)
@@ -151,7 +196,7 @@ export async function POST(req: Request) {
                 .delete(friendRequests)
                 .where(
                     and(
-                        eq(friendRequests.id, requestId),
+                        eq(friendRequests.id, targetRequestId),
                         or(
                             eq(friendRequests.senderId, senderId),
                             eq(friendRequests.receiverId, senderId),
