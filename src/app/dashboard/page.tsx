@@ -3,27 +3,76 @@ import { authOptions } from "../../lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import LogoutButton from "../../components/LogoutButton";
+import { db } from "../../db";
+import { users } from "../../db/schema";
+import { eq } from "drizzle-orm";
 
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions);
 
-    if (!session) {
+    const sessionUser = session?.user as
+        | { id?: string; name?: string | null }
+        | undefined;
+
+    if (!session || !sessionUser || !sessionUser.id) {
+        redirect("/login");
+    }
+
+    const currentUserId = sessionUser.id;
+    const targetUserResult = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, currentUserId))
+        .limit(1);
+
+    const targetUser = targetUserResult[0];
+
+    if (!targetUser) {
         redirect("/login");
     }
 
     return (
-        <main className="min-h-screen text-neutral-200 flex flex-col items-center justify-center px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
-            <div className="w-full max-w-4xl p-8 sm:p-12 bg-black/80 backdrop-blur-md border border-neutral-800 border-t-4 border-t-neutral-600 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative text-center">
+        <main className="min-h-screen text-neutral-200 flex flex-col items-center justify-center py-12 px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
+            <div className="w-full max-w-4xl p-8 sm:p-12 bg-black/80 backdrop-blur-md border border-neutral-800 border-t-4 border-t-neutral-600 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative text-center flex flex-col items-center">
                 <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-100 to-neutral-700 drop-shadow-[0_5px_5px_rgba(0,0,0,1)] mb-4">
                     The Safehouse
                 </h1>
                 <h2 className="text-xl sm:text-2xl font-bold tracking-widest text-neutral-400 uppercase mb-8">
-                    Welcome, {session.user?.name}
+                    Welcome, {targetUser.username}
                 </h2>
 
-                <p className="text-base text-neutral-500 font-medium tracking-wide mb-10">
+                <p className="text-base text-neutral-500 font-medium tracking-wide mb-8">
                     Your cosmetics dashboard is currently under construction.
                 </p>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+                    <Link
+                        href={`/profile/${targetUser.username}`}
+                        className="group inline-flex items-center justify-center gap-3 px-8 py-3 rounded-sm bg-neutral-900 text-neutral-100 font-bold text-sm uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+                    >
+                        View Profile
+                    </Link>
+
+                    <Link
+                        href="/search"
+                        className="group inline-flex items-center justify-center gap-3 px-8 py-3 rounded-sm bg-neutral-900/50 text-neutral-300 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:border-neutral-500 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+                    >
+                        <svg
+                            className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300 transition-colors"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            />
+                        </svg>
+                        Find Survivors
+                    </Link>
+                </div>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Link
