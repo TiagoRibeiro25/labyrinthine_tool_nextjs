@@ -8,6 +8,7 @@ import {
     FaUserGroup,
     FaShirt,
     FaUser,
+    FaTrophy,
 } from "react-icons/fa6";
 import LogoutButton from "../../components/LogoutButton";
 import { db } from "../../db";
@@ -172,7 +173,24 @@ export default async function DashboardPage() {
                         </h3>
                         <p className="text-sm text-neutral-500 font-medium text-center sm:text-left">
                             Search for a cosmetic and see which of your friends
-                            don't have it.
+                            don&apos;t have it.
+                        </p>
+                    </Link>
+
+                    {/* Leaderboard Card */}
+                    <Link
+                        href="/leaderboard"
+                        className="group relative flex flex-col items-center sm:items-start p-6 bg-neutral-900/40 border border-neutral-800 rounded-sm hover:bg-neutral-900 hover:border-neutral-600 transition-all duration-300"
+                    >
+                        <div className="w-12 h-12 rounded-full bg-black/50 border border-neutral-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                            <FaTrophy className="w-5 h-5 text-neutral-400 group-hover:text-yellow-400 transition-colors" />
+                        </div>
+                        <h3 className="text-xl font-black uppercase tracking-widest text-neutral-200 mb-1 group-hover:text-white transition-colors">
+                            Top Collectors
+                        </h3>
+                        <p className="text-sm text-neutral-500 font-medium text-center sm:text-left">
+                            See who has the largest cosmetic collection in the
+                            leaderboard.
                         </p>
                     </Link>
                 </div>
