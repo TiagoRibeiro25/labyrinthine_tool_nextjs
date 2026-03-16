@@ -16,6 +16,7 @@ const Background: FC<PropsWithChildren> = ({ children }) => {
             backgroundImage = "/images/candle.webp";
             break;
         case "/dashboard":
+        case "/cosmetics":
             backgroundImage = "/images/chap1.jpg";
             break;
         case "/search":
