@@ -29,7 +29,7 @@ const Background: FC<PropsWithChildren> = ({ children }) => {
     }
 
     // For debugging purposes
-    console.log(`Current pathname: ${pathname}`);
+    // console.log(`Current pathname: ${pathname}`);
 
     return (
         <div

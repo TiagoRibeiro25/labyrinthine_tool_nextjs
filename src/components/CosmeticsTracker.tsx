@@ -61,6 +61,45 @@ export default function CosmeticsTracker({
         }
     };
 
+    const toggleCategory = async (
+        items: { id: number; name: string }[],
+        action: "unlock" | "lock",
+    ) => {
+        const itemIds = items.map((i) => i.id);
+        const originalUnlockedIds = new Set(unlockedIds);
+        const newUnlockedIds = new Set(unlockedIds);
+
+        if (action === "unlock") {
+            itemIds.forEach((id) => newUnlockedIds.add(id));
+        } else {
+            itemIds.forEach((id) => newUnlockedIds.delete(id));
+        }
+
+        setUnlockedIds(newUnlockedIds);
+        setLoadingIds((prev) => new Set([...prev, ...itemIds]));
+
+        try {
+            const res = await fetch("/api/cosmetics/toggle", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ cosmeticIds: itemIds, action }),
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to sync category");
+            }
+        } catch (error) {
+            console.error(error);
+            setUnlockedIds(originalUnlockedIds);
+        } finally {
+            setLoadingIds((prev) => {
+                const updated = new Set(prev);
+                itemIds.forEach((id) => updated.delete(id));
+                return updated;
+            });
+        }
+    };
+
     // Prepare filter options
     const filterOptions = ["All", ...Object.keys(categories)];
 
@@ -121,13 +160,33 @@ export default function CosmeticsTracker({
 
                     return (
                         <section key={categoryName} className="w-full">
-                            <div className="flex items-end justify-between border-b border-neutral-800/80 pb-3 mb-6">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between border-b border-neutral-800/80 pb-3 mb-6 gap-4 sm:gap-0">
                                 <h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-200 to-neutral-600 uppercase">
                                     {categoryName}
                                 </h2>
-                                <span className="text-sm font-bold text-neutral-500 tracking-widest">
-                                    {categoryUnlockedCount} / {items.length}
-                                </span>
+                                <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() =>
+                                                toggleCategory(items, "unlock")
+                                            }
+                                            className="text-[10px] sm:text-xs px-3 py-1.5 bg-emerald-950/30 text-emerald-500 border border-emerald-900 rounded-sm hover:bg-emerald-900 hover:text-emerald-400 transition-colors uppercase font-bold tracking-widest shadow-[0_0_10px_rgba(16,185,129,0.05)]"
+                                        >
+                                            Unlock All
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                toggleCategory(items, "lock")
+                                            }
+                                            className="text-[10px] sm:text-xs px-3 py-1.5 bg-red-950/30 text-red-500 border border-red-900 rounded-sm hover:bg-red-900 hover:text-red-400 transition-colors uppercase font-bold tracking-widest shadow-[0_0_10px_rgba(220,38,38,0.05)]"
+                                        >
+                                            Lock All
+                                        </button>
+                                    </div>
+                                    <span className="text-sm font-bold text-neutral-500 tracking-widest shrink-0">
+                                        {categoryUnlockedCount} / {items.length}
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">

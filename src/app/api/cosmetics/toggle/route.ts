@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../lib/auth";
 import { db } from "../../../../db";
 import { userCosmetics } from "../../../../db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 
 export async function POST(req: Request) {
     try {
@@ -19,8 +19,67 @@ export async function POST(req: Request) {
 
         const userId = sessionUser.id;
         const body = await req.json();
-        const { cosmeticId } = body;
+        const { cosmeticId, cosmeticIds, action } = body;
 
+        // --- BULK TOGGLE LOGIC ---
+        if (Array.isArray(cosmeticIds) && typeof action === "string") {
+            if (cosmeticIds.length === 0) {
+                return NextResponse.json(
+                    { message: "No cosmetic IDs provided." },
+                    { status: 400 },
+                );
+            }
+
+            if (action === "unlock") {
+                // To avoid unique constraint errors, we first need to find which ones the user ALREADY has
+                const existingRecords = await db
+                    .select({ cosmeticId: userCosmetics.cosmeticId })
+                    .from(userCosmetics)
+                    .where(eq(userCosmetics.userId, userId));
+
+                const existingSet = new Set(
+                    existingRecords.map((r) => r.cosmeticId),
+                );
+
+                // Filter out the ones they already have
+                const toInsert = cosmeticIds
+                    .filter((id) => !existingSet.has(id))
+                    .map((id) => ({
+                        userId,
+                        cosmeticId: id,
+                    }));
+
+                if (toInsert.length > 0) {
+                    await db.insert(userCosmetics).values(toInsert);
+                }
+
+                return NextResponse.json(
+                    { message: "Cosmetics bulk unlocked." },
+                    { status: 200 },
+                );
+            } else if (action === "lock") {
+                await db
+                    .delete(userCosmetics)
+                    .where(
+                        and(
+                            eq(userCosmetics.userId, userId),
+                            inArray(userCosmetics.cosmeticId, cosmeticIds),
+                        ),
+                    );
+
+                return NextResponse.json(
+                    { message: "Cosmetics bulk locked." },
+                    { status: 200 },
+                );
+            }
+
+            return NextResponse.json(
+                { message: "Invalid bulk action." },
+                { status: 400 },
+            );
+        }
+
+        // --- SINGLE TOGGLE LOGIC ---
         if (typeof cosmeticId !== "number") {
             return NextResponse.json(
                 { message: "Invalid cosmetic ID." },

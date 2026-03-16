@@ -9,7 +9,6 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { username, password } = body;
 
-        // Basic validation
         if (!username || !password) {
             return NextResponse.json(
                 { message: "Username and password are required." },
@@ -24,7 +23,6 @@ export async function POST(req: Request) {
             );
         }
 
-        // Check if the user already exists in the database
         const existingUserResult = await db
             .select()
             .from(users)
@@ -38,10 +36,8 @@ export async function POST(req: Request) {
             );
         }
 
-        // Hash the password before storing it
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Insert the new user into the database
         await db.insert(users).values({
             username,
             password: hashedPassword,

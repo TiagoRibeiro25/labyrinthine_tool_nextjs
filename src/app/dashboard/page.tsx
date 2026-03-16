@@ -7,11 +7,12 @@ import {
     FaArrowLeft,
     FaUserGroup,
     FaShirt,
+    FaUser,
 } from "react-icons/fa6";
 import LogoutButton from "../../components/LogoutButton";
 import { db } from "../../db";
-import { users } from "../../db/schema";
-import { eq } from "drizzle-orm";
+import { users, friendRequests, userCosmetics } from "../../db/schema";
+import { eq, and, or } from "drizzle-orm";
 
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions);
@@ -37,50 +38,125 @@ export default async function DashboardPage() {
         redirect("/login");
     }
 
+    // Get stats
+    const friendsResult = await db
+        .select({ id: friendRequests.id })
+        .from(friendRequests)
+        .where(
+            and(
+                or(
+                    eq(friendRequests.senderId, targetUser.id),
+                    eq(friendRequests.receiverId, targetUser.id),
+                ),
+                eq(friendRequests.status, "accepted"),
+            ),
+        );
+    const friendsCount = friendsResult.length;
+
+    const unlockedCosmeticsResult = await db
+        .select({ id: userCosmetics.id })
+        .from(userCosmetics)
+        .where(eq(userCosmetics.userId, targetUser.id));
+    const unlockedCount = unlockedCosmeticsResult.length;
+
     return (
-        <main className="min-h-screen text-neutral-200 flex flex-col items-center justify-center py-12 px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
-            <div className="w-full max-w-4xl p-8 sm:p-12 bg-black/80 backdrop-blur-md border border-neutral-800 border-t-4 border-t-neutral-600 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative text-center flex flex-col items-center">
-                <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-100 to-neutral-700 drop-shadow-[0_5px_5px_rgba(0,0,0,1)] mb-4">
-                    The Safehouse
-                </h1>
-                <h2 className="text-xl sm:text-2xl font-bold tracking-widest text-neutral-400 uppercase mb-8">
-                    Welcome, {targetUser.username}
-                </h2>
+        <main className="min-h-screen text-neutral-200 flex flex-col items-center justify-center py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
+            <div className="w-full max-w-5xl bg-black/80 backdrop-blur-md border border-neutral-800 border-t-4 border-t-neutral-600 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative p-6 sm:p-10 flex flex-col items-center">
+                <div className="text-center mb-10 border-b border-neutral-800/80 pb-8 w-full">
+                    <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-100 to-neutral-700 drop-shadow-[0_5px_5px_rgba(0,0,0,1)] mb-4 uppercase">
+                        The Safehouse
+                    </h1>
+                    <h2 className="text-lg sm:text-xl font-bold tracking-widest text-emerald-500 uppercase flex items-center justify-center gap-3">
+                        <span className="relative flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                        </span>
+                        Welcome back, {targetUser.username}
+                    </h2>
+                </div>
 
-                <p className="text-base text-neutral-500 font-medium tracking-wide mb-8">
-                    Your cosmetics dashboard is currently under construction.
-                </p>
-
-                <div className="flex flex-wrap items-center justify-center gap-4 mb-10">
-                    <Link
-                        href={`/profile/${targetUser.username}`}
-                        className="group inline-flex items-center justify-center gap-3 px-8 py-3 rounded-sm bg-neutral-900 text-neutral-100 font-bold text-sm uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]"
-                    >
-                        View Profile
-                    </Link>
-
-                    <Link
-                        href="/search"
-                        className="group inline-flex items-center justify-center gap-3 px-8 py-3 rounded-sm bg-neutral-900/50 text-neutral-300 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:border-neutral-500 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]"
-                    >
-                        <FaMagnifyingGlass className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300 transition-colors" />
-                        Find Survivors
-                    </Link>
-
-                    <Link
-                        href="/friends"
-                        className="group inline-flex items-center justify-center gap-3 px-8 py-3 rounded-sm bg-neutral-900/50 text-neutral-300 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:border-neutral-500 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]"
-                    >
-                        <FaUserGroup className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300 transition-colors" />
-                        Connections
-                    </Link>
-
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12 w-full max-w-4xl">
+                    {/* Wardrobe Card */}
                     <Link
                         href="/cosmetics"
-                        className="group inline-flex items-center justify-center gap-3 px-8 py-3 rounded-sm bg-neutral-900/50 text-neutral-300 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:border-neutral-500 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+                        className="group relative flex flex-col items-center sm:items-start p-6 bg-neutral-900/40 border border-neutral-800 rounded-sm hover:bg-neutral-900 hover:border-neutral-600 transition-all duration-300"
                     >
-                        <FaShirt className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300 transition-colors" />
-                        Wardrobe
+                        <div className="w-12 h-12 rounded-full bg-black/50 border border-neutral-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                            <FaShirt className="w-5 h-5 text-neutral-400 group-hover:text-emerald-400 transition-colors" />
+                        </div>
+                        <h3 className="text-xl font-black uppercase tracking-widest text-neutral-200 mb-1 group-hover:text-white transition-colors">
+                            The Wardrobe
+                        </h3>
+                        <p className="text-sm text-neutral-500 font-medium mb-4 text-center sm:text-left">
+                            Manage your collection and track your cosmetic
+                            items.
+                        </p>
+                        <div className="mt-auto flex items-center gap-2 px-3 py-1.5 bg-black/60 border border-neutral-800 rounded-sm w-fit">
+                            <span className="text-lg font-black text-emerald-500 leading-none">
+                                {unlockedCount}
+                            </span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
+                                Unlocked
+                            </span>
+                        </div>
+                    </Link>
+
+                    {/* Connections Card */}
+                    <Link
+                        href="/friends"
+                        className="group relative flex flex-col items-center sm:items-start p-6 bg-neutral-900/40 border border-neutral-800 rounded-sm hover:bg-neutral-900 hover:border-neutral-600 transition-all duration-300"
+                    >
+                        <div className="w-12 h-12 rounded-full bg-black/50 border border-neutral-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                            <FaUserGroup className="w-5 h-5 text-neutral-400 group-hover:text-blue-400 transition-colors" />
+                        </div>
+                        <h3 className="text-xl font-black uppercase tracking-widest text-neutral-200 mb-1 group-hover:text-white transition-colors">
+                            Connections
+                        </h3>
+                        <p className="text-sm text-neutral-500 font-medium mb-4 text-center sm:text-left">
+                            Manage your fellow survivors and friend requests.
+                        </p>
+                        <div className="mt-auto flex items-center gap-2 px-3 py-1.5 bg-black/60 border border-neutral-800 rounded-sm w-fit">
+                            <span className="text-lg font-black text-blue-500 leading-none">
+                                {friendsCount}
+                            </span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
+                                Friends
+                            </span>
+                        </div>
+                    </Link>
+
+                    {/* Public Profile Card */}
+                    <Link
+                        href={`/profile/${targetUser.username}`}
+                        className="group relative flex flex-col items-center sm:items-start p-6 bg-neutral-900/40 border border-neutral-800 rounded-sm hover:bg-neutral-900 hover:border-neutral-600 transition-all duration-300"
+                    >
+                        <div className="w-12 h-12 rounded-full bg-black/50 border border-neutral-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                            <FaUser className="w-5 h-5 text-neutral-400 group-hover:text-purple-400 transition-colors" />
+                        </div>
+                        <h3 className="text-xl font-black uppercase tracking-widest text-neutral-200 mb-1 group-hover:text-white transition-colors">
+                            Public Profile
+                        </h3>
+                        <p className="text-sm text-neutral-500 font-medium text-center sm:text-left">
+                            View and edit your public profile, connections, and
+                            missing items.
+                        </p>
+                    </Link>
+
+                    {/* Find Survivors Card */}
+                    <Link
+                        href="/search"
+                        className="group relative flex flex-col items-center sm:items-start p-6 bg-neutral-900/40 border border-neutral-800 rounded-sm hover:bg-neutral-900 hover:border-neutral-600 transition-all duration-300"
+                    >
+                        <div className="w-12 h-12 rounded-full bg-black/50 border border-neutral-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                            <FaMagnifyingGlass className="w-5 h-5 text-neutral-400 group-hover:text-amber-400 transition-colors" />
+                        </div>
+                        <h3 className="text-xl font-black uppercase tracking-widest text-neutral-200 mb-1 group-hover:text-white transition-colors">
+                            Find Survivors
+                        </h3>
+                        <p className="text-sm text-neutral-500 font-medium text-center sm:text-left">
+                            Search the fog for other players and view their
+                            collections.
+                        </p>
                     </Link>
                 </div>
 

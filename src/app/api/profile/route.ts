@@ -22,7 +22,6 @@ export async function PUT(req: Request) {
         const body = await req.json();
         const { discordUsername, steamProfileUrl, profilePictureId } = body;
 
-        // Basic validation for URL if provided
         if (steamProfileUrl) {
             const steamRegex =
                 /^https?:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/;
@@ -37,7 +36,6 @@ export async function PUT(req: Request) {
             }
         }
 
-        // Update the user profile
         await db
             .update(users)
             .set({
