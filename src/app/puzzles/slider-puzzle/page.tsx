@@ -1,8 +1,9 @@
 import SliderPuzzle from "@/components/SliderPuzzle";
+import { Metadata } from "next";
 import Link from "next/link";
 import { FaArrowLeft } from "react-icons/fa6";
 
-export const metadata = {
+export const metadata: Metadata = {
     title: "Slider Puzzle | Labyrinthine Tool",
     description: "Practice the Labyrinthine slider puzzle.",
 };
