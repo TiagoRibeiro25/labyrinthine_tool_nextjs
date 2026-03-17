@@ -3,6 +3,7 @@ import cosmeticsData from "../data/cosmetics.json";
 export interface CosmeticItem {
     id: number;
     name: string;
+    type: string;
 }
 
 export type CosmeticsCategoryMap = Record<string, CosmeticItem[]>;
@@ -12,6 +13,11 @@ export const categories: CosmeticsCategoryMap = cosmeticsData;
 
 // A flat array of all cosmetics regardless of category
 export const allCosmetics: CosmeticItem[] = Object.values(categories).flat();
+
+// An array of all unique cosmetic types
+export const allTypes: string[] = Array.from(
+    new Set(allCosmetics.map((c) => c.type)),
+).sort();
 
 /**
  * Returns the category name for a given cosmetic ID.

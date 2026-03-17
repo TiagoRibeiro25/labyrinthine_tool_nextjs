@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 
 const GRID_SIZE = 3;
 const NUM_TILES = GRID_SIZE * GRID_SIZE;
@@ -27,7 +27,7 @@ export default function SliderPuzzle() {
 
     const shufflePuzzle = () => {
         // To ensure solvability, we simulate random valid moves rather than randomizing the array
-        let currentTiles = [...getSolvedState()];
+        const currentTiles = [...getSolvedState()];
         let emptyIndex = currentTiles.indexOf(0);
 
         // Make 100 random valid moves to shuffle
@@ -41,7 +41,8 @@ export default function SliderPuzzle() {
             if (col > 0) validMoves.push(emptyIndex - 1); // Left
             if (col < GRID_SIZE - 1) validMoves.push(emptyIndex + 1); // Right
 
-            const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+            const randomMove =
+                validMoves[Math.floor(Math.random() * validMoves.length)];
 
             // Swap
             currentTiles[emptyIndex] = currentTiles[randomMove];
@@ -75,7 +76,7 @@ export default function SliderPuzzle() {
             newTiles[index] = 0;
 
             setTiles(newTiles);
-            setMoves(m => m + 1);
+            setMoves((m) => m + 1);
 
             if (checkSolved(newTiles)) {
                 setIsSolved(true);
@@ -92,13 +93,19 @@ export default function SliderPuzzle() {
 
             <div className="flex justify-between w-full mb-4 px-2 text-neutral-400 font-mono text-sm tracking-wider">
                 <span>MOVES: {moves}</span>
-                <span>{isSolved && moves > 0 ? "SOLVED!" : isPlaying ? "PLAYING" : "WAITING"}</span>
+                <span>
+                    {isSolved && moves > 0
+                        ? "SOLVED!"
+                        : isPlaying
+                          ? "PLAYING"
+                          : "WAITING"}
+                </span>
             </div>
 
             <div
                 className="grid gap-1 bg-neutral-900 p-2 rounded-sm border border-neutral-700 shadow-inner"
                 style={{
-                    gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))`
+                    gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))`,
                 }}
             >
                 {tiles.map((tile, index) => (
@@ -107,12 +114,13 @@ export default function SliderPuzzle() {
                         onClick={() => handleTileClick(index)}
                         className={`
                             relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 text-2xl font-bold rounded-sm select-none transition-all duration-200
-                            ${tile === 0
-                                ? 'bg-transparent border border-neutral-800/50 cursor-default'
-                                : 'bg-neutral-800 border border-neutral-600 text-neutral-300 cursor-pointer hover:bg-neutral-700 hover:border-neutral-400 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]'
+                            ${
+                                tile === 0
+                                    ? "bg-transparent border border-neutral-800/50 cursor-default"
+                                    : "bg-neutral-800 border border-neutral-600 text-neutral-300 cursor-pointer hover:bg-neutral-700 hover:border-neutral-400 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                             }
-                            ${!isPlaying && tile !== 0 && !isSolved ? 'opacity-50 grayscale' : ''}
-                            ${isSolved && tile !== 0 ? 'bg-neutral-800/80 border-green-900/50 text-neutral-500' : ''}
+                            ${!isPlaying && tile !== 0 && !isSolved ? "opacity-50 grayscale" : ""}
+                            ${isSolved && tile !== 0 ? "bg-neutral-800/80 border-green-900/50 text-neutral-500" : ""}
                         `}
                     >
                         {tile !== 0 && (
@@ -128,7 +136,7 @@ export default function SliderPuzzle() {
                 onClick={shufflePuzzle}
                 className="mt-8 px-8 py-3 w-full rounded-sm bg-neutral-900 text-neutral-100 font-bold uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]"
             >
-                {isPlaying ? 'Restart Puzzle' : 'Start Practice'}
+                {isPlaying ? "Restart Puzzle" : "Start Practice"}
             </button>
 
             {isSolved && moves > 0 && (

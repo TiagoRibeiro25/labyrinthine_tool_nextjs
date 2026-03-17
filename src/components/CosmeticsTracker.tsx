@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { FaLock, FaUnlockKeyhole, FaFilter } from "react-icons/fa6";
-import { categories } from "../lib/cosmetics";
+import { categories, allTypes } from "../lib/cosmetics";
 
 interface CosmeticsTrackerProps {
     initialUnlockedIds: number[];
@@ -16,6 +16,7 @@ export default function CosmeticsTracker({
         new Set(initialUnlockedIds),
     );
     const [activeFilter, setActiveFilter] = useState<string>("All");
+    const [activeTypeFilter, setActiveTypeFilter] = useState<string>("All");
     const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
 
     const toggleCosmetic = async (id: number) => {
@@ -102,29 +103,53 @@ export default function CosmeticsTracker({
 
     // Prepare filter options
     const filterOptions = ["All", ...Object.keys(categories)];
+    const typeFilterOptions = ["All", ...allTypes];
 
     return (
         <div className="w-full flex flex-col items-center">
             {/* Filter Bar */}
-            <div className="w-full max-w-6xl mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 bg-black/60 border border-neutral-800 p-4 rounded-sm shadow-xl">
-                <div className="flex items-center gap-3 text-neutral-400 font-bold uppercase tracking-widest text-xs">
-                    <FaFilter className="text-neutral-500" />
-                    <span>Filter Collection</span>
+            <div className="w-full max-w-6xl mb-8 flex flex-col gap-4 bg-black/60 border border-neutral-800 p-4 rounded-sm shadow-xl">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 text-neutral-400 font-bold uppercase tracking-widest text-xs">
+                        <FaFilter className="text-neutral-500" />
+                        <span>Category</span>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2">
+                        {filterOptions.map((filter) => (
+                            <button
+                                key={filter}
+                                onClick={() => setActiveFilter(filter)}
+                                className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-sm transition-all duration-300 border ${
+                                    activeFilter === filter
+                                        ? "bg-emerald-900/30 border-emerald-500 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.1)]"
+                                        : "bg-neutral-900/50 border-neutral-800 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
+                                }`}
+                            >
+                                {filter}
+                            </button>
+                        ))}
+                    </div>
                 </div>
-                <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2">
-                    {filterOptions.map((filter) => (
-                        <button
-                            key={filter}
-                            onClick={() => setActiveFilter(filter)}
-                            className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-sm transition-all duration-300 border ${
-                                activeFilter === filter
-                                    ? "bg-emerald-900/30 border-emerald-500 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.1)]"
-                                    : "bg-neutral-900/50 border-neutral-800 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
-                            }`}
-                        >
-                            {filter}
-                        </button>
-                    ))}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-neutral-800/80 pt-4">
+                    <div className="flex items-center gap-3 text-neutral-400 font-bold uppercase tracking-widest text-xs">
+                        <FaFilter className="text-neutral-500" />
+                        <span>Type</span>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2">
+                        {typeFilterOptions.map((filter) => (
+                            <button
+                                key={filter}
+                                onClick={() => setActiveTypeFilter(filter)}
+                                className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-sm transition-all duration-300 border ${
+                                    activeTypeFilter === filter
+                                        ? "bg-emerald-900/30 border-emerald-500 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.1)]"
+                                        : "bg-neutral-900/50 border-neutral-800 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
+                                }`}
+                            >
+                                {filter}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
@@ -150,11 +175,20 @@ export default function CosmeticsTracker({
                         return null;
                     }
 
+                    const filteredItems =
+                        activeTypeFilter === "All"
+                            ? items
+                            : items.filter((i) => i.type === activeTypeFilter);
+
+                    if (filteredItems.length === 0) {
+                        return null;
+                    }
+
                     // Sort items by unlocked status (unlocked first) just for visual organization if desired
                     // But keeping them static is usually better for memory muscle when finding items.
                     // We will keep static order.
 
-                    const categoryUnlockedCount = items.filter((i) =>
+                    const categoryUnlockedCount = filteredItems.filter((i) =>
                         unlockedIds.has(i.id),
                     ).length;
 
@@ -168,7 +202,10 @@ export default function CosmeticsTracker({
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={() =>
-                                                toggleCategory(items, "unlock")
+                                                toggleCategory(
+                                                    filteredItems,
+                                                    "unlock",
+                                                )
                                             }
                                             className="text-[10px] sm:text-xs px-3 py-1.5 bg-emerald-950/30 text-emerald-500 border border-emerald-900 rounded-sm hover:bg-emerald-900 hover:text-emerald-400 transition-colors uppercase font-bold tracking-widest shadow-[0_0_10px_rgba(16,185,129,0.05)]"
                                         >
@@ -176,7 +213,10 @@ export default function CosmeticsTracker({
                                         </button>
                                         <button
                                             onClick={() =>
-                                                toggleCategory(items, "lock")
+                                                toggleCategory(
+                                                    filteredItems,
+                                                    "lock",
+                                                )
                                             }
                                             className="text-[10px] sm:text-xs px-3 py-1.5 bg-red-950/30 text-red-500 border border-red-900 rounded-sm hover:bg-red-900 hover:text-red-400 transition-colors uppercase font-bold tracking-widest shadow-[0_0_10px_rgba(220,38,38,0.05)]"
                                         >
@@ -184,13 +224,14 @@ export default function CosmeticsTracker({
                                         </button>
                                     </div>
                                     <span className="text-sm font-bold text-neutral-500 tracking-widest shrink-0">
-                                        {categoryUnlockedCount} / {items.length}
+                                        {categoryUnlockedCount} /{" "}
+                                        {filteredItems.length}
                                     </span>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-                                {items.map((item) => {
+                                {filteredItems.map((item) => {
                                     const isUnlocked = unlockedIds.has(item.id);
                                     const isLoading = loadingIds.has(item.id);
 
