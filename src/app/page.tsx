@@ -73,11 +73,11 @@ export default async function Home() {
                         </Link>
                     )}
                     <Link
-                        href="/slider-puzzle"
+                        href="/puzzles"
                         className="group flex items-center justify-center gap-3 px-8 sm:px-10 py-3 sm:py-4 rounded-sm bg-neutral-900 text-neutral-100 font-bold text-base sm:text-lg uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:-translate-y-1 active:translate-y-0 w-full sm:w-auto"
                     >
                         <FaPuzzlePiece className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                        Slider Puzzle
+                        Puzzles
                     </Link>
                 </div>
             </section>

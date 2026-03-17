@@ -12,11 +12,11 @@ export default function SliderPuzzlePage() {
         <main className="min-h-screen text-neutral-200 selection:bg-neutral-800/50 selection:text-neutral-200 flex flex-col items-center py-24 relative z-10 px-6">
             <div className="w-full max-w-4xl mb-8 flex justify-start">
                 <Link
-                    href="/"
+                    href="/puzzles"
                     className="group flex items-center gap-2 px-4 py-2 rounded-sm bg-neutral-900 text-neutral-400 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:text-neutral-100 hover:border-neutral-500 transition-all duration-300"
                 >
                     <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
-                    Back to Home
+                    Back to Puzzles
                 </Link>
             </div>
             <div className="max-w-4xl w-full flex flex-col items-center text-center mb-12">
