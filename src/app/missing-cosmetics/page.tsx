@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { FaMagnifyingGlass, FaShirt, FaArrowLeft } from "react-icons/fa6";
 import { useDebounce } from "use-debounce";
@@ -13,13 +14,29 @@ interface FriendResult {
     profilePictureId: string | null;
 }
 
-export default function MissingCosmeticsPage() {
+function MissingCosmeticsContent() {
+    const searchParams = useSearchParams();
+    const initialCosmeticId = searchParams.get("cosmeticId");
+
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [debouncedQuery] = useDebounce(searchQuery, 300);
-    const [selectedCosmetic, setSelectedCosmetic] = useState<CosmeticItem | null>(null);
+    const [selectedCosmetic, setSelectedCosmetic] =
+        useState<CosmeticItem | null>(null);
     const [missingFriends, setMissingFriends] = useState<FriendResult[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
+
+    useEffect(() => {
+        if (initialCosmeticId && !selectedCosmetic) {
+            const cosmetic = allCosmetics.find(
+                (c) => c.id === parseInt(initialCosmeticId, 10),
+            );
+            if (cosmetic) {
+                setSelectedCosmetic(cosmetic);
+                setSearchQuery(cosmetic.name);
+            }
+        }
+    }, [initialCosmeticId, selectedCosmetic]);
 
     // Reset selection if user starts typing again
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +56,9 @@ export default function MissingCosmeticsPage() {
         debouncedQuery && !selectedCosmetic
             ? allCosmetics
                   .filter((c) =>
-                      c.name.toLowerCase().includes(debouncedQuery.toLowerCase())
+                      c.name
+                          .toLowerCase()
+                          .includes(debouncedQuery.toLowerCase()),
                   )
                   .slice(0, 10)
             : [];
@@ -56,7 +75,7 @@ export default function MissingCosmeticsPage() {
 
             try {
                 const res = await fetch(
-                    `/api/missing-cosmetics?cosmeticId=${selectedCosmetic.id}`
+                    `/api/missing-cosmetics?cosmeticId=${selectedCosmetic.id}`,
                 );
 
                 if (!res.ok) {
@@ -88,7 +107,8 @@ export default function MissingCosmeticsPage() {
                         Missing Cosmetics
                     </h1>
                     <p className="text-sm text-neutral-400 font-medium tracking-wide">
-                        Search for a cosmetic to see which of your friends still need it.
+                        Search for a cosmetic to see which of your friends still
+                        need it.
                     </p>
                 </div>
 
@@ -110,7 +130,9 @@ export default function MissingCosmeticsPage() {
                             {filteredCosmetics.map((cosmetic) => (
                                 <button
                                     key={cosmetic.id}
-                                    onClick={() => handleSelectCosmetic(cosmetic)}
+                                    onClick={() =>
+                                        handleSelectCosmetic(cosmetic)
+                                    }
                                     className="w-full text-left px-4 py-3 border-b border-neutral-800 hover:bg-neutral-800 transition-colors flex items-center gap-3"
                                 >
                                     <div className="w-8 h-8 relative bg-black border border-neutral-700 rounded-sm overflow-hidden shrink-0 p-1">
@@ -150,65 +172,76 @@ export default function MissingCosmeticsPage() {
                         </div>
                     )}
 
-                    {!loading && !error && selectedCosmetic && missingFriends.length === 0 && (
-                        <div className="w-full text-center py-12 border border-dashed border-neutral-800 rounded-sm bg-neutral-900/20">
-                            <div className="w-16 h-16 mx-auto mb-4 bg-emerald-950/50 border border-emerald-900 rounded-full flex items-center justify-center">
-                                <FaShirt className="w-8 h-8 text-emerald-500" />
+                    {!loading &&
+                        !error &&
+                        selectedCosmetic &&
+                        missingFriends.length === 0 && (
+                            <div className="w-full text-center py-12 border border-dashed border-neutral-800 rounded-sm bg-neutral-900/20">
+                                <div className="w-16 h-16 mx-auto mb-4 bg-emerald-950/50 border border-emerald-900 rounded-full flex items-center justify-center">
+                                    <FaShirt className="w-8 h-8 text-emerald-500" />
+                                </div>
+                                <p className="text-emerald-500 font-medium tracking-wide">
+                                    All of your friends already have this
+                                    cosmetic!
+                                </p>
                             </div>
-                            <p className="text-emerald-500 font-medium tracking-wide">
-                                All of your friends already have this cosmetic!
-                            </p>
-                        </div>
-                    )}
+                        )}
 
-                    {!loading && !error && selectedCosmetic && missingFriends.length > 0 && (
-                        <div>
-                            <div className="mb-4 flex items-center justify-between border-b border-neutral-800/50 pb-2">
-                                <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-400">
-                                    Friends missing <span className="text-white">{selectedCosmetic.name}</span>
-                                </h3>
-                                <span className="text-xs font-bold bg-neutral-800 px-2 py-1 rounded-sm text-neutral-300">
-                                    {missingFriends.length} Found
-                                </span>
+                    {!loading &&
+                        !error &&
+                        selectedCosmetic &&
+                        missingFriends.length > 0 && (
+                            <div>
+                                <div className="mb-4 flex items-center justify-between border-b border-neutral-800/50 pb-2">
+                                    <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-400">
+                                        Friends missing{" "}
+                                        <span className="text-white">
+                                            {selectedCosmetic.name}
+                                        </span>
+                                    </h3>
+                                    <span className="text-xs font-bold bg-neutral-800 px-2 py-1 rounded-sm text-neutral-300">
+                                        {missingFriends.length} Found
+                                    </span>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {missingFriends.map((friend) => (
+                                        <Link
+                                            key={friend.id}
+                                            href={`/profile/${friend.username}`}
+                                            className="group flex items-center gap-4 p-4 bg-neutral-900/40 border border-neutral-800 rounded-sm hover:bg-neutral-800 hover:border-neutral-500 transition-all duration-300"
+                                        >
+                                            <div className="relative w-12 h-12 shrink-0 border border-black shadow-md overflow-hidden bg-neutral-950">
+                                                <Image
+                                                    src={
+                                                        friend.profilePictureId
+                                                            ? `/images/profile_pictures/${friend.profilePictureId}.webp`
+                                                            : `/images/profile_pictures/1.webp`
+                                                    }
+                                                    alt={friend.username}
+                                                    fill
+                                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                                    sizes="48px"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col min-w-0">
+                                                <span className="text-neutral-200 font-bold truncate group-hover:text-white transition-colors">
+                                                    {friend.username}
+                                                </span>
+                                                <span className="text-[10px] text-neutral-500 uppercase tracking-widest font-semibold mt-0.5 group-hover:text-neutral-400 transition-colors">
+                                                    View Profile &rarr;
+                                                </span>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {missingFriends.map((friend) => (
-                                    <Link
-                                        key={friend.id}
-                                        href={`/profile/${friend.username}`}
-                                        className="group flex items-center gap-4 p-4 bg-neutral-900/40 border border-neutral-800 rounded-sm hover:bg-neutral-800 hover:border-neutral-500 transition-all duration-300"
-                                    >
-                                        <div className="relative w-12 h-12 shrink-0 border border-black shadow-md overflow-hidden bg-neutral-950">
-                                            <Image
-                                                src={
-                                                    friend.profilePictureId
-                                                        ? `/images/profile_pictures/${friend.profilePictureId}.webp`
-                                                        : `/images/profile_pictures/1.webp`
-                                                }
-                                                alt={friend.username}
-                                                fill
-                                                className="object-cover group-hover:scale-110 transition-transform duration-500"
-                                                sizes="48px"
-                                            />
-                                        </div>
-                                        <div className="flex flex-col min-w-0">
-                                            <span className="text-neutral-200 font-bold truncate group-hover:text-white transition-colors">
-                                                {friend.username}
-                                            </span>
-                                            <span className="text-[10px] text-neutral-500 uppercase tracking-widest font-semibold mt-0.5 group-hover:text-neutral-400 transition-colors">
-                                                View Profile &rarr;
-                                            </span>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                        )}
 
                     {!loading && !selectedCosmetic && (
                         <div className="w-full text-center py-12 border border-dashed border-neutral-800 rounded-sm">
                             <p className="text-neutral-500 font-medium italic">
-                                Search and select a cosmetic to see who needs it.
+                                Search and select a cosmetic to see who needs
+                                it.
                             </p>
                         </div>
                     )}
@@ -224,5 +257,23 @@ export default function MissingCosmeticsPage() {
                 </div>
             </div>
         </main>
+    );
+}
+
+export default function MissingCosmeticsPage() {
+    return (
+        <Suspense
+            fallback={
+                <main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
+                    <div className="w-full h-full flex flex-col items-center justify-center space-y-4 py-12">
+                        <span className="text-xs text-neutral-500 font-bold uppercase tracking-widest">
+                            Loading...
+                        </span>
+                    </div>
+                </main>
+            }
+        >
+            <MissingCosmeticsContent />
+        </Suspense>
     );
 }

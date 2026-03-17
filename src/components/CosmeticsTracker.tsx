@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { FaLock, FaUnlockKeyhole, FaFilter } from "react-icons/fa6";
+import Link from "next/link";
+import {
+    FaLock,
+    FaUnlockKeyhole,
+    FaFilter,
+    FaMagnifyingGlass,
+} from "react-icons/fa6";
 import { categories, allTypes } from "../lib/cosmetics";
 
 interface CosmeticsTrackerProps {
@@ -236,17 +242,18 @@ export default function CosmeticsTracker({
                                     const isLoading = loadingIds.has(item.id);
 
                                     return (
-                                        <button
+                                        <div
                                             key={item.id}
-                                            onClick={() =>
-                                                toggleCosmetic(item.id)
-                                            }
-                                            disabled={isLoading}
-                                            className={`group relative flex flex-col items-center bg-black border rounded-sm overflow-hidden transition-all duration-300 ${
+                                            onClick={() => {
+                                                if (!isLoading) {
+                                                    toggleCosmetic(item.id);
+                                                }
+                                            }}
+                                            className={`group relative flex flex-col items-center bg-black border rounded-sm overflow-hidden transition-all duration-300 cursor-pointer ${
                                                 isUnlocked
                                                     ? "border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.1)] hover:border-emerald-400 hover:shadow-[0_0_25px_rgba(16,185,129,0.2)] hover:-translate-y-1"
                                                     : "border-neutral-800 opacity-60 hover:opacity-100 hover:border-neutral-500 hover:-translate-y-1"
-                                            }`}
+                                            } ${isLoading ? "pointer-events-none" : ""}`}
                                         >
                                             {/* Top Status Banner */}
                                             <div
@@ -256,6 +263,18 @@ export default function CosmeticsTracker({
                                                         : "bg-red-900/50"
                                                 }`}
                                             />
+
+                                            {/* Search Friends Link */}
+                                            <Link
+                                                href={`/missing-cosmetics?cosmeticId=${item.id}`}
+                                                onClick={(e) =>
+                                                    e.stopPropagation()
+                                                }
+                                                title="Find friends missing this"
+                                                className="absolute top-2 left-2 z-20 p-1.5 rounded-sm backdrop-blur-md border bg-black/60 border-neutral-800 text-neutral-500 hover:text-emerald-400 hover:border-emerald-500 transition-all opacity-0 group-hover:opacity-100"
+                                            >
+                                                <FaMagnifyingGlass className="w-3 h-3" />
+                                            </Link>
 
                                             {/* Icon Indicator */}
                                             <div
@@ -305,7 +324,7 @@ export default function CosmeticsTracker({
                                                     {item.name}
                                                 </p>
                                             </div>
-                                        </button>
+                                        </div>
                                     );
                                 })}
                             </div>
