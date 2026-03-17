@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useDeferredValue } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -23,6 +23,8 @@ export default function CosmeticsTracker({
     );
     const [activeFilter, setActiveFilter] = useState<string>("All");
     const [activeTypeFilter, setActiveTypeFilter] = useState<string>("All");
+    const [searchQuery, setSearchQuery] = useState<string>("");
+    const deferredSearchQuery = useDeferredValue(searchQuery);
     const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
 
     const toggleCosmetic = async (id: number) => {
@@ -157,6 +159,21 @@ export default function CosmeticsTracker({
                         ))}
                     </div>
                 </div>
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-neutral-800/80 pt-4">
+                    <div className="flex items-center gap-3 text-neutral-400 font-bold uppercase tracking-widest text-xs">
+                        <FaMagnifyingGlass className="text-neutral-500" />
+                        <span>Search</span>
+                    </div>
+                    <div className="w-full sm:w-auto flex-1 max-w-sm flex justify-center sm:justify-end ml-auto">
+                        <input
+                            type="text"
+                            placeholder="Search cosmetics by name..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-neutral-900/50 border border-neutral-800 text-neutral-200 text-sm px-4 py-2 rounded-sm focus:outline-none focus:border-emerald-500 transition-colors placeholder:text-neutral-600"
+                        />
+                    </div>
+                </div>
             </div>
 
             {/* Statistics */}
@@ -181,10 +198,15 @@ export default function CosmeticsTracker({
                         return null;
                     }
 
-                    const filteredItems =
-                        activeTypeFilter === "All"
-                            ? items
-                            : items.filter((i) => i.type === activeTypeFilter);
+                    const filteredItems = items.filter((i) => {
+                        const matchesType =
+                            activeTypeFilter === "All" ||
+                            i.type === activeTypeFilter;
+                        const matchesSearch = i.name
+                            .toLowerCase()
+                            .includes(deferredSearchQuery.toLowerCase());
+                        return matchesType && matchesSearch;
+                    });
 
                     if (filteredItems.length === 0) {
                         return null;
