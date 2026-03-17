@@ -27,7 +27,7 @@
         { "id": 23, "name": "Pineapple Lantern", "type": "Lantern" },
         { "id": 24, "name": "Black Bandana", "type": "Hat" },
         { "id": 25, "name": "Palm Tree Lantern", "type": "Lantern" },
-        { "id": 26, "name": "Blue Bandana", "type": "Clothing" },
+        { "id": 26, "name": "Blue Bandana", "type": "Hat" },
         { "id": 27, "name": "Sandcastle Lantern", "type": "Lantern" },
         { "id": 28, "name": "Green Bandana", "type": "Hat" },
         { "id": 29, "name": "Sun Lantern", "type": "Lantern" },
