@@ -18,34 +18,42 @@ export const authOptions: NextAuthOptions = {
                     return null;
                 }
 
-                // Look up the user in the database
-                const userResult = await db
-                    .select()
-                    .from(users)
-                    .where(eq(users.username, credentials.username))
-                    .limit(1);
+                try {
+                    // Look up the user in the database
+                    const userResult = await db
+                        .select()
+                        .from(users)
+                        .where(eq(users.username, credentials.username))
+                        .limit(1);
 
-                const user = userResult[0];
+                    const user = userResult[0];
 
-                if (!user) {
+                    if (!user) {
+                        return null;
+                    }
+
+                    // Verify password
+                    const isPasswordValid = await bcrypt.compare(
+                        credentials.password,
+                        user.password,
+                    );
+
+                    if (!isPasswordValid) {
+                        return null;
+                    }
+
+                    // Return user object for NextAuth session
+                    return {
+                        id: user.id,
+                        name: user.username,
+                    };
+                } catch (error) {
+                    console.error(
+                        "Database error during authorization:",
+                        error,
+                    );
                     return null;
                 }
-
-                // Verify password
-                const isPasswordValid = await bcrypt.compare(
-                    credentials.password,
-                    user.password,
-                );
-
-                if (!isPasswordValid) {
-                    return null;
-                }
-
-                // Return user object for NextAuth session
-                return {
-                    id: user.id,
-                    name: user.username,
-                };
             },
         }),
     ],
