@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaXmark } from "react-icons/fa6";
 
-const availableAvatars = ["1", "2", "3"];
+const availableAvatars = ["1", "2", "3", "4", "5", "6"];
 
 interface EditProfileModalProps {
     isOpen: boolean;
