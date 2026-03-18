@@ -15,6 +15,7 @@ A full-stack web application built with modern web technologies including Next.j
 ## 📋 Prerequisites
 
 Before you begin, ensure you have the following installed on your machine:
+
 - [Node.js](https://nodejs.org/) (v20 or higher recommended)
 - [npm](https://www.npmjs.com/) or another package manager
 - [Docker](https://www.docker.com/) and Docker Compose (for the local database)
@@ -26,7 +27,7 @@ Follow these steps to set up the project locally.
 ### 1. Clone the repository and install dependencies
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/TiagoRibeiro25/labyrinthine_tool_nextjs
 cd labyrinthine_tool
 npm install
 ```
@@ -60,7 +61,7 @@ Once the database is running, you need to push the schema using Drizzle:
 npx drizzle-kit push
 ```
 
-*Note: Depending on your exact drizzle scripts in `package.json`, you might use `npx drizzle-kit generate` and `npx drizzle-kit migrate` instead.*
+_Note: Depending on your exact drizzle scripts in `package.json`, you might use `npx drizzle-kit generate` and `npx drizzle-kit migrate` instead._
 
 ### 5. Run the Development Server
 
