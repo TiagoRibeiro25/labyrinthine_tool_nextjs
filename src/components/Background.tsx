@@ -6,7 +6,7 @@ import { type FC, type PropsWithChildren } from "react";
 const Background: FC<PropsWithChildren> = ({ children }) => {
     const pathname = usePathname();
 
-    let backgroundImage = "/images/Chapter_1_Entrance.webp";
+    let backgroundImage;
     switch (pathname) {
         case "/":
             backgroundImage = "/images/Chapter_1_Entrance.webp";
