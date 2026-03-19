@@ -55,8 +55,8 @@ const generateBoard = () => {
 
 export default function LightsOut() {
     const [board, setBoard] = useState<boolean[]>(() => generateBoard());
-    const [isWon, setIsWon] = useState(false);
-    const [moves, setMoves] = useState(0);
+    const [isWon, setIsWon] = useState<boolean>(false);
+    const [moves, setMoves] = useState<number>(0);
 
     // Initialize board with random moves to ensure solvability
     const startNewGame = useCallback(() => {
