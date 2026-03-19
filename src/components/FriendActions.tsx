@@ -21,7 +21,7 @@ export default function FriendActions({
     const router = useRouter();
     const [status, setStatus] = useState<FriendStatus>(initialStatus);
     const [requestId, setRequestId] = useState<string | null>(initialRequestId);
-    const { loading, error, execute, setError } = useApi();
+    const { loading, error, execute } = useApi();
 
     const handleAction = async (
         action: "add" | "accept" | "reject" | "remove",
@@ -47,7 +47,7 @@ export default function FriendActions({
             }
 
             router.refresh();
-        } catch (err) {
+        } catch {
             // Error handled by useApi
         }
     };

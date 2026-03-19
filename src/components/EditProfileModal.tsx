@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaXmark } from "react-icons/fa6";
@@ -48,16 +48,6 @@ export default function EditProfileModal({
 
     const error = localError || apiError;
 
-    useEffect(() => {
-        if (isOpen) {
-            setDiscordUsername(initialData.discordUsername || "");
-            setSteamProfileUrl(initialData.steamProfileUrl || "");
-            setProfilePictureId(initialData.profilePictureId || "1");
-            setLocalError("");
-            setApiError(null);
-        }
-    }, [isOpen, initialData, setApiError]);
-
     if (!isOpen) return null;
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -88,7 +78,7 @@ export default function EditProfileModal({
 
             router.refresh();
             onClose();
-        } catch (err) {
+        } catch {
             // Error is handled by useApi
         }
     };

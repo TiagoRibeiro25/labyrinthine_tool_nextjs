@@ -20,10 +20,17 @@ function MissingCosmeticsContent() {
     const searchParams = useSearchParams();
     const initialCosmeticId = searchParams.get("cosmeticId");
 
-    const [searchQuery, setSearchQuery] = useState<string>("");
+    const initialCosmetic = initialCosmeticId
+        ? allCosmetics.find((c) => c.id === parseInt(initialCosmeticId, 10)) ||
+          null
+        : null;
+
+    const [searchQuery, setSearchQuery] = useState<string>(
+        initialCosmetic?.name || "",
+    );
     const [debouncedQuery] = useDebounce(searchQuery, 300);
     const [selectedCosmetic, setSelectedCosmetic] =
-        useState<CosmeticItem | null>(null);
+        useState<CosmeticItem | null>(initialCosmetic);
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -36,18 +43,6 @@ function MissingCosmeticsContent() {
         setData: setMissingFriends,
     } = useApi<FriendResult[]>();
     const missingFriends = data || [];
-
-    useEffect(() => {
-        if (initialCosmeticId && !selectedCosmetic) {
-            const cosmetic = allCosmetics.find(
-                (c) => c.id === parseInt(initialCosmeticId, 10),
-            );
-            if (cosmetic) {
-                setSelectedCosmetic(cosmetic);
-                setSearchQuery(cosmetic.name);
-            }
-        }
-    }, [initialCosmeticId, selectedCosmetic]);
 
     // Reset selection if user starts typing again
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

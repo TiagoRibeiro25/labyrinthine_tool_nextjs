@@ -25,11 +25,13 @@ export default function EditProfileButton({
                 Edit Profile
             </button>
 
-            <EditProfileModal
-                isOpen={isOpen}
-                onClose={close}
-                initialData={initialData}
-            />
+            {isOpen && (
+                <EditProfileModal
+                    isOpen={isOpen}
+                    onClose={close}
+                    initialData={initialData}
+                />
+            )}
         </>
     );
 }
