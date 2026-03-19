@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaXmark } from "react-icons/fa6";
+import { useApi } from "../hooks/useApi";
 
 const availableAvatars = ["1", "2", "3", "4", "5", "6"];
 
@@ -32,40 +33,47 @@ export default function EditProfileModal({
     const [profilePictureId, setProfilePictureId] = useState<string>(
         initialData.profilePictureId || "1",
     );
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string>("");
+    const [localError, setLocalError] = useState<string>("");
+    const {
+        loading,
+        error: apiError,
+        execute,
+        setError: setApiError,
+    } = useApi();
+
+    const error = localError || apiError;
+
     useEffect(() => {
         if (isOpen) {
             setDiscordUsername(initialData.discordUsername || "");
             setSteamProfileUrl(initialData.steamProfileUrl || "");
             setProfilePictureId(initialData.profilePictureId || "1");
-            setError("");
+            setLocalError("");
+            setApiError(null);
         }
-    }, [isOpen, initialData]);
+    }, [isOpen, initialData, setApiError]);
 
     if (!isOpen) return null;
 
-    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setLoading(true);
-        setError("");
+        setLocalError("");
+        setApiError(null);
 
         if (steamProfileUrl) {
             const steamRegex =
                 /^https?:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/;
             if (!steamRegex.test(steamProfileUrl)) {
-                setError(
+                setLocalError(
                     "Invalid Steam Profile URL. Must be a valid steamcommunity.com link.",
                 );
-                setLoading(false);
                 return;
             }
         }
 
         try {
-            const res = await fetch("/api/profile", {
+            await execute("/api/profile", {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     discordUsername,
                     steamProfileUrl,
@@ -73,21 +81,10 @@ export default function EditProfileModal({
                 }),
             });
 
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.message || "Failed to update profile.");
-            }
-
             router.refresh();
             onClose();
         } catch (err) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError("An unexpected error occurred.");
-            }
-        } finally {
-            setLoading(false);
+            // Error is handled by useApi
         }
     };
 

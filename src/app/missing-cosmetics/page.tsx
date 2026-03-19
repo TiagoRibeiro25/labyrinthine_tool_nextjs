@@ -7,6 +7,7 @@ import Image from "next/image";
 import { FaMagnifyingGlass, FaShirt, FaArrowLeft } from "react-icons/fa6";
 import { useDebounce } from "use-debounce";
 import { allCosmetics, CosmeticItem } from "../../lib/cosmetics";
+import { useApi } from "../../hooks/useApi";
 
 interface FriendResult {
     id: string;
@@ -22,9 +23,14 @@ function MissingCosmeticsContent() {
     const [debouncedQuery] = useDebounce(searchQuery, 300);
     const [selectedCosmetic, setSelectedCosmetic] =
         useState<CosmeticItem | null>(null);
-    const [missingFriends, setMissingFriends] = useState<FriendResult[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string>("");
+    const {
+        data,
+        loading,
+        error,
+        execute,
+        setData: setMissingFriends,
+    } = useApi<FriendResult[]>();
+    const missingFriends = data || [];
 
     useEffect(() => {
         if (initialCosmeticId && !selectedCosmetic) {
@@ -64,40 +70,17 @@ function MissingCosmeticsContent() {
             : [];
 
     useEffect(() => {
-        const fetchMissingFriends = async () => {
-            if (!selectedCosmetic) {
-                setMissingFriends([]);
-                return;
-            }
+        if (!selectedCosmetic) {
+            setMissingFriends([]);
+            return;
+        }
 
-            setLoading(true);
-            setError("");
-
-            try {
-                const res = await fetch(
-                    `/api/missing-cosmetics?cosmeticId=${selectedCosmetic.id}`,
-                );
-
-                if (!res.ok) {
-                    throw new Error("Failed to fetch friends.");
-                }
-
-                const data: FriendResult[] = await res.json();
-                setMissingFriends(data);
-            } catch (err) {
-                if (err instanceof Error) {
-                    setError(err.message);
-                } else {
-                    setError("An unexpected error occurred.");
-                }
-                setMissingFriends([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchMissingFriends();
-    }, [selectedCosmetic]);
+        execute(
+            `/api/missing-cosmetics?cosmeticId=${selectedCosmetic.id}`,
+        ).catch(() => {
+            setMissingFriends([]);
+        });
+    }, [selectedCosmetic, execute, setMissingFriends]);
 
     return (
         <main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">

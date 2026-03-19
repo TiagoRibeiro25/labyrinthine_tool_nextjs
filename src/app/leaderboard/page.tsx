@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { FaTrophy, FaArrowLeft, FaMedal } from "react-icons/fa6";
+import { useApi } from "../../hooks/useApi";
 
 interface LeaderboardEntry {
     id: string;
@@ -13,32 +14,12 @@ interface LeaderboardEntry {
 }
 
 export default function LeaderboardPage() {
-    const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string>("");
+    const { data, loading, error, execute } = useApi<LeaderboardEntry[]>();
+    const leaderboard = data || [];
 
     useEffect(() => {
-        const fetchLeaderboard = async () => {
-            try {
-                const res = await fetch("/api/leaderboard");
-                if (!res.ok) {
-                    throw new Error("Failed to fetch leaderboard.");
-                }
-                const data: LeaderboardEntry[] = await res.json();
-                setLeaderboard(data);
-            } catch (err) {
-                if (err instanceof Error) {
-                    setError(err.message);
-                } else {
-                    setError("An unexpected error occurred.");
-                }
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchLeaderboard();
-    }, []);
+        execute("/api/leaderboard").catch(() => {});
+    }, [execute]);
 
     const getRankColor = (index: number) => {
         switch (index) {

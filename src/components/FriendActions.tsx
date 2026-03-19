@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaUserPlus, FaUserXmark } from "react-icons/fa6";
+import { useApi } from "../hooks/useApi";
 
 type FriendStatus = "none" | "pending_sent" | "pending_received" | "friends";
 
@@ -20,32 +21,20 @@ export default function FriendActions({
     const router = useRouter();
     const [status, setStatus] = useState<FriendStatus>(initialStatus);
     const [requestId, setRequestId] = useState<string | null>(initialRequestId);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string>("");
+    const { loading, error, execute, setError } = useApi();
 
     const handleAction = async (
         action: "add" | "accept" | "reject" | "remove",
     ) => {
-        setLoading(true);
-        setError("");
-
         try {
-            const res = await fetch("/api/friends", {
+            await execute("/api/friends", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
                 body: JSON.stringify({
                     action,
                     receiverUsername: targetUsername,
                     requestId: requestId,
                 }),
             });
-
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.message || "Failed to perform action");
-            }
 
             // Optimistic UI updates
             if (action === "add") {
@@ -59,13 +48,7 @@ export default function FriendActions({
 
             router.refresh();
         } catch (err) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError("An unexpected error occurred");
-            }
-        } finally {
-            setLoading(false);
+            // Error handled by useApi
         }
     };
 

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaCheck, FaXmark, FaUserXmark } from "react-icons/fa6";
+import { useApi } from "../hooks/useApi";
 
 interface ManageFriendButtonProps {
     requestId: string;
@@ -16,35 +16,23 @@ export default function ManageFriendButton({
     label,
 }: ManageFriendButtonProps) {
     const router = useRouter();
-    const [loading, setLoading] = useState<boolean>(false);
+    const { loading, execute } = useApi();
 
     const handleAction = async () => {
-        setLoading(true);
-
         try {
-            const res = await fetch("/api/friends", {
+            await execute("/api/friends", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
                 body: JSON.stringify({
                     action,
                     requestId,
                 }),
             });
 
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.message || "Failed to perform action");
-            }
-
             // Instantly refresh the server component to reflect the new state
             router.refresh();
         } catch (err) {
             console.error("Failed to manage friend action:", err);
             // Optionally could add a toast notification system here in the future
-        } finally {
-            setLoading(false);
         }
     };
 

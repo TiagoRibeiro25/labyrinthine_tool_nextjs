@@ -3,48 +3,41 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useApi } from "../../hooks/useApi";
 
 export default function SignUpPage() {
     const router = useRouter();
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
-    const [error, setError] = useState<string>("");
-    const [loading, setLoading] = useState<boolean>(false);
+    const [localError, setLocalError] = useState<string>("");
+    const {
+        loading,
+        error: apiError,
+        execute,
+        setError: setApiError,
+    } = useApi();
 
-    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    const error = localError || apiError;
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError("");
+        setLocalError("");
+        setApiError(null);
 
         if (password !== confirmPassword) {
-            setError("Passwords do not match.");
+            setLocalError("Passwords do not match.");
             return;
         }
 
-        setLoading(true);
-
         try {
-            const res = await fetch("/api/register", {
+            await execute("/api/register", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
                 body: JSON.stringify({ username, password }),
             });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                setError(
-                    data.message || "An error occurred during registration.",
-                );
-                setLoading(false);
-            } else {
-                router.push("/login");
-            }
+            router.push("/login");
         } catch {
-            setError("An unexpected error occurred. Please try again later.");
-            setLoading(false);
+            // Error is handled by useApi
         }
     };
 

@@ -11,6 +11,8 @@ import {
 } from "react-icons/fa6";
 import { categories, allTypes } from "../lib/cosmetics";
 
+import { useApi } from "../hooks/useApi";
+
 interface CosmeticsTrackerProps {
     initialUnlockedIds: number[];
 }
@@ -26,6 +28,7 @@ export default function CosmeticsTracker({
     const [searchQuery, setSearchQuery] = useState<string>("");
     const deferredSearchQuery = useDeferredValue(searchQuery);
     const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
+    const { execute } = useApi();
 
     const toggleCosmetic = async (id: number) => {
         if (loadingIds.has(id)) return;
@@ -44,16 +47,10 @@ export default function CosmeticsTracker({
         setLoadingIds((prev) => new Set(prev).add(id));
 
         try {
-            const res = await fetch("/api/cosmetics/toggle", {
+            await execute("/api/cosmetics/toggle", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ cosmeticId: id }),
             });
-
-            if (!res.ok) {
-                // Revert optimistic update on failure
-                throw new Error("Failed to sync");
-            }
         } catch (error) {
             console.error(error);
             // Revert State
@@ -88,15 +85,10 @@ export default function CosmeticsTracker({
         setLoadingIds((prev) => new Set([...prev, ...itemIds]));
 
         try {
-            const res = await fetch("/api/cosmetics/toggle", {
+            await execute("/api/cosmetics/toggle", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ cosmeticIds: itemIds, action }),
             });
-
-            if (!res.ok) {
-                throw new Error("Failed to sync category");
-            }
         } catch (error) {
             console.error(error);
             setUnlockedIds(originalUnlockedIds);

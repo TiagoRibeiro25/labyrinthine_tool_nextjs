@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { useDebounce } from "use-debounce";
+import { useApi } from "../../hooks/useApi";
 
 interface UserResult {
     id: string;
@@ -15,48 +16,30 @@ interface UserResult {
 
 export default function SearchPage() {
     const [searchQuery, setSearchQuery] = useState<string>("");
-    const [results, setResults] = useState<UserResult[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string>("");
+    const {
+        data,
+        loading,
+        error,
+        execute,
+        setData: setResults,
+    } = useApi<UserResult[]>();
+    const results = data || [];
 
     // Debounce the search query so we don't spam the API on every keystroke
     const [debouncedQuery] = useDebounce(searchQuery, 400);
 
     useEffect(() => {
-        const fetchResults = async () => {
-            if (!debouncedQuery.trim()) {
+        if (!debouncedQuery.trim()) {
+            setResults([]);
+            return;
+        }
+
+        execute(`/api/search?q=${encodeURIComponent(debouncedQuery)}`).catch(
+            () => {
                 setResults([]);
-                return;
-            }
-
-            setLoading(true);
-            setError("");
-
-            try {
-                const res = await fetch(
-                    `/api/search?q=${encodeURIComponent(debouncedQuery)}`,
-                );
-
-                if (!res.ok) {
-                    throw new Error("Failed to fetch survivors.");
-                }
-
-                const data: UserResult[] = await res.json();
-                setResults(data);
-            } catch (err) {
-                if (err instanceof Error) {
-                    setError(err.message);
-                } else {
-                    setError("An unexpected error occurred.");
-                }
-                setResults([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchResults();
-    }, [debouncedQuery]);
+            },
+        );
+    }, [debouncedQuery, execute, setResults]);
 
     return (
         <main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
