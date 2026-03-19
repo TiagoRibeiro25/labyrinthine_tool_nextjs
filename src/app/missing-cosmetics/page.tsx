@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -8,6 +8,7 @@ import { FaMagnifyingGlass, FaShirt, FaArrowLeft } from "react-icons/fa6";
 import { useDebounce } from "use-debounce";
 import { allCosmetics, CosmeticItem } from "../../lib/cosmetics";
 import { useApi } from "../../hooks/useApi";
+import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 
 interface FriendResult {
     id: string;
@@ -23,6 +24,10 @@ function MissingCosmeticsContent() {
     const [debouncedQuery] = useDebounce(searchQuery, 300);
     const [selectedCosmetic, setSelectedCosmetic] =
         useState<CosmeticItem | null>(null);
+    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useOnClickOutside(dropdownRef, () => setIsDropdownOpen(false));
     const {
         data,
         loading,
@@ -47,6 +52,7 @@ function MissingCosmeticsContent() {
     // Reset selection if user starts typing again
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
+        setIsDropdownOpen(true);
         if (selectedCosmetic && e.target.value !== selectedCosmetic.name) {
             setSelectedCosmetic(null);
             setMissingFriends([]);
@@ -56,6 +62,7 @@ function MissingCosmeticsContent() {
     const handleSelectCosmetic = (cosmetic: CosmeticItem) => {
         setSelectedCosmetic(cosmetic);
         setSearchQuery(cosmetic.name);
+        setIsDropdownOpen(false);
     };
 
     const filteredCosmetics =
@@ -95,7 +102,7 @@ function MissingCosmeticsContent() {
                     </p>
                 </div>
 
-                <div className="relative mb-8 z-20">
+                <div className="relative mb-8 z-20" ref={dropdownRef}>
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <FaMagnifyingGlass className="text-neutral-500 w-5 h-5" />
                     </div>
@@ -104,11 +111,12 @@ function MissingCosmeticsContent() {
                         placeholder="Search for a cosmetic..."
                         value={searchQuery}
                         onChange={handleSearchChange}
+                        onFocus={() => setIsDropdownOpen(true)}
                         className="w-full bg-neutral-900/50 border-2 border-neutral-800 text-neutral-100 pl-12 pr-4 py-4 rounded-sm focus:outline-none focus:border-neutral-500 focus:bg-neutral-900 transition-all font-medium tracking-wide placeholder:text-neutral-600 shadow-[inset_0_2px_10px_rgba(0,0,0,0.8)]"
                     />
 
                     {/* Autocomplete Dropdown */}
-                    {filteredCosmetics.length > 0 && (
+                    {isDropdownOpen && filteredCosmetics.length > 0 && (
                         <div className="absolute top-full left-0 right-0 mt-2 bg-neutral-900 border border-neutral-700 rounded-sm shadow-2xl overflow-hidden max-h-64 overflow-y-auto">
                             {filteredCosmetics.map((cosmetic) => (
                                 <button

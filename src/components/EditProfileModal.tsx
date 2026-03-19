@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaXmark } from "react-icons/fa6";
 import { useApi } from "../hooks/useApi";
+import { useOnClickOutside } from "../hooks/useOnClickOutside";
 
 const availableAvatars = ["1", "2", "3", "4", "5", "6"];
 
@@ -24,6 +25,10 @@ export default function EditProfileModal({
     initialData,
 }: EditProfileModalProps) {
     const router = useRouter();
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    useOnClickOutside(modalRef, onClose);
+
     const [discordUsername, setDiscordUsername] = useState<string>(
         initialData.discordUsername || "",
     );
@@ -90,7 +95,10 @@ export default function EditProfileModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <div className="w-full max-w-md bg-neutral-950 border border-neutral-800 border-t-4 border-t-neutral-600 p-6 sm:p-8 shadow-2xl relative">
+            <div
+                ref={modalRef}
+                className="w-full max-w-md bg-neutral-950 border border-neutral-800 border-t-4 border-t-neutral-600 p-6 sm:p-8 shadow-2xl relative"
+            >
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-neutral-500 hover:text-neutral-300 transition-colors cursor-pointer"
