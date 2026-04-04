@@ -29,7 +29,7 @@ export default function SearchPage() {
     const [debouncedQuery] = useDebounce(searchQuery, 400);
 
     useEffect(() => {
-        if (!debouncedQuery.trim()) {
+        if (!debouncedQuery.trim() || debouncedQuery.trim().length < 3) {
             setResults([]);
             return;
         }
