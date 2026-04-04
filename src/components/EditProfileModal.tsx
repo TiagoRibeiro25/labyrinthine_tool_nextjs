@@ -7,7 +7,20 @@ import { FaXmark } from "react-icons/fa6";
 import { useApi } from "../hooks/useApi";
 import { useOnClickOutside } from "../hooks/useOnClickOutside";
 
-const availableAvatars = ["1", "2", "3", "4", "5", "6"];
+const availableAvatars = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+];
 
 interface EditProfileModalProps {
     isOpen: boolean;
@@ -50,7 +63,7 @@ export default function EditProfileModal({
 
     if (!isOpen) return null;
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLocalError("");
         setApiError(null);
@@ -155,7 +168,7 @@ export default function EditProfileModal({
                                         alt={`Avatar ${id}`}
                                         fill
                                         className="object-cover"
-                                        sizes="64px"
+                                        sizes="200px"
                                     />
                                 </button>
                             ))}

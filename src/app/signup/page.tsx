@@ -20,7 +20,7 @@ export default function SignUpPage() {
 
     const error = localError || apiError;
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLocalError("");
         setApiError(null);
