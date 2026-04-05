@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "../../hooks/useApi";
+import { useToast } from "../../hooks/useToast";
 
 export default function SignUpPage() {
     const router = useRouter();
@@ -17,6 +18,7 @@ export default function SignUpPage() {
         execute,
         setError: setApiError,
     } = useApi();
+    const toast = useToast();
 
     const error = localError || apiError;
 
@@ -35,9 +37,18 @@ export default function SignUpPage() {
                 method: "POST",
                 body: JSON.stringify({ username, password }),
             });
+
+            toast.success(
+                "Account created",
+                "Your account is ready. You can sign in now.",
+            );
             router.push("/login");
-        } catch {
-            // Error is handled by useApi
+        } catch (err) {
+            const message =
+                err instanceof Error
+                    ? err.message
+                    : "Could not create account. Please try again.";
+            toast.error("Signup failed", message);
         }
     };
 

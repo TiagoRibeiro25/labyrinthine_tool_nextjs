@@ -4,6 +4,10 @@ import { authOptions } from "../../../../lib/auth";
 import { db } from "../../../../db";
 import { userCosmetics } from "../../../../db/schema";
 import { eq, and, inArray } from "drizzle-orm";
+import {
+    cosmeticsToggleBodySchema,
+    getFirstZodErrorMessage,
+} from "../../../../lib/validation";
 
 export async function POST(req: Request) {
     try {
@@ -18,17 +22,28 @@ export async function POST(req: Request) {
         }
 
         const userId = sessionUser.id;
-        const body = await req.json();
-        const { cosmeticId, cosmeticIds, action } = body;
+        let body: unknown;
+        try {
+            body = await req.json();
+        } catch {
+            return NextResponse.json(
+                { message: "Invalid JSON body." },
+                { status: 400 },
+            );
+        }
+
+        const parsed = cosmeticsToggleBodySchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { message: getFirstZodErrorMessage(parsed.error) },
+                { status: 400 },
+            );
+        }
 
         // --- BULK TOGGLE LOGIC ---
-        if (Array.isArray(cosmeticIds) && typeof action === "string") {
-            if (cosmeticIds.length === 0) {
-                return NextResponse.json(
-                    { message: "No cosmetic IDs provided." },
-                    { status: 400 },
-                );
-            }
+        if ("cosmeticIds" in parsed.data) {
+            const { cosmeticIds, action } = parsed.data;
 
             if (action === "unlock") {
                 // To avoid unique constraint errors, we first need to find which ones the user ALREADY has
@@ -80,12 +95,7 @@ export async function POST(req: Request) {
         }
 
         // --- SINGLE TOGGLE LOGIC ---
-        if (typeof cosmeticId !== "number") {
-            return NextResponse.json(
-                { message: "Invalid cosmetic ID." },
-                { status: 400 },
-            );
-        }
+        const { cosmeticId } = parsed.data;
 
         // Check if the cosmetic is already unlocked
         const existing = await db

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { FaXmark } from "react-icons/fa6";
 import { useApi } from "../hooks/useApi";
 import { useOnClickOutside } from "../hooks/useOnClickOutside";
+import { useToast } from "../hooks/useToast";
 
 const availableAvatars = [
     "1",
@@ -58,6 +59,7 @@ export default function EditProfileModal({
         execute,
         setError: setApiError,
     } = useApi();
+    const toast = useToast();
 
     const error = localError || apiError;
 
@@ -89,10 +91,18 @@ export default function EditProfileModal({
                 }),
             });
 
+            toast.success(
+                "Profile updated",
+                "Your profile changes were saved.",
+            );
             router.refresh();
             onClose();
-        } catch {
-            // Error is handled by useApi
+        } catch (err) {
+            const message =
+                err instanceof Error
+                    ? err.message
+                    : "Failed to save profile changes.";
+            toast.error("Could not update profile", message);
         }
     };
 

@@ -4,6 +4,7 @@ import "./globals.css";
 import Background from "../components/Background";
 import Footer from "../components/Footer";
 import CommandPalette from "../components/CommandPalette";
+import AppProviders from "../components/providers/AppProviders";
 import { METADATA } from "@/data/metadata";
 
 const geistSans = Geist({
@@ -28,11 +29,13 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <Background>
-                    <main>{children}</main>
-                    <CommandPalette />
-                    <Footer />
-                </Background>
+                <AppProviders>
+                    <Background>
+                        <main>{children}</main>
+                        <CommandPalette />
+                        <Footer />
+                    </Background>
+                </AppProviders>
             </body>
         </html>
     );

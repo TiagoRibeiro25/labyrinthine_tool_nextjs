@@ -4,6 +4,12 @@ import { authOptions } from "../../../lib/auth";
 import { db } from "../../../db";
 import { friendRequests, users } from "../../../db/schema";
 import { and, eq, or } from "drizzle-orm";
+import { getClientIpFromHeaders } from "../../../lib/request";
+import { rateLimit, toRateLimitHeaders } from "../../../lib/rate-limit";
+import {
+    friendsActionSchema,
+    getFirstZodErrorMessage,
+} from "../../../lib/validation";
 
 export async function POST(req: Request) {
     try {
@@ -18,8 +24,62 @@ export async function POST(req: Request) {
         }
 
         const senderId = sessionUser.id;
-        const body = await req.json();
-        const { action, receiverUsername, requestId } = body;
+        const clientIp = getClientIpFromHeaders(req.headers);
+
+        const userRateLimit = rateLimit({
+            key: `friends:user:${senderId}`,
+            limit: 80,
+            windowMs: 60 * 1000,
+        });
+
+        if (!userRateLimit.success) {
+            return NextResponse.json(
+                {
+                    message:
+                        "Too many friend actions in a short period. Please try again in a moment.",
+                },
+                { status: 429, headers: toRateLimitHeaders(userRateLimit) },
+            );
+        }
+
+        let body: unknown;
+        try {
+            body = await req.json();
+        } catch {
+            return NextResponse.json(
+                { message: "Invalid JSON body." },
+                { status: 400, headers: toRateLimitHeaders(userRateLimit) },
+            );
+        }
+
+        const parsed = friendsActionSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { message: getFirstZodErrorMessage(parsed.error) },
+                { status: 400, headers: toRateLimitHeaders(userRateLimit) },
+            );
+        }
+
+        const { action, receiverUsername, requestId } = parsed.data;
+
+        if (action === "add") {
+            const addRateLimit = rateLimit({
+                key: `friends:add:${senderId}:${clientIp}`,
+                limit: 20,
+                windowMs: 10 * 60 * 1000,
+            });
+
+            if (!addRateLimit.success) {
+                return NextResponse.json(
+                    {
+                        message:
+                            "Too many friend request attempts. Please try again later.",
+                    },
+                    { status: 429, headers: toRateLimitHeaders(addRateLimit) },
+                );
+            }
+        }
 
         // ACTION: ADD FRIEND
         if (action === "add") {
@@ -188,6 +248,13 @@ export async function POST(req: Request) {
                 }
 
                 targetRequestId = existingRequest[0].id;
+            }
+
+            if (!targetRequestId) {
+                return NextResponse.json(
+                    { message: "Request ID is required." },
+                    { status: 400 },
+                );
             }
 
             // Delete the request (either reject pending or remove accepted)

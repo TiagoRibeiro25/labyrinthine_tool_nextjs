@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db } from "../db";
 import { users } from "../db/schema";
+import { getClientIpFromHeaders } from "./request";
+import { rateLimit } from "./rate-limit";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -13,8 +15,23 @@ export const authOptions: NextAuthOptions = {
                 username: { label: "Username/Email", type: "text" },
                 password: { label: "Password", type: "password" },
             },
-            async authorize(credentials) {
+            async authorize(credentials, req) {
                 if (!credentials?.username || !credentials?.password) {
+                    return null;
+                }
+
+                const username = credentials.username.trim();
+                const clientIp = getClientIpFromHeaders(req?.headers);
+                const loginLimit = rateLimit({
+                    key: `auth:login:${clientIp}:${username.toLowerCase()}`,
+                    limit: 10,
+                    windowMs: 10 * 60 * 1000,
+                });
+
+                if (!loginLimit.success) {
+                    console.warn(
+                        `Login rate limit exceeded for username="${username}" ip="${clientIp}"`,
+                    );
                     return null;
                 }
 
@@ -23,7 +40,7 @@ export const authOptions: NextAuthOptions = {
                     const userResult = await db
                         .select()
                         .from(users)
-                        .where(eq(users.username, credentials.username))
+                        .where(eq(users.username, username))
                         .limit(1);
 
                     const user = userResult[0];

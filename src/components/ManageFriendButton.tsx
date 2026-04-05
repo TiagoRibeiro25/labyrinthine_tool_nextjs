@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FaCheck, FaXmark, FaUserXmark } from "react-icons/fa6";
 import { useApi } from "../hooks/useApi";
+import { useToast } from "../hooks/useToast";
 
 interface ManageFriendButtonProps {
     requestId: string;
@@ -17,6 +18,7 @@ export default function ManageFriendButton({
 }: ManageFriendButtonProps) {
     const router = useRouter();
     const { loading, execute } = useApi();
+    const { success, error } = useToast();
 
     const handleAction = async () => {
         try {
@@ -28,11 +30,23 @@ export default function ManageFriendButton({
                 }),
             });
 
+            const actionLabel =
+                action === "accept"
+                    ? "accepted"
+                    : action === "reject"
+                      ? "rejected"
+                      : "removed";
+            success("Action completed", `Friend request ${actionLabel}.`);
+
             // Instantly refresh the server component to reflect the new state
             router.refresh();
         } catch (err) {
+            const message =
+                err instanceof Error
+                    ? err.message
+                    : "Failed to manage friend action.";
+            error("Action failed", message);
             console.error("Failed to manage friend action:", err);
-            // Optionally could add a toast notification system here in the future
         }
     };
 

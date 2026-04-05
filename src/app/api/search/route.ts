@@ -2,18 +2,26 @@ import { NextResponse } from "next/server";
 import { db } from "../../../db";
 import { users } from "../../../db/schema";
 import { ilike } from "drizzle-orm";
+import {
+    getFirstZodErrorMessage,
+    searchQuerySchema,
+} from "../../../lib/validation";
 
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
-        const query = searchParams.get("q");
+        const parsedQuery = searchQuerySchema.safeParse({
+            q: searchParams.get("q") ?? "",
+        });
 
-        if (!query || query.trim().length === 0) {
+        if (!parsedQuery.success) {
             return NextResponse.json(
-                { message: "Search query is required." },
+                { message: getFirstZodErrorMessage(parsedQuery.error) },
                 { status: 400 },
             );
         }
+
+        const query = parsedQuery.data.q;
 
         // Search for users whose username contains the query (case-insensitive)
         const results = await db

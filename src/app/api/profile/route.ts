@@ -4,6 +4,10 @@ import { authOptions } from "../../../lib/auth";
 import { db } from "../../../db";
 import { users } from "../../../db/schema";
 import { eq } from "drizzle-orm";
+import {
+    getFirstZodErrorMessage,
+    profileUpdateSchema,
+} from "../../../lib/validation";
 
 export async function PUT(req: Request) {
     try {
@@ -19,22 +23,29 @@ export async function PUT(req: Request) {
         }
 
         const userId = sessionUser.id;
-        const body = await req.json();
-        const { discordUsername, steamProfileUrl, profilePictureId } = body;
 
-        if (steamProfileUrl) {
-            const steamRegex =
-                /^https?:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/;
-            if (!steamRegex.test(steamProfileUrl)) {
-                return NextResponse.json(
-                    {
-                        message:
-                            "Invalid Steam Profile URL. Must be a valid steamcommunity.com link.",
-                    },
-                    { status: 400 },
-                );
-            }
+        let body: unknown;
+        try {
+            body = await req.json();
+        } catch {
+            return NextResponse.json(
+                { message: "Invalid JSON body." },
+                { status: 400 },
+            );
         }
+
+        const parsed = profileUpdateSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { message: getFirstZodErrorMessage(parsed.error) },
+                { status: 400 },
+            );
+        }
+
+        const discordUsername = parsed.data.discordUsername?.trim() || null;
+        const steamProfileUrl = parsed.data.steamProfileUrl?.trim() || null;
+        const profilePictureId = parsed.data.profilePictureId?.trim() || null;
 
         await db
             .update(users)

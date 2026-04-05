@@ -12,6 +12,7 @@ import {
 import { categories, allTypes } from "../lib/cosmetics";
 
 import { useApi } from "../hooks/useApi";
+import { useToast } from "../hooks/useToast";
 
 interface CosmeticsTrackerProps {
     initialUnlockedIds: number[];
@@ -29,6 +30,7 @@ export default function CosmeticsTracker({
     const deferredSearchQuery = useDeferredValue(searchQuery);
     const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
     const { execute } = useApi();
+    const { success, error: toastError } = useToast();
 
     const toggleCosmetic = async (id: number) => {
         if (loadingIds.has(id)) return;
@@ -89,9 +91,20 @@ export default function CosmeticsTracker({
                 method: "POST",
                 body: JSON.stringify({ cosmeticIds: itemIds, action }),
             });
+
+            success(
+                action === "unlock" ? "Category unlocked" : "Category locked",
+                `${itemIds.length} cosmetic${itemIds.length === 1 ? "" : "s"} updated.`,
+            );
         } catch (error) {
             console.error(error);
             setUnlockedIds(originalUnlockedIds);
+
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : "Failed to update this category.";
+            toastError("Bulk update failed", message);
         } finally {
             setLoadingIds((prev) => {
                 const updated = new Set(prev);

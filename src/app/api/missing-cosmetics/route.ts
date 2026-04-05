@@ -4,6 +4,10 @@ import { authOptions } from "../../../lib/auth";
 import { db } from "../../../db";
 import { friendRequests, userCosmetics, users } from "../../../db/schema";
 import { and, eq, or, inArray } from "drizzle-orm";
+import {
+    getFirstZodErrorMessage,
+    missingCosmeticsQuerySchema,
+} from "../../../lib/validation";
 
 export async function GET(req: Request) {
     try {
@@ -18,23 +22,18 @@ export async function GET(req: Request) {
         }
 
         const url = new URL(req.url);
-        const cosmeticIdParam = url.searchParams.get("cosmeticId");
+        const parsedQuery = missingCosmeticsQuerySchema.safeParse({
+            cosmeticId: url.searchParams.get("cosmeticId"),
+        });
 
-        if (!cosmeticIdParam) {
+        if (!parsedQuery.success) {
             return NextResponse.json(
-                { message: "Cosmetic ID is required." },
+                { message: getFirstZodErrorMessage(parsedQuery.error) },
                 { status: 400 },
             );
         }
 
-        const cosmeticId = parseInt(cosmeticIdParam, 10);
-        if (isNaN(cosmeticId)) {
-            return NextResponse.json(
-                { message: "Invalid Cosmetic ID." },
-                { status: 400 },
-            );
-        }
-
+        const cosmeticId = parsedQuery.data.cosmeticId;
         const userId = sessionUser.id;
 
         // 1. Get all accepted friends of the current user

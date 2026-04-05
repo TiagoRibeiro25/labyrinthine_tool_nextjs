@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaUserPlus, FaUserXmark } from "react-icons/fa6";
 import { useApi } from "../hooks/useApi";
+import { useToast } from "../hooks/useToast";
 
 type FriendStatus = "none" | "pending_sent" | "pending_received" | "friends";
 
@@ -22,6 +23,7 @@ export default function FriendActions({
     const [status, setStatus] = useState<FriendStatus>(initialStatus);
     const [requestId, setRequestId] = useState<string | null>(initialRequestId);
     const { loading, error, execute } = useApi();
+    const { success: showSuccess, error: showError } = useToast();
 
     const handleAction = async (
         action: "add" | "accept" | "reject" | "remove",
@@ -39,16 +41,36 @@ export default function FriendActions({
             // Optimistic UI updates
             if (action === "add") {
                 setStatus("pending_sent");
+                showSuccess(
+                    "Friend request sent",
+                    `Request sent to ${targetUsername}.`,
+                );
             } else if (action === "accept") {
                 setStatus("friends");
+                showSuccess(
+                    "Friend request accepted",
+                    `You are now friends with ${targetUsername}.`,
+                );
             } else if (action === "reject" || action === "remove") {
                 setStatus("none");
                 setRequestId(null);
+                showSuccess(
+                    action === "reject"
+                        ? "Friend request rejected"
+                        : "Friend removed",
+                    action === "reject"
+                        ? `You rejected ${targetUsername}'s request.`
+                        : `${targetUsername} was removed from your friends.`,
+                );
             }
 
             router.refresh();
-        } catch {
-            // Error handled by useApi
+        } catch (err) {
+            const message =
+                err instanceof Error
+                    ? err.message
+                    : "Could not complete the friend action.";
+            showError("Action failed", message);
         }
     };
 

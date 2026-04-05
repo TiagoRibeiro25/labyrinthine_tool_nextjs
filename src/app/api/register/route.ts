@@ -3,23 +3,67 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db } from "../../../db";
 import { users } from "../../../db/schema";
+import { getClientIpFromHeaders } from "../../../lib/request";
+import { rateLimit, toRateLimitHeaders } from "../../../lib/rate-limit";
+import {
+    getFirstZodErrorMessage,
+    registerBodySchema,
+} from "../../../lib/validation";
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
-        const { username, password } = body;
+        const clientIp = getClientIpFromHeaders(req.headers);
 
-        if (!username || !password) {
+        const ipLimit = rateLimit({
+            key: `auth:register:ip:${clientIp}`,
+            limit: 6,
+            windowMs: 15 * 60 * 1000,
+        });
+
+        if (!ipLimit.success) {
             return NextResponse.json(
-                { message: "Username and password are required." },
-                { status: 400 },
+                {
+                    message:
+                        "Too many registration attempts. Please try again later.",
+                },
+                { status: 429, headers: toRateLimitHeaders(ipLimit) },
             );
         }
 
-        if (password.length < 6) {
+        let body: unknown;
+        try {
+            body = await req.json();
+        } catch {
             return NextResponse.json(
-                { message: "Password must be at least 6 characters long." },
-                { status: 400 },
+                { message: "Invalid JSON body." },
+                { status: 400, headers: toRateLimitHeaders(ipLimit) },
+            );
+        }
+
+        const parsed = registerBodySchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { message: getFirstZodErrorMessage(parsed.error) },
+                { status: 400, headers: toRateLimitHeaders(ipLimit) },
+            );
+        }
+
+        const { username, password } = parsed.data;
+
+        const usernameLimit = rateLimit({
+            key: `auth:register:username:${username.toLowerCase()}`,
+            limit: 4,
+            windowMs: 15 * 60 * 1000,
+        });
+
+        if (!usernameLimit.success) {
+            return NextResponse.json(
+                {
+                    message:
+                        "Too many attempts for this username. Please try again later.",
+                },
+                { status: 429, headers: toRateLimitHeaders(usernameLimit) },
             );
         }
 
@@ -32,7 +76,7 @@ export async function POST(req: Request) {
         if (existingUserResult.length > 0) {
             return NextResponse.json(
                 { message: "A user with this username already exists." },
-                { status: 409 },
+                { status: 409, headers: toRateLimitHeaders(ipLimit) },
             );
         }
 
@@ -46,7 +90,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json(
             { message: "User registered successfully." },
-            { status: 201 },
+            { status: 201, headers: toRateLimitHeaders(ipLimit) },
         );
     } catch (error) {
         console.error("Error during registration:", error);
