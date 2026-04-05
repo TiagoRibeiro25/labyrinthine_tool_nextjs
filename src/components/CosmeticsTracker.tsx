@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useDeferredValue } from "react";
+import { useState, useDeferredValue, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -118,6 +118,52 @@ export default function CosmeticsTracker({
     const filterOptions = ["All", ...Object.keys(categories)];
     const typeFilterOptions = ["All", ...allTypes];
 
+    const categoryAnalytics = useMemo(() => {
+        return Object.entries(categories)
+            .map(([categoryName, items]) => {
+                const total = items.length;
+                const unlocked = items.filter((item) =>
+                    unlockedIds.has(item.id),
+                ).length;
+                const missing = total - unlocked;
+                const percentage =
+                    total > 0 ? Math.round((unlocked / total) * 100) : 0;
+
+                return {
+                    categoryName,
+                    total,
+                    unlocked,
+                    missing,
+                    percentage,
+                };
+            })
+            .sort((a, b) => {
+                if (b.percentage !== a.percentage) {
+                    return b.percentage - a.percentage;
+                }
+                return b.unlocked - a.unlocked;
+            });
+    }, [unlockedIds]);
+
+    const totalCosmetics = useMemo(
+        () => Object.values(categories).flat().length,
+        [],
+    );
+
+    const overallCompletion = totalCosmetics
+        ? Math.round((unlockedIds.size / totalCosmetics) * 100)
+        : 0;
+
+    const completedCategories = categoryAnalytics.filter(
+        (category) => category.missing === 0,
+    ).length;
+
+    const nearCompleteCategories = categoryAnalytics
+        .filter((category) => category.missing > 0 && category.percentage >= 80)
+        .slice(0, 3);
+
+    const topProgressCategories = categoryAnalytics.slice(0, 4);
+
     return (
         <div className="w-full flex flex-col items-center">
             {/* Filter Bar */}
@@ -180,6 +226,86 @@ export default function CosmeticsTracker({
                     </div>
                 </div>
             </div>
+
+            {/* Progress Analytics */}
+            <div className="w-full max-w-6xl mb-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div className="p-4 bg-neutral-900/70 border border-neutral-800 rounded-sm">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
+                        Total Progress
+                    </p>
+                    <p className="text-2xl font-black text-emerald-400 mt-2">
+                        {overallCompletion}%
+                    </p>
+                    <p className="text-xs text-neutral-500 mt-1">
+                        {unlockedIds.size} / {totalCosmetics} unlocked
+                    </p>
+                    <div className="mt-3 h-2 w-full bg-neutral-800 rounded-sm overflow-hidden">
+                        <div
+                            className="h-full bg-emerald-500 transition-all duration-300"
+                            style={{ width: `${overallCompletion}%` }}
+                        />
+                    </div>
+                </div>
+
+                <div className="p-4 bg-neutral-900/70 border border-neutral-800 rounded-sm">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
+                        Categories Completed
+                    </p>
+                    <p className="text-2xl font-black text-blue-400 mt-2">
+                        {completedCategories}
+                    </p>
+                    <p className="text-xs text-neutral-500 mt-1">
+                        out of {categoryAnalytics.length} categories
+                    </p>
+                </div>
+
+                <div className="p-4 bg-neutral-900/70 border border-neutral-800 rounded-sm md:col-span-2 xl:col-span-2">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-3">
+                        Top Category Progress
+                    </p>
+                    <div className="space-y-3">
+                        {topProgressCategories.map((category) => (
+                            <div key={category.categoryName}>
+                                <div className="flex items-center justify-between text-xs mb-1">
+                                    <span className="font-bold uppercase tracking-widest text-neutral-300">
+                                        {category.categoryName}
+                                    </span>
+                                    <span className="text-neutral-500 font-bold">
+                                        {category.unlocked}/{category.total} (
+                                        {category.percentage}%)
+                                    </span>
+                                </div>
+                                <div className="h-2 w-full bg-neutral-800 rounded-sm overflow-hidden">
+                                    <div
+                                        className="h-full bg-emerald-500/90 transition-all duration-300"
+                                        style={{
+                                            width: `${category.percentage}%`,
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {nearCompleteCategories.length > 0 && (
+                <div className="w-full max-w-6xl mb-8 p-4 bg-amber-950/20 border border-amber-900/50 rounded-sm">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-3">
+                        Almost There
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                        {nearCompleteCategories.map((category) => (
+                            <span
+                                key={category.categoryName}
+                                className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-sm border border-amber-800/60 text-amber-300 bg-amber-950/30"
+                            >
+                                {category.categoryName}: {category.missing} left
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Statistics */}
             <div className="w-full max-w-6xl mb-8 flex justify-end">
