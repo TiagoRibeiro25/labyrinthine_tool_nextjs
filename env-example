@@ -1,0 +1,3 @@
+NODE_ENV=development
+NEXTAUTH_SECRET=secret
+DATABASE_URL=postgresql://labyrinthine_user:labyrinthine_password@localhost:5432/labyrinthine_db
