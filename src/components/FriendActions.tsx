@@ -34,7 +34,7 @@ export default function FriendActions({
                 body: JSON.stringify({
                     action,
                     receiverUsername: targetUsername,
-                    requestId: requestId,
+                    ...(requestId ? { requestId } : {}),
                 }),
             });
 

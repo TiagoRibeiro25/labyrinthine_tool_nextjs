@@ -22,17 +22,26 @@ export const registerBodySchema = z.object({
 export const friendsActionSchema = z
     .object({
         action: z.enum(["add", "accept", "reject", "remove"]),
-        receiverUsername: z
-            .string()
-            .trim()
-            .min(3, "Receiver username must be at least 3 characters long.")
-            .max(32, "Receiver username must be at most 32 characters long.")
-            .regex(
-                /^[a-zA-Z0-9_-]+$/,
-                "Receiver username can only contain letters, numbers, underscores, and hyphens.",
-            )
-            .optional(),
-        requestId: z.string().uuid("Invalid request ID format.").optional(),
+        receiverUsername: z.preprocess(
+            (value) => (value === null ? undefined : value),
+            z
+                .string()
+                .trim()
+                .min(3, "Receiver username must be at least 3 characters long.")
+                .max(
+                    32,
+                    "Receiver username must be at most 32 characters long.",
+                )
+                .regex(
+                    /^[a-zA-Z0-9_-]+$/,
+                    "Receiver username can only contain letters, numbers, underscores, and hyphens.",
+                )
+                .optional(),
+        ),
+        requestId: z.preprocess(
+            (value) => (value === null ? undefined : value),
+            z.string().uuid("Invalid request ID format.").optional(),
+        ),
     })
     .superRefine((data, ctx) => {
         if (data.action === "add" && !data.receiverUsername) {
