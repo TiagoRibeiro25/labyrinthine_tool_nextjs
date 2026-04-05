@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { FaTrophy, FaArrowLeft, FaMedal } from "react-icons/fa6";
@@ -13,13 +13,39 @@ interface LeaderboardEntry {
     cosmeticsCount: number;
 }
 
+interface LeaderboardPagination {
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+}
+
+interface LeaderboardResponse {
+    data: LeaderboardEntry[];
+    pagination: LeaderboardPagination;
+}
+
+const PAGE_SIZE = 20;
+
 export default function LeaderboardPage() {
-    const { data, loading, error, execute } = useApi<LeaderboardEntry[]>();
-    const leaderboard = data || [];
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const { data, loading, error, execute } = useApi<LeaderboardResponse>();
+    const leaderboard = data?.data || [];
+    const pagination = data?.pagination;
+
+    const totalPages = pagination?.totalPages ?? 1;
+    const hasNextPage = pagination?.hasNextPage ?? false;
+    const hasPreviousPage = pagination?.hasPreviousPage ?? currentPage > 1;
+    const currentPageFromApi = pagination?.page ?? currentPage;
+    const pageSize = pagination?.limit ?? PAGE_SIZE;
 
     useEffect(() => {
-        execute("/api/leaderboard").catch(() => {});
-    }, [execute]);
+        execute(
+            `/api/leaderboard?page=${currentPage}&limit=${PAGE_SIZE}`,
+        ).catch(() => {});
+    }, [currentPage, execute]);
 
     const getRankColor = (index: number) => {
         switch (index) {
@@ -79,64 +105,107 @@ export default function LeaderboardPage() {
                         </div>
                     )}
 
-                    {!loading && leaderboard.length > 0 && (
+                    {!loading && !error && leaderboard.length > 0 && (
                         <div className="flex flex-col space-y-3">
-                            {leaderboard.map((user, index) => (
-                                <Link
-                                    key={user.id}
-                                    href={`/profile/${user.username}`}
-                                    className="group relative flex items-center gap-4 p-4 bg-neutral-900/40 border border-neutral-800 rounded-sm hover:bg-neutral-800 hover:border-neutral-500 transition-all duration-300"
-                                >
-                                    {/* Rank Indicator */}
-                                    <div className="flex flex-col items-center justify-center w-8 shrink-0">
-                                        {index < 3 && (
-                                            <FaMedal
-                                                className={`w-6 h-6 mb-1 ${getRankColor(index)}`}
+                            {leaderboard.map((user, index) => {
+                                const rank =
+                                    (currentPageFromApi - 1) * pageSize +
+                                    index +
+                                    1;
+                                const rankColorClass =
+                                    rank <= 3
+                                        ? getRankColor(rank - 1)
+                                        : "text-neutral-600";
+
+                                return (
+                                    <Link
+                                        key={user.id}
+                                        href={`/profile/${user.username}`}
+                                        className="group relative flex items-center gap-4 p-4 bg-neutral-900/40 border border-neutral-800 rounded-sm hover:bg-neutral-800 hover:border-neutral-500 transition-all duration-300"
+                                    >
+                                        {/* Rank Indicator */}
+                                        <div className="flex flex-col items-center justify-center w-8 shrink-0">
+                                            {rank <= 3 && (
+                                                <FaMedal
+                                                    className={`w-6 h-6 mb-1 ${getRankColor(rank - 1)}`}
+                                                />
+                                            )}
+                                            <span
+                                                className={`text-xl font-black ${rankColorClass}`}
+                                            >
+                                                #{rank}
+                                            </span>
+                                        </div>
+
+                                        {/* Profile Picture */}
+                                        <div className="relative w-12 h-12 shrink-0 border border-black shadow-md overflow-hidden bg-neutral-950">
+                                            <Image
+                                                src={
+                                                    user.profilePictureId
+                                                        ? `/images/profile_pictures/${user.profilePictureId}.webp`
+                                                        : `/images/profile_pictures/1.webp`
+                                                }
+                                                alt={user.username}
+                                                fill
+                                                className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                                sizes="200px"
                                             />
-                                        )}
-                                        <span
-                                            className={`text-xl font-black ${index < 3 ? getRankColor(index) : "text-neutral-600"}`}
-                                        >
-                                            #{index + 1}
-                                        </span>
-                                    </div>
+                                        </div>
 
-                                    {/* Profile Picture */}
-                                    <div className="relative w-12 h-12 shrink-0 border border-black shadow-md overflow-hidden bg-neutral-950">
-                                        <Image
-                                            src={
-                                                user.profilePictureId
-                                                    ? `/images/profile_pictures/${user.profilePictureId}.webp`
-                                                    : `/images/profile_pictures/1.webp`
-                                            }
-                                            alt={user.username}
-                                            fill
-                                            className="object-cover group-hover:scale-110 transition-transform duration-500"
-                                            sizes="200px"
-                                        />
-                                    </div>
+                                        {/* User Info */}
+                                        <div className="flex flex-col min-w-0 flex-1">
+                                            <span className="text-neutral-200 font-bold text-lg truncate group-hover:text-white transition-colors">
+                                                {user.username}
+                                            </span>
+                                            <span className="text-[10px] text-neutral-500 uppercase tracking-widest font-semibold mt-0.5 group-hover:text-neutral-400 transition-colors">
+                                                View Profile &rarr;
+                                            </span>
+                                        </div>
 
-                                    {/* User Info */}
-                                    <div className="flex flex-col min-w-0 flex-1">
-                                        <span className="text-neutral-200 font-bold text-lg truncate group-hover:text-white transition-colors">
-                                            {user.username}
-                                        </span>
-                                        <span className="text-[10px] text-neutral-500 uppercase tracking-widest font-semibold mt-0.5 group-hover:text-neutral-400 transition-colors">
-                                            View Profile &rarr;
-                                        </span>
-                                    </div>
+                                        {/* Score */}
+                                        <div className="flex flex-col items-end shrink-0 pl-4 border-l border-neutral-800/80">
+                                            <span className="text-2xl font-black text-emerald-500 leading-none group-hover:text-emerald-400 transition-colors">
+                                                {user.cosmeticsCount}
+                                            </span>
+                                            <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-500 mt-1">
+                                                Unlocked
+                                            </span>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
 
-                                    {/* Score */}
-                                    <div className="flex flex-col items-end shrink-0 pl-4 border-l border-neutral-800/80">
-                                        <span className="text-2xl font-black text-emerald-500 leading-none group-hover:text-emerald-400 transition-colors">
-                                            {user.cosmeticsCount}
-                                        </span>
-                                        <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-500 mt-1">
-                                            Unlocked
-                                        </span>
-                                    </div>
-                                </Link>
-                            ))}
+                            <div className="mt-4 flex items-center justify-between gap-3 border-t border-neutral-800/80 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setCurrentPage((prev) =>
+                                            Math.max(1, prev - 1),
+                                        )
+                                    }
+                                    disabled={loading || !hasPreviousPage}
+                                    className="px-4 py-2 rounded-sm bg-neutral-900 border border-neutral-700 text-neutral-300 text-xs font-bold uppercase tracking-widest hover:bg-neutral-800 hover:border-neutral-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                    Previous
+                                </button>
+
+                                <div className="text-xs font-bold uppercase tracking-widest text-neutral-500">
+                                    Page {currentPageFromApi} of {totalPages}
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setCurrentPage((prev) =>
+                                            Math.min(totalPages, prev + 1),
+                                        )
+                                    }
+                                    disabled={loading || !hasNextPage}
+                                    className="px-4 py-2 rounded-sm bg-neutral-900 border border-neutral-700 text-neutral-300 text-xs font-bold uppercase tracking-widest hover:bg-neutral-800 hover:border-neutral-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                    Next
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
