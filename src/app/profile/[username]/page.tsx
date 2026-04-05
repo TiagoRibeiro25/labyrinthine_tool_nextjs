@@ -175,11 +175,22 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                                 Surviving the fog since{" "}
                                 {targetUser.createdAt.toLocaleDateString()}
                             </p>
-                            <div className="flex items-center gap-2 text-sm text-neutral-400 font-bold tracking-widest uppercase bg-neutral-900/50 px-3 py-1 rounded-sm border border-neutral-800">
-                                <FaUserGroup className="text-neutral-500" />
-                                {friendsCount}{" "}
-                                {friendsCount === 1 ? "Friend" : "Friends"}
-                            </div>
+                            {isOwnProfile ? (
+                                <Link
+                                    href="/friends"
+                                    className="flex items-center gap-2 text-sm text-neutral-400 font-bold tracking-widest uppercase bg-neutral-900/50 px-3 py-1 rounded-sm border border-neutral-800 hover:bg-neutral-800/60 hover:border-neutral-500 transition-all duration-300"
+                                >
+                                    <FaUserGroup className="text-neutral-500" />
+                                    {friendsCount}{" "}
+                                    {friendsCount === 1 ? "Friend" : "Friends"}
+                                </Link>
+                            ) : (
+                                <div className="flex items-center gap-2 text-sm text-neutral-400 font-bold tracking-widest uppercase bg-neutral-900/50 px-3 py-1 rounded-sm border border-neutral-800">
+                                    <FaUserGroup className="text-neutral-500" />
+                                    {friendsCount}{" "}
+                                    {friendsCount === 1 ? "Friend" : "Friends"}
+                                </div>
+                            )}
                         </div>
 
                         {/* Social Links Panel */}
