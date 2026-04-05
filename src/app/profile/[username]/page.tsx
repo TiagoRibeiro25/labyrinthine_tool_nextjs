@@ -139,11 +139,21 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                                     }}
                                 />
                             ) : currentUserId ? (
-                                <FriendActions
-                                    targetUsername={targetUser.username}
-                                    initialStatus={friendStatus}
-                                    initialRequestId={activeRequestId}
-                                />
+                                <>
+                                    <FriendActions
+                                        targetUsername={targetUser.username}
+                                        initialStatus={friendStatus}
+                                        initialRequestId={activeRequestId}
+                                    />
+                                    {friendStatus === "friends" && (
+                                        <Link
+                                            href={`/compare/${targetUser.username}`}
+                                            className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-sm bg-neutral-900/50 text-neutral-300 font-bold text-xs uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:text-white hover:border-neutral-500 transition-all duration-300"
+                                        >
+                                            Compare Collections
+                                        </Link>
+                                    )}
+                                </>
                             ) : (
                                 <Link
                                     href="/login"
