@@ -3,14 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-    FaArrowRight,
-    FaCompass,
-    FaDoorOpen,
-    FaMagnifyingGlass,
-    FaShirt,
-    FaTrophy,
-    FaUserGroup,
-    FaWandMagicSparkles,
+	FaArrowRight,
+	FaCompass,
+	FaDoorOpen,
+	FaMagnifyingGlass,
+	FaShield,
+	FaShirt,
+	FaTrophy,
+	FaUserGroup,
+	FaWandMagicSparkles,
 } from "react-icons/fa6";
 import { useDebounce } from "use-debounce";
 
@@ -115,6 +116,20 @@ const COMMANDS: CommandItem[] = [
 		description: "Practice puzzle challenges",
 		href: "/puzzles",
 		keywords: ["puzzles", "lights out", "slider"],
+	},
+	{
+		id: "puzzle-leaderboards",
+		label: "Puzzle Leaderboards",
+		description: "Global puzzle rankings",
+		href: "/puzzles/leaderboard",
+		keywords: ["puzzles", "leaderboard", "ranks", "global"],
+	},
+	{
+		id: "admin",
+		label: "Admin Panel",
+		description: "Maintenance and operational tools",
+		href: "/admin",
+		keywords: ["admin", "maintenance", "cleanup", "ops"],
 	},
 	{
 		id: "login",
@@ -452,6 +467,9 @@ export default function CommandPalette() {
 							</span>
 							<span className="inline-flex items-center gap-1 border border-neutral-800 px-2 py-1 rounded-sm">
 								<FaTrophy className="w-3 h-3" /> Leaderboard
+							</span>
+							<span className="inline-flex items-center gap-1 border border-neutral-800 px-2 py-1 rounded-sm">
+								<FaShield className="w-3 h-3" /> Admin
 							</span>
 						</div>
 					</div>

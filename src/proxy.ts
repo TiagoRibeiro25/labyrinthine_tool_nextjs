@@ -47,6 +47,7 @@ export const config = {
 		"/compare/:path*",
 		"/activity/:path*",
 		"/notifications/:path*",
+		"/admin/:path*",
 		"/login",
 		"/signup",
 	],

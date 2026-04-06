@@ -1,4 +1,4 @@
-import { desc, eq, inArray } from "drizzle-orm";
+import { desc, eq, inArray, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { db } from "../../../db";
@@ -70,6 +70,7 @@ export async function GET(req: Request) {
 
 		const url = new URL(req.url);
 		const parsed = activityFeedQuerySchema.safeParse({
+			page: url.searchParams.get("page") ?? undefined,
 			limit: url.searchParams.get("limit") ?? undefined,
 		});
 
@@ -80,12 +81,35 @@ export async function GET(req: Request) {
 			);
 		}
 
-		const { limit } = parsed.data;
+		const { page, limit } = parsed.data;
 		const friendIds = await getAcceptedFriendIds(sessionUser.id);
 
 		if (friendIds.length === 0) {
-			return NextResponse.json({ data: [] }, { status: 200 });
+			return NextResponse.json(
+				{
+					data: [],
+					pagination: {
+						page: 1,
+						limit,
+						totalItems: 0,
+						totalPages: 1,
+						hasNextPage: false,
+						hasPreviousPage: false,
+					},
+				},
+				{ status: 200 },
+			);
 		}
+
+		const totalItemsResult = await db
+			.select({ count: sql<number>`count(*)`.mapWith(Number) })
+			.from(activityEvents)
+			.where(inArray(activityEvents.actorUserId, friendIds));
+
+		const totalItems = totalItemsResult[0]?.count ?? 0;
+		const totalPages = Math.max(1, Math.ceil(totalItems / limit));
+		const safePage = Math.min(page, totalPages);
+		const offset = (safePage - 1) * limit;
 
 		const rows = await db
 			.select({
@@ -104,7 +128,8 @@ export async function GET(req: Request) {
 			.innerJoin(users, eq(users.id, activityEvents.actorUserId))
 			.where(inArray(activityEvents.actorUserId, friendIds))
 			.orderBy(desc(activityEvents.createdAt))
-			.limit(limit);
+			.limit(limit)
+			.offset(offset);
 
 		return NextResponse.json(
 			{
@@ -123,6 +148,14 @@ export async function GET(req: Request) {
 					createdAt: row.createdAt,
 					...getEventSummary(row),
 				})),
+				pagination: {
+					page: safePage,
+					limit,
+					totalItems,
+					totalPages,
+					hasNextPage: safePage < totalPages,
+					hasPreviousPage: safePage > 1,
+				},
 			},
 			{ status: 200 },
 		);

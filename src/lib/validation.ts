@@ -156,6 +156,11 @@ export const missingCosmeticsQuerySchema = z.object({
 });
 
 export const activityFeedQuerySchema = z.object({
+	page: z.coerce
+		.number()
+		.int("Page must be an integer.")
+		.min(1, "Page must be at least 1.")
+		.default(1),
 	limit: z.coerce
 		.number()
 		.int("Limit must be an integer.")
@@ -165,6 +170,11 @@ export const activityFeedQuerySchema = z.object({
 });
 
 export const notificationsQuerySchema = z.object({
+	page: z.coerce
+		.number()
+		.int("Page must be an integer.")
+		.min(1, "Page must be at least 1.")
+		.default(1),
 	limit: z.coerce
 		.number()
 		.int("Limit must be an integer.")
@@ -210,6 +220,30 @@ export const puzzleScoreQuerySchema = z.object({
 	puzzleType: z.enum(["lights-out", "slider-puzzle"]).optional(),
 });
 
+export const puzzleLeaderboardQuerySchema = z.object({
+	puzzleType: z.enum(["lights-out", "slider-puzzle"]).default("lights-out"),
+	page: z.coerce
+		.number()
+		.int("Page must be an integer.")
+		.min(1, "Page must be at least 1.")
+		.default(1),
+	limit: z.coerce
+		.number()
+		.int("Limit must be an integer.")
+		.min(1, "Limit must be at least 1.")
+		.max(50, "Limit cannot be greater than 50.")
+		.default(20),
+});
+
+export const adminCleanupBodySchema = z.object({
+	retentionDays: z.coerce
+		.number()
+		.int("Retention days must be an integer.")
+		.min(7, "Retention must be at least 7 days.")
+		.max(365, "Retention cannot exceed 365 days.")
+		.default(90),
+});
+
 export function getFirstZodErrorMessage(error: z.ZodError): string {
 	return error.issues[0]?.message ?? "Invalid request payload.";
 }
@@ -220,3 +254,4 @@ export type ProfileUpdateBody = z.infer<typeof profileUpdateSchema>;
 export type CosmeticsToggleBody = z.infer<typeof cosmeticsToggleBodySchema>;
 export type NotificationsMarkReadBody = z.infer<typeof notificationsMarkReadBodySchema>;
 export type PuzzleScoreBody = z.infer<typeof puzzleScoreBodySchema>;
+export type AdminCleanupBody = z.infer<typeof adminCleanupBodySchema>;

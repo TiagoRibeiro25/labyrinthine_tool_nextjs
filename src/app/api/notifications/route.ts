@@ -21,6 +21,7 @@ export async function GET(req: Request) {
 
 		const url = new URL(req.url);
 		const parsed = notificationsQuerySchema.safeParse({
+			page: url.searchParams.get("page") ?? undefined,
 			limit: url.searchParams.get("limit") ?? undefined,
 			unreadOnly: url.searchParams.get("unreadOnly") ?? undefined,
 		});
@@ -32,11 +33,21 @@ export async function GET(req: Request) {
 			);
 		}
 
-		const { limit, unreadOnly } = parsed.data;
+		const { page, limit, unreadOnly } = parsed.data;
 
 		const baseWhere = unreadOnly
 			? and(eq(notifications.userId, sessionUser.id), eq(notifications.isRead, false))
 			: eq(notifications.userId, sessionUser.id);
+
+		const totalItemsResult = await db
+			.select({ count: sql<number>`count(*)`.mapWith(Number) })
+			.from(notifications)
+			.where(baseWhere);
+
+		const totalItems = totalItemsResult[0]?.count ?? 0;
+		const totalPages = Math.max(1, Math.ceil(totalItems / limit));
+		const safePage = Math.min(page, totalPages);
+		const offset = (safePage - 1) * limit;
 
 		const rows = await db
 			.select({
@@ -52,7 +63,8 @@ export async function GET(req: Request) {
 			.from(notifications)
 			.where(baseWhere)
 			.orderBy(desc(notifications.createdAt))
-			.limit(limit);
+			.limit(limit)
+			.offset(offset);
 
 		const userIds = Array.from(
 			new Set([
@@ -110,6 +122,14 @@ export async function GET(req: Request) {
 					};
 				}),
 				unreadCount: unreadCountResult[0]?.count ?? 0,
+				pagination: {
+					page: safePage,
+					limit,
+					totalItems,
+					totalPages,
+					hasNextPage: safePage < totalPages,
+					hasPreviousPage: safePage > 1,
+				},
 			},
 			{ status: 200 },
 		);

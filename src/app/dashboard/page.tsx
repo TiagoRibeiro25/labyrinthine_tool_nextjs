@@ -7,6 +7,8 @@ import {
     FaBell,
     FaClockRotateLeft,
     FaMagnifyingGlass,
+    FaPuzzlePiece,
+    FaShield,
     FaShirt,
     FaTrophy,
     FaUser,
@@ -220,6 +222,39 @@ export default async function DashboardPage() {
 							Review friend requests, accepts, and recent social updates.
 						</p>
 					</Link>
+
+					{/* Puzzle Leaderboards Card */}
+					<Link
+						href="/puzzles/leaderboard"
+						className="group relative flex flex-col items-center sm:items-start p-6 bg-neutral-900/40 border border-neutral-800 rounded-sm hover:bg-neutral-900 hover:border-neutral-600 transition-all duration-300"
+					>
+						<div className="w-12 h-12 rounded-full bg-black/50 border border-neutral-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+							<FaPuzzlePiece className="w-5 h-5 text-neutral-400 group-hover:text-sky-400 transition-colors" />
+						</div>
+						<h3 className="text-xl font-black uppercase tracking-widest text-neutral-200 mb-1 group-hover:text-white transition-colors">
+							Puzzle Leaderboards
+						</h3>
+						<p className="text-sm text-neutral-500 font-medium text-center sm:text-left">
+							View global rankings for Lights Out and Slider Puzzle runs.
+						</p>
+					</Link>
+
+					{targetUser.isAdministrator ? (
+						<Link
+							href="/admin"
+							className="group relative flex flex-col items-center sm:items-start p-6 bg-neutral-900/40 border border-amber-900/60 rounded-sm hover:bg-neutral-900 hover:border-amber-600 transition-all duration-300"
+						>
+							<div className="w-12 h-12 rounded-full bg-black/50 border border-neutral-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+								<FaShield className="w-5 h-5 text-amber-500 group-hover:text-amber-300 transition-colors" />
+							</div>
+							<h3 className="text-xl font-black uppercase tracking-widest text-neutral-200 mb-1 group-hover:text-white transition-colors">
+								Admin Panel
+							</h3>
+							<p className="text-sm text-neutral-500 font-medium text-center sm:text-left">
+								Open cleanup tools and platform-level operational metrics.
+							</p>
+						</Link>
+					) : null}
 				</div>
 
 				<div className="flex flex-col sm:flex-row items-center justify-center gap-4">

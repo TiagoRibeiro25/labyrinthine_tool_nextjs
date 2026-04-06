@@ -4,12 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-    FaDiscord,
-    FaLightbulb,
-    FaPuzzlePiece,
-    FaShirt,
-    FaSteam,
-    FaUserGroup,
+	FaDiscord,
+	FaLightbulb,
+	FaPuzzlePiece,
+	FaShirt,
+	FaSteam,
+	FaTrophy,
+	FaUserGroup,
 } from "react-icons/fa6";
 import EditProfileButton from "../../../components/EditProfileButton";
 import FriendActions from "../../../components/FriendActions";
@@ -17,7 +18,7 @@ import { getBannerImageById } from "../../../data/profile-banners";
 import { db } from "../../../db";
 import { friendRequests, puzzleScores, userCosmetics, users } from "../../../db/schema";
 import { authOptions } from "../../../lib/auth";
-import { getCosmeticById } from "../../../lib/cosmetics";
+import { allCosmetics, categories, getCosmeticById } from "../../../lib/cosmetics";
 
 interface ProfilePageProps {
 	params: {
@@ -115,7 +116,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
 	// Get Unlocked Cosmetics Count
 	const unlockedCosmeticsResult = await db
-		.select({ id: userCosmetics.id })
+		.select({ id: userCosmetics.id, cosmeticId: userCosmetics.cosmeticId })
 		.from(userCosmetics)
 		.where(eq(userCosmetics.userId, targetUser.id));
 	const unlockedCount = unlockedCosmeticsResult.length;
@@ -147,6 +148,102 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
 	const lightsOutBest = lightsOutBestResult[0] ?? null;
 	const sliderPuzzleBest = sliderPuzzleBestResult[0] ?? null;
+
+	const unlockedCosmeticIds = new Set(
+		unlockedCosmeticsResult.map((row) => row.cosmeticId),
+	);
+	const totalCosmeticsCount = allCosmetics.length;
+	const categoryEntries = Object.entries(categories);
+	const completedCategoryCount = categoryEntries.filter(([, items]) =>
+		items.every((item) => unlockedCosmeticIds.has(item.id)),
+	).length;
+	const totalCategoryCount = categoryEntries.length;
+	const bestDurationMs = Math.min(
+		lightsOutBest?.durationMs ?? Number.POSITIVE_INFINITY,
+		sliderPuzzleBest?.durationMs ?? Number.POSITIVE_INFINITY,
+	);
+
+	const achievements = [
+		{
+			id: "first-unlock",
+			title: "First Unlock",
+			description: "Unlock your first cosmetic.",
+			unlocked: unlockedCount >= 1,
+			progress: `${Math.min(unlockedCount, 1)}/1`,
+			icon: <FaShirt className="text-emerald-400" />,
+		},
+		{
+			id: "collector-100",
+			title: "Collector",
+			description: "Unlock 100 cosmetics.",
+			unlocked: unlockedCount >= 100,
+			progress: `${Math.min(unlockedCount, 100)}/100`,
+			icon: <FaShirt className="text-cyan-400" />,
+		},
+		{
+			id: "category-specialist",
+			title: "Category Specialist",
+			description: "Fully complete 3 cosmetic categories.",
+			unlocked: completedCategoryCount >= 3,
+			progress: `${Math.min(completedCategoryCount, 3)}/3`,
+			icon: <FaTrophy className="text-amber-400" />,
+		},
+		{
+			id: "full-completion",
+			title: "Full Completion",
+			description: "Unlock every cosmetic in the game.",
+			unlocked: unlockedCount >= totalCosmeticsCount,
+			progress: `${unlockedCount}/${totalCosmeticsCount}`,
+			icon: <FaTrophy className="text-yellow-400" />,
+		},
+		{
+			id: "social-survivor",
+			title: "Social Survivor",
+			description: "Reach 5 accepted friends.",
+			unlocked: friendsCount >= 5,
+			progress: `${Math.min(friendsCount, 5)}/5`,
+			icon: <FaUserGroup className="text-blue-400" />,
+		},
+		{
+			id: "puzzle-initiate",
+			title: "Puzzle Initiate",
+			description: "Complete any puzzle mode once.",
+			unlocked: Boolean(lightsOutBest || sliderPuzzleBest),
+			progress: `${(lightsOutBest ? 1 : 0) + (sliderPuzzleBest ? 1 : 0)}/1`,
+			icon: <FaPuzzlePiece className="text-sky-400" />,
+		},
+		{
+			id: "dual-discipline",
+			title: "Dual Discipline",
+			description: "Set personal records in both puzzle modes.",
+			unlocked: Boolean(lightsOutBest && sliderPuzzleBest),
+			progress: `${(lightsOutBest ? 1 : 0) + (sliderPuzzleBest ? 1 : 0)}/2`,
+			icon: <FaLightbulb className="text-amber-400" />,
+		},
+		{
+			id: "sprinter",
+			title: "Sprinter",
+			description: "Finish a puzzle in under 60 seconds.",
+			unlocked: bestDurationMs < 60_000,
+			progress:
+				bestDurationMs === Number.POSITIVE_INFINITY
+					? "No record"
+					: formatDuration(bestDurationMs),
+			icon: <FaPuzzlePiece className="text-fuchsia-400" />,
+		},
+		{
+			id: "curator",
+			title: "Curator",
+			description: "Pick a favorite cosmetic on your profile.",
+			unlocked: Boolean(targetUser.favoriteCosmeticId),
+			progress: targetUser.favoriteCosmeticId ? "Set" : "Not set",
+			icon: <FaShirt className="text-neutral-300" />,
+		},
+	];
+
+	const unlockedAchievementsCount = achievements.filter(
+		(achievement) => achievement.unlocked,
+	).length;
 
 	return (
 		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
@@ -374,6 +471,51 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 										</span>
 									</div>
 								</div>
+							</div>
+
+							<div className="mt-4 p-4 bg-neutral-900/30 border border-neutral-800 rounded-sm">
+								<div className="flex items-center justify-between gap-3 mb-3">
+									<p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">
+										Achievements
+									</p>
+									<span className="text-[10px] font-bold uppercase tracking-widest text-amber-400">
+										{unlockedAchievementsCount}/{achievements.length} Unlocked
+									</span>
+								</div>
+								<div className="grid grid-cols-1 xl:grid-cols-2 gap-2.5">
+									{achievements.map((achievement) => (
+										<div
+											key={achievement.id}
+											className={`p-3 border rounded-sm transition-colors ${
+												achievement.unlocked
+													? "bg-amber-900/20 border-amber-700/60"
+													: "bg-neutral-900/40 border-neutral-800"
+											}`}
+										>
+											<div className="flex items-center justify-between gap-2">
+												<div className="flex items-center gap-2 min-w-0">
+													<span className="text-sm shrink-0">{achievement.icon}</span>
+													<p className="text-[11px] font-bold uppercase tracking-widest text-neutral-200 truncate">
+														{achievement.title}
+													</p>
+												</div>
+												<span
+													className={`text-[10px] font-bold uppercase tracking-widest ${
+														achievement.unlocked ? "text-amber-300" : "text-neutral-500"
+													}`}
+												>
+													{achievement.progress}
+												</span>
+											</div>
+											<p className="text-[11px] text-neutral-500 mt-2 leading-relaxed">
+												{achievement.description}
+											</p>
+										</div>
+									))}
+								</div>
+								<p className="text-[10px] text-neutral-600 uppercase tracking-widest font-bold mt-3">
+									Completed categories: {completedCategoryCount}/{totalCategoryCount}
+								</p>
 							</div>
 						</div>
 					</div>
