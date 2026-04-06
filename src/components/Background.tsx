@@ -30,6 +30,7 @@ const Background: FC<PropsWithChildren> = ({ children }) => {
 		case "/notifications":
 			backgroundImage = "/images/house.jpg";
 			break;
+		case "/admin":
 		case "/puzzles":
 		case pathname.match(/^\/puzzles\/.+$/)?.input: // Matches /puzzles/:puzzleId
 			backgroundImage = "/images/puzzles.jpg";
