@@ -3,16 +3,16 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-    FaArrowLeft,
-    FaBell,
-    FaClockRotateLeft,
-    FaMagnifyingGlass,
-    FaPuzzlePiece,
-    FaShield,
-    FaShirt,
-    FaTrophy,
-    FaUser,
-    FaUserGroup,
+	FaArrowLeft,
+	FaBell,
+	FaClockRotateLeft,
+	FaMagnifyingGlass,
+	FaPuzzlePiece,
+	FaShield,
+	FaShirt,
+	FaTrophy,
+	FaUser,
+	FaUserGroup,
 } from "react-icons/fa6";
 import LogoutButton from "../../components/LogoutButton";
 import { db } from "../../db";
@@ -239,7 +239,7 @@ export default async function DashboardPage() {
 						</p>
 					</Link>
 
-					{targetUser.isAdministrator ? (
+					{targetUser.isAdministrator && (
 						<Link
 							href="/admin"
 							className="group relative flex flex-col items-center sm:items-start p-6 bg-neutral-900/40 border border-amber-900/60 rounded-sm hover:bg-neutral-900 hover:border-amber-600 transition-all duration-300"
@@ -254,7 +254,7 @@ export default async function DashboardPage() {
 								Open cleanup tools and platform-level operational metrics.
 							</p>
 						</Link>
-					) : null}
+					)}
 				</div>
 
 				<div className="flex flex-col sm:flex-row items-center justify-center gap-4">

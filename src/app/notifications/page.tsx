@@ -37,7 +37,7 @@ interface NotificationsResponse {
 const PAGE_SIZE = 25;
 
 export default function NotificationsPage() {
-	const [currentPage, setCurrentPage] = useState(1);
+	const [currentPage, setCurrentPage] = useState<number>(1);
 	const { data, loading, error, execute } = useApi<NotificationsResponse>();
 	const notifications = data?.data ?? [];
 	const unreadCount = data?.unreadCount ?? 0;
