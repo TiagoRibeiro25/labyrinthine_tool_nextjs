@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FaArrowLeft, FaClockRotateLeft } from "react-icons/fa6";
+import { REALTIME_TOPICS, type RealtimeStreamSnapshot } from "../../constants/realtime";
 import { useApi } from "../../hooks/useApi";
+import { useRealtimeStream } from "../../hooks/useRealtimeStream";
 
 interface ActivityItem {
 	id: string;
@@ -42,9 +44,37 @@ export default function ActivityPage() {
 	const hasPreviousPage = pagination?.hasPreviousPage ?? currentPageFromApi > 1;
 	const hasNextPage = pagination?.hasNextPage ?? false;
 
-	useEffect(() => {
-		execute(`/api/activity?page=${currentPage}&limit=${PAGE_SIZE}`).catch(() => {});
+	const fetchActivity = useCallback(async () => {
+		await execute(`/api/activity?page=${currentPage}&limit=${PAGE_SIZE}`);
 	}, [currentPage, execute]);
+
+	const handleRealtimeUpdate = useCallback(() => {
+		if (document.visibilityState !== "visible") {
+			return;
+		}
+
+		fetchActivity().catch(() => {});
+	}, [fetchActivity]);
+
+	const handleRealtimeStreamPayload = useCallback(
+		(payload: RealtimeStreamSnapshot) => {
+			if (!payload.activity) {
+				return;
+			}
+
+			handleRealtimeUpdate();
+		},
+		[handleRealtimeUpdate],
+	);
+
+	useRealtimeStream({
+		topics: [REALTIME_TOPICS.ACTIVITY],
+		onUpdate: handleRealtimeStreamPayload,
+	});
+
+	useEffect(() => {
+		fetchActivity().catch(() => {});
+	}, [fetchActivity]);
 
 	return (
 		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">

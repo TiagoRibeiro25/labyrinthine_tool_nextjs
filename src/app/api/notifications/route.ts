@@ -1,9 +1,11 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import { REALTIME_TOPICS } from "../../../constants/realtime";
 import { db } from "../../../db";
 import { notifications, users } from "../../../db/schema";
 import { authOptions } from "../../../lib/auth";
+import { emitRealtimeHint } from "../../../lib/realtime";
 import {
     getFirstZodErrorMessage,
     notificationsMarkReadBodySchema,
@@ -177,6 +179,11 @@ export async function PATCH(req: Request) {
 					and(eq(notifications.userId, sessionUser.id), eq(notifications.isRead, false)),
 				);
 
+			emitRealtimeHint({
+				topic: REALTIME_TOPICS.NOTIFICATIONS,
+				userIds: [sessionUser.id],
+			});
+
 			return NextResponse.json(
 				{ message: "All notifications marked as read." },
 				{ status: 200 },
@@ -199,6 +206,11 @@ export async function PATCH(req: Request) {
 					eq(notifications.userId, sessionUser.id),
 				),
 			);
+
+		emitRealtimeHint({
+			topic: REALTIME_TOPICS.NOTIFICATIONS,
+			userIds: [sessionUser.id],
+		});
 
 		return NextResponse.json(
 			{ message: "Notification marked as read." },

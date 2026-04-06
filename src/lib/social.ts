@@ -1,6 +1,8 @@
 import { and, eq, or } from "drizzle-orm";
+import { REALTIME_TOPICS } from "../constants/realtime";
 import { db } from "../db";
 import { activityEvents, friendRequests, notifications } from "../db/schema";
+import { emitRealtimeHint } from "./realtime";
 
 export async function getAcceptedFriendIds(userId: string): Promise<string[]> {
 	const rows = await db
@@ -34,6 +36,8 @@ export async function recordActivityEvent(input: ActivityEventInput) {
 		scoreValue: input.scoreValue,
 		metadata: input.metadata,
 	});
+
+	emitRealtimeHint({ topic: REALTIME_TOPICS.ACTIVITY });
 }
 
 interface NotificationInput {
@@ -60,4 +64,9 @@ export async function createNotifications(items: NotificationInput[]) {
 			href: item.href ?? null,
 		})),
 	);
+
+	emitRealtimeHint({
+		topic: REALTIME_TOPICS.NOTIFICATIONS,
+		userIds: Array.from(new Set(items.map((item) => item.userId))),
+	});
 }

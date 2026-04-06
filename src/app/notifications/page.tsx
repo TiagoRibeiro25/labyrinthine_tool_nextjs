@@ -4,7 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { FaArrowLeft, FaBell } from "react-icons/fa6";
+import { REALTIME_TOPICS, type RealtimeStreamSnapshot } from "../../constants/realtime";
 import { useApi } from "../../hooks/useApi";
+import { useRealtimeStream } from "../../hooks/useRealtimeStream";
 
 interface NotificationItem {
 	id: string;
@@ -50,6 +52,30 @@ export default function NotificationsPage() {
 	const fetchNotifications = useCallback(async () => {
 		await execute(`/api/notifications?page=${currentPage}&limit=${PAGE_SIZE}`);
 	}, [currentPage, execute]);
+
+	const handleRealtimeUpdate = useCallback(() => {
+		if (document.visibilityState !== "visible") {
+			return;
+		}
+
+		fetchNotifications().catch(() => {});
+	}, [fetchNotifications]);
+
+	const handleRealtimeStreamPayload = useCallback(
+		(payload: RealtimeStreamSnapshot) => {
+			if (!payload.notifications) {
+				return;
+			}
+
+			handleRealtimeUpdate();
+		},
+		[handleRealtimeUpdate],
+	);
+
+	useRealtimeStream({
+		topics: [REALTIME_TOPICS.NOTIFICATIONS],
+		onUpdate: handleRealtimeStreamPayload,
+	});
 
 	const markAllRead = async () => {
 		try {

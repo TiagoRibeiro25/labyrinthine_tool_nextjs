@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaBell, FaCheck, FaXmark } from "react-icons/fa6";
+import { REALTIME_TOPICS, type RealtimeStreamSnapshot } from "../constants/realtime";
 import { useApi } from "../hooks/useApi";
 import { useOnClickOutside } from "../hooks/useOnClickOutside";
+import { useRealtimeStream } from "../hooks/useRealtimeStream";
 
 interface NotificationPreview {
 	id: string;
@@ -19,10 +21,6 @@ interface NotificationsResponse {
 	data: NotificationPreview[];
 	unreadCount: number;
 }
-
-const DEFAULT_POLL_MS = 60_000;
-const OPEN_PANEL_POLL_MS = 15_000;
-const INACTIVE_POLL_MS = 15 * 60_000;
 
 export default function NotificationsCenter() {
 	const [isOpen, setIsOpen] = useState(false);
@@ -40,6 +38,30 @@ export default function NotificationsCenter() {
 			// Ignore fetch errors for floating center.
 		}
 	}, [execute]);
+
+	const handleRealtimeUpdate = useCallback(() => {
+		if (document.visibilityState !== "visible") {
+			return;
+		}
+
+		refresh().catch(() => {});
+	}, [refresh]);
+
+	const handleRealtimeStreamPayload = useCallback(
+		(payload: RealtimeStreamSnapshot) => {
+			if (!payload.notifications) {
+				return;
+			}
+
+			handleRealtimeUpdate();
+		},
+		[handleRealtimeUpdate],
+	);
+
+	useRealtimeStream({
+		topics: [REALTIME_TOPICS.NOTIFICATIONS],
+		onUpdate: handleRealtimeStreamPayload,
+	});
 
 	const markAllRead = async () => {
 		try {
@@ -72,52 +94,20 @@ export default function NotificationsCenter() {
 	};
 
 	useEffect(() => {
-		let intervalId: number | null = null;
-
-		const stopPolling = () => {
-			if (intervalId !== null) {
-				window.clearInterval(intervalId);
-				intervalId = null;
-			}
-		};
-
-		const startPolling = (intervalMs: number) => {
-			intervalId = window.setInterval(() => {
-				refresh().catch(() => {});
-			}, intervalMs);
-		};
-
-		const getPollingIntervalMs = () => {
-			if (document.visibilityState !== "visible") {
-				return INACTIVE_POLL_MS;
-			}
-
-			return isOpen ? OPEN_PANEL_POLL_MS : DEFAULT_POLL_MS;
-		};
-
-		const restartPollingForCurrentState = () => {
-			stopPolling();
-			startPolling(getPollingIntervalMs());
-		};
+		refresh().catch(() => {});
 
 		const handleVisibilityChange = () => {
 			if (document.visibilityState === "visible") {
 				refresh().catch(() => {});
 			}
-
-			restartPollingForCurrentState();
 		};
-
-		refresh().catch(() => {});
-		restartPollingForCurrentState();
 
 		document.addEventListener("visibilitychange", handleVisibilityChange);
 
 		return () => {
-			stopPolling();
 			document.removeEventListener("visibilitychange", handleVisibilityChange);
 		};
-	}, [isOpen, refresh]);
+	}, [refresh]);
 
 	return (
 		<div className="fixed top-5 right-5 z-40">
