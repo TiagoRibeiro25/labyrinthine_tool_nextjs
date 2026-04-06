@@ -1,291 +1,291 @@
-import { NextResponse } from "next/server";
+import { and, eq, or } from "drizzle-orm";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../../lib/auth";
+import { NextResponse } from "next/server";
 import { db } from "../../../db";
 import { friendRequests, users } from "../../../db/schema";
-import { and, eq, or } from "drizzle-orm";
-import { getClientIpFromHeaders } from "../../../lib/request";
+import { authOptions } from "../../../lib/auth";
 import { rateLimit, toRateLimitHeaders } from "../../../lib/rate-limit";
-import {
-    friendsActionSchema,
-    getFirstZodErrorMessage,
-} from "../../../lib/validation";
+import { getClientIpFromHeaders } from "../../../lib/request";
+import { createNotifications } from "../../../lib/social";
+import { friendsActionSchema, getFirstZodErrorMessage } from "../../../lib/validation";
 
 export async function POST(req: Request) {
-    try {
-        const session = await getServerSession(authOptions);
-        const sessionUser = session?.user as { id?: string } | undefined;
+	try {
+		const session = await getServerSession(authOptions);
+		const sessionUser = session?.user as { id?: string } | undefined;
 
-        if (!session || !sessionUser || !sessionUser.id) {
-            return NextResponse.json(
-                { message: "Unauthorized." },
-                { status: 401 },
-            );
-        }
+		if (!session || !sessionUser || !sessionUser.id) {
+			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
+		}
 
-        const senderId = sessionUser.id;
-        const clientIp = getClientIpFromHeaders(req.headers);
+		const senderId = sessionUser.id;
+		const currentUserResult = await db
+			.select({ username: users.username })
+			.from(users)
+			.where(eq(users.id, senderId))
+			.limit(1);
 
-        const userRateLimit = rateLimit({
-            key: `friends:user:${senderId}`,
-            limit: 80,
-            windowMs: 60 * 1000,
-        });
+		const currentUser = currentUserResult[0];
 
-        if (!userRateLimit.success) {
-            return NextResponse.json(
-                {
-                    message:
-                        "Too many friend actions in a short period. Please try again in a moment.",
-                },
-                { status: 429, headers: toRateLimitHeaders(userRateLimit) },
-            );
-        }
+		if (!currentUser) {
+			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
+		}
 
-        let body: unknown;
-        try {
-            body = await req.json();
-        } catch {
-            return NextResponse.json(
-                { message: "Invalid JSON body." },
-                { status: 400, headers: toRateLimitHeaders(userRateLimit) },
-            );
-        }
+		const clientIp = getClientIpFromHeaders(req.headers);
 
-        const parsed = friendsActionSchema.safeParse(body);
+		const userRateLimit = rateLimit({
+			key: `friends:user:${senderId}`,
+			limit: 80,
+			windowMs: 60 * 1000,
+		});
 
-        if (!parsed.success) {
-            return NextResponse.json(
-                { message: getFirstZodErrorMessage(parsed.error) },
-                { status: 400, headers: toRateLimitHeaders(userRateLimit) },
-            );
-        }
+		if (!userRateLimit.success) {
+			return NextResponse.json(
+				{
+					message:
+						"Too many friend actions in a short period. Please try again in a moment.",
+				},
+				{ status: 429, headers: toRateLimitHeaders(userRateLimit) },
+			);
+		}
 
-        const { action, receiverUsername, requestId } = parsed.data;
+		let body: unknown;
+		try {
+			body = await req.json();
+		} catch {
+			return NextResponse.json(
+				{ message: "Invalid JSON body." },
+				{ status: 400, headers: toRateLimitHeaders(userRateLimit) },
+			);
+		}
 
-        if (action === "add") {
-            const addRateLimit = rateLimit({
-                key: `friends:add:${senderId}:${clientIp}`,
-                limit: 20,
-                windowMs: 10 * 60 * 1000,
-            });
+		const parsed = friendsActionSchema.safeParse(body);
 
-            if (!addRateLimit.success) {
-                return NextResponse.json(
-                    {
-                        message:
-                            "Too many friend request attempts. Please try again later.",
-                    },
-                    { status: 429, headers: toRateLimitHeaders(addRateLimit) },
-                );
-            }
-        }
+		if (!parsed.success) {
+			return NextResponse.json(
+				{ message: getFirstZodErrorMessage(parsed.error) },
+				{ status: 400, headers: toRateLimitHeaders(userRateLimit) },
+			);
+		}
 
-        // ACTION: ADD FRIEND
-        if (action === "add") {
-            if (!receiverUsername) {
-                return NextResponse.json(
-                    { message: "Receiver username is required." },
-                    { status: 400 },
-                );
-            }
+		const { action, receiverUsername, requestId } = parsed.data;
 
-            // Find receiver user
-            const receiverResult = await db
-                .select()
-                .from(users)
-                .where(eq(users.username, receiverUsername))
-                .limit(1);
+		if (action === "add") {
+			const addRateLimit = rateLimit({
+				key: `friends:add:${senderId}:${clientIp}`,
+				limit: 20,
+				windowMs: 10 * 60 * 1000,
+			});
 
-            const receiver = receiverResult[0];
+			if (!addRateLimit.success) {
+				return NextResponse.json(
+					{
+						message: "Too many friend request attempts. Please try again later.",
+					},
+					{ status: 429, headers: toRateLimitHeaders(addRateLimit) },
+				);
+			}
+		}
 
-            if (!receiver) {
-                return NextResponse.json(
-                    { message: "User not found." },
-                    { status: 404 },
-                );
-            }
+		// ACTION: ADD FRIEND
+		if (action === "add") {
+			if (!receiverUsername) {
+				return NextResponse.json(
+					{ message: "Receiver username is required." },
+					{ status: 400 },
+				);
+			}
 
-            if (receiver.id === senderId) {
-                return NextResponse.json(
-                    { message: "You cannot add yourself as a friend." },
-                    { status: 400 },
-                );
-            }
+			// Find receiver user
+			const receiverResult = await db
+				.select()
+				.from(users)
+				.where(eq(users.username, receiverUsername))
+				.limit(1);
 
-            // Check if request already exists
-            const existingRequest = await db
-                .select()
-                .from(friendRequests)
-                .where(
-                    or(
-                        and(
-                            eq(friendRequests.senderId, senderId),
-                            eq(friendRequests.receiverId, receiver.id),
-                        ),
-                        and(
-                            eq(friendRequests.senderId, receiver.id),
-                            eq(friendRequests.receiverId, senderId),
-                        ),
-                    ),
-                )
-                .limit(1);
+			const receiver = receiverResult[0];
 
-            if (existingRequest.length > 0) {
-                return NextResponse.json(
-                    {
-                        message:
-                            "Friend request already exists or you are already friends.",
-                    },
-                    { status: 400 },
-                );
-            }
+			if (!receiver) {
+				return NextResponse.json({ message: "User not found." }, { status: 404 });
+			}
 
-            // Create new pending friend request
-            await db.insert(friendRequests).values({
-                senderId: senderId,
-                receiverId: receiver.id,
-                status: "pending",
-            });
+			if (receiver.id === senderId) {
+				return NextResponse.json(
+					{ message: "You cannot add yourself as a friend." },
+					{ status: 400 },
+				);
+			}
 
-            return NextResponse.json(
-                { message: "Friend request sent." },
-                { status: 200 },
-            );
-        }
+			// Check if request already exists
+			const existingRequest = await db
+				.select()
+				.from(friendRequests)
+				.where(
+					or(
+						and(
+							eq(friendRequests.senderId, senderId),
+							eq(friendRequests.receiverId, receiver.id),
+						),
+						and(
+							eq(friendRequests.senderId, receiver.id),
+							eq(friendRequests.receiverId, senderId),
+						),
+					),
+				)
+				.limit(1);
 
-        // ACTION: ACCEPT FRIEND
-        if (action === "accept") {
-            if (!requestId) {
-                return NextResponse.json(
-                    { message: "Request ID is required." },
-                    { status: 400 },
-                );
-            }
+			if (existingRequest.length > 0) {
+				return NextResponse.json(
+					{
+						message: "Friend request already exists or you are already friends.",
+					},
+					{ status: 400 },
+				);
+			}
 
-            // Verify the request exists and the current user is the receiver
-            const targetRequestResult = await db
-                .select()
-                .from(friendRequests)
-                .where(
-                    and(
-                        eq(friendRequests.id, requestId),
-                        eq(friendRequests.receiverId, senderId),
-                    ),
-                )
-                .limit(1);
+			// Create new pending friend request
+			await db.insert(friendRequests).values({
+				senderId: senderId,
+				receiverId: receiver.id,
+				status: "pending",
+			});
 
-            const targetRequest = targetRequestResult[0];
+			await createNotifications([
+				{
+					userId: receiver.id,
+					actorUserId: senderId,
+					type: "friend_request",
+					title: "New friend request",
+					message: `${currentUser.username} sent you a friend request.`,
+					href: `/profile/${currentUser.username}`,
+				},
+			]);
 
-            if (!targetRequest) {
-                return NextResponse.json(
-                    { message: "Friend request not found or unauthorized." },
-                    { status: 404 },
-                );
-            }
+			return NextResponse.json({ message: "Friend request sent." }, { status: 200 });
+		}
 
-            // Update status to accepted
-            await db
-                .update(friendRequests)
-                .set({ status: "accepted" })
-                .where(eq(friendRequests.id, requestId));
+		// ACTION: ACCEPT FRIEND
+		if (action === "accept") {
+			if (!requestId) {
+				return NextResponse.json({ message: "Request ID is required." }, { status: 400 });
+			}
 
-            return NextResponse.json(
-                { message: "Friend request accepted." },
-                { status: 200 },
-            );
-        }
+			// Verify the request exists and the current user is the receiver
+			const targetRequestResult = await db
+				.select()
+				.from(friendRequests)
+				.where(
+					and(eq(friendRequests.id, requestId), eq(friendRequests.receiverId, senderId)),
+				)
+				.limit(1);
 
-        // ACTION: REJECT OR REMOVE FRIEND
-        if (action === "reject" || action === "remove") {
-            if (!requestId && !receiverUsername) {
-                return NextResponse.json(
-                    { message: "Request ID or receiver username is required." },
-                    { status: 400 },
-                );
-            }
+			const targetRequest = targetRequestResult[0];
 
-            let targetRequestId = requestId;
+			if (!targetRequest) {
+				return NextResponse.json(
+					{ message: "Friend request not found or unauthorized." },
+					{ status: 404 },
+				);
+			}
 
-            if (!targetRequestId && receiverUsername) {
-                const receiverResult = await db
-                    .select()
-                    .from(users)
-                    .where(eq(users.username, receiverUsername))
-                    .limit(1);
+			// Update status to accepted
+			await db
+				.update(friendRequests)
+				.set({ status: "accepted" })
+				.where(eq(friendRequests.id, requestId));
 
-                const receiver = receiverResult[0];
+			await createNotifications([
+				{
+					userId: targetRequest.senderId,
+					actorUserId: senderId,
+					type: "friend_accepted",
+					title: "Friend request accepted",
+					message: `${currentUser.username} accepted your friend request.`,
+					href: `/profile/${currentUser.username}`,
+				},
+			]);
 
-                if (!receiver) {
-                    return NextResponse.json(
-                        { message: "User not found." },
-                        { status: 404 },
-                    );
-                }
+			return NextResponse.json({ message: "Friend request accepted." }, { status: 200 });
+		}
 
-                const existingRequest = await db
-                    .select()
-                    .from(friendRequests)
-                    .where(
-                        or(
-                            and(
-                                eq(friendRequests.senderId, senderId),
-                                eq(friendRequests.receiverId, receiver.id),
-                            ),
-                            and(
-                                eq(friendRequests.senderId, receiver.id),
-                                eq(friendRequests.receiverId, senderId),
-                            ),
-                        ),
-                    )
-                    .limit(1);
+		// ACTION: REJECT OR REMOVE FRIEND
+		if (action === "reject" || action === "remove") {
+			if (!requestId && !receiverUsername) {
+				return NextResponse.json(
+					{ message: "Request ID or receiver username is required." },
+					{ status: 400 },
+				);
+			}
 
-                if (existingRequest.length === 0) {
-                    return NextResponse.json(
-                        { message: "Friend request not found." },
-                        { status: 404 },
-                    );
-                }
+			let targetRequestId = requestId;
 
-                targetRequestId = existingRequest[0].id;
-            }
+			if (!targetRequestId && receiverUsername) {
+				const receiverResult = await db
+					.select()
+					.from(users)
+					.where(eq(users.username, receiverUsername))
+					.limit(1);
 
-            if (!targetRequestId) {
-                return NextResponse.json(
-                    { message: "Request ID is required." },
-                    { status: 400 },
-                );
-            }
+				const receiver = receiverResult[0];
 
-            // Delete the request (either reject pending or remove accepted)
-            // Ensure the user is either the sender or receiver
-            await db
-                .delete(friendRequests)
-                .where(
-                    and(
-                        eq(friendRequests.id, targetRequestId),
-                        or(
-                            eq(friendRequests.senderId, senderId),
-                            eq(friendRequests.receiverId, senderId),
-                        ),
-                    ),
-                );
+				if (!receiver) {
+					return NextResponse.json({ message: "User not found." }, { status: 404 });
+				}
 
-            return NextResponse.json(
-                { message: "Friend removed/rejected." },
-                { status: 200 },
-            );
-        }
+				const existingRequest = await db
+					.select()
+					.from(friendRequests)
+					.where(
+						or(
+							and(
+								eq(friendRequests.senderId, senderId),
+								eq(friendRequests.receiverId, receiver.id),
+							),
+							and(
+								eq(friendRequests.senderId, receiver.id),
+								eq(friendRequests.receiverId, senderId),
+							),
+						),
+					)
+					.limit(1);
 
-        return NextResponse.json(
-            { message: "Invalid action." },
-            { status: 400 },
-        );
-    } catch (error) {
-        console.error("Error managing friends:", error);
-        return NextResponse.json(
-            { message: "An internal server error occurred." },
-            { status: 500 },
-        );
-    }
+				if (existingRequest.length === 0) {
+					return NextResponse.json(
+						{ message: "Friend request not found." },
+						{ status: 404 },
+					);
+				}
+
+				targetRequestId = existingRequest[0].id;
+			}
+
+			if (!targetRequestId) {
+				return NextResponse.json({ message: "Request ID is required." }, { status: 400 });
+			}
+
+			// Delete the request (either reject pending or remove accepted)
+			// Ensure the user is either the sender or receiver
+			await db
+				.delete(friendRequests)
+				.where(
+					and(
+						eq(friendRequests.id, targetRequestId),
+						or(
+							eq(friendRequests.senderId, senderId),
+							eq(friendRequests.receiverId, senderId),
+						),
+					),
+				);
+
+			return NextResponse.json({ message: "Friend removed/rejected." }, { status: 200 });
+		}
+
+		return NextResponse.json({ message: "Invalid action." }, { status: 400 });
+	} catch (error) {
+		console.error("Error managing friends:", error);
+		return NextResponse.json(
+			{ message: "An internal server error occurred." },
+			{ status: 500 },
+		);
+	}
 }
