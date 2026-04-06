@@ -4,9 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaArrowLeft, FaLightbulb, FaPuzzlePiece, FaTrophy } from "react-icons/fa6";
+import { type PuzzleType } from "../../../constants/puzzles";
 import { useApi } from "../../../hooks/useApi";
-
-type PuzzleType = "lights-out" | "slider-puzzle";
 
 interface PuzzleLeaderboardEntry {
 	id: string;

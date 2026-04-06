@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DEFAULT_PUZZLE_TYPE, PUZZLE_TYPE_VALUES } from "../constants/puzzles";
 
 const steamProfileRegex =
 	/^https?:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/;
@@ -203,7 +204,7 @@ export const notificationsMarkReadBodySchema = z
 	});
 
 export const puzzleScoreBodySchema = z.object({
-	puzzleType: z.enum(["lights-out", "slider-puzzle"]),
+	puzzleType: z.enum(PUZZLE_TYPE_VALUES),
 	moves: z
 		.number()
 		.int("Moves must be an integer.")
@@ -217,11 +218,11 @@ export const puzzleScoreBodySchema = z.object({
 });
 
 export const puzzleScoreQuerySchema = z.object({
-	puzzleType: z.enum(["lights-out", "slider-puzzle"]).optional(),
+	puzzleType: z.enum(PUZZLE_TYPE_VALUES).optional(),
 });
 
 export const puzzleLeaderboardQuerySchema = z.object({
-	puzzleType: z.enum(["lights-out", "slider-puzzle"]).default("lights-out"),
+	puzzleType: z.enum(PUZZLE_TYPE_VALUES).default(DEFAULT_PUZZLE_TYPE),
 	page: z.coerce
 		.number()
 		.int("Page must be an integer.")

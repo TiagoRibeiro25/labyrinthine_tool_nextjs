@@ -1,38 +1,17 @@
 import { and, asc, desc, eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import { PUZZLE_TYPE_VALUES } from "../../../../constants/puzzles";
 import { db } from "../../../../db";
 import { puzzleScores } from "../../../../db/schema";
 import { authOptions } from "../../../../lib/auth";
+import { getPuzzleLabel, isBetterPuzzleScore } from "../../../../lib/puzzles";
 import { createNotifications, recordActivityEvent } from "../../../../lib/social";
 import {
     getFirstZodErrorMessage,
     puzzleScoreBodySchema,
     puzzleScoreQuerySchema,
 } from "../../../../lib/validation";
-
-function puzzleLabel(puzzleType: string) {
-	return puzzleType === "lights-out" ? "Lights Out" : "Slider Puzzle";
-}
-
-function isBetterScore(
-	previous: { moves: number; durationMs: number } | undefined,
-	current: { moves: number; durationMs: number },
-) {
-	if (!previous) {
-		return true;
-	}
-
-	if (current.moves < previous.moves) {
-		return true;
-	}
-
-	if (current.moves === previous.moves && current.durationMs < previous.durationMs) {
-		return true;
-	}
-
-	return false;
-}
 
 export async function GET(req: Request) {
 	try {
@@ -65,9 +44,7 @@ export async function GET(req: Request) {
 		}
 
 		const selectedPuzzle = parsed.data.puzzleType;
-		const puzzleTypes = selectedPuzzle
-			? [selectedPuzzle]
-			: (["lights-out", "slider-puzzle"] as const);
+		const puzzleTypes = selectedPuzzle ? [selectedPuzzle] : PUZZLE_TYPE_VALUES;
 
 		const bestEntries = await Promise.all(
 			puzzleTypes.map(async (puzzleType) => {
@@ -177,7 +154,7 @@ export async function POST(req: Request) {
 			.limit(1);
 
 		const previousBest = previousBestRows[0];
-		const personalBest = isBetterScore(previousBest, { moves, durationMs });
+		const personalBest = isBetterPuzzleScore(previousBest, { moves, durationMs });
 
 		if (!personalBest) {
 			return NextResponse.json(
@@ -202,7 +179,7 @@ export async function POST(req: Request) {
 			eventType: "puzzle_completed",
 			puzzleType,
 			scoreValue: moves,
-			metadata: `${puzzleLabel(puzzleType)} personal best: ${moves} moves in ${Math.round(durationMs / 1000)}s.`,
+			metadata: `${getPuzzleLabel(puzzleType)} personal best: ${moves} moves in ${Math.round(durationMs / 1000)}s.`,
 		});
 
 		await createNotifications([
@@ -210,7 +187,7 @@ export async function POST(req: Request) {
 				userId,
 				actorUserId: userId,
 				type: "puzzle_personal_best",
-				title: `New ${puzzleLabel(puzzleType)} personal best`,
+				title: `New ${getPuzzleLabel(puzzleType)} personal best`,
 				message: `${moves} moves in ${Math.round(durationMs / 1000)}s.`,
 				href: `/puzzles/${puzzleType}`,
 			},

@@ -1,32 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useToast } from "../hooks/useToast";
+import { PUZZLE_TIMER_TICK_MS, PUZZLE_TYPES } from "../constants/puzzles";
+import { usePuzzleScore } from "../hooks/usePuzzleScore";
+import { currentTimeMs, formatDuration } from "../lib/puzzles";
 
 const GRID_SIZE = 3;
 const NUM_TILES = GRID_SIZE * GRID_SIZE;
-
-interface PuzzleScore {
-	puzzleType: string;
-	moves: number;
-	durationMs: number;
-}
-
-interface PuzzleScoresResponse {
-	signedIn: boolean;
-	bestByPuzzle: Record<string, PuzzleScore>;
-}
-
-function formatDuration(durationMs: number) {
-	const totalSeconds = Math.floor(durationMs / 1000);
-	const minutes = Math.floor(totalSeconds / 60);
-	const seconds = totalSeconds % 60;
-	return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-}
-
-function currentTimeMs() {
-	return Date.now();
-}
 
 const getSolvedState = () => {
 	const state = Array.from({ length: NUM_TILES - 1 }, (_, i) => i + 1);
@@ -42,12 +22,8 @@ export default function SliderPuzzle() {
 	const [startTimeMs, setStartTimeMs] = useState<number | null>(null);
 	const [elapsedMs, setElapsedMs] = useState<number>(0);
 	const [tickMs, setTickMs] = useState<number>(() => currentTimeMs());
-	const [bestScore, setBestScore] = useState<PuzzleScore | null>(null);
-	const [signedIn, setSignedIn] = useState<boolean>(true);
-	const [saveState, setSaveState] = useState<
-		"idle" | "saving" | "saved" | "not-best" | "error" | "signin"
-	>("idle");
-	const toast = useToast();
+	const { bestScore, signedIn, saveState, loadBestScore, saveScore, resetSaveState } =
+		usePuzzleScore(PUZZLE_TYPES.SLIDER_PUZZLE);
 
 	const checkSolved = useCallback((currentTiles: number[]) => {
 		const solved = getSolvedState();
@@ -56,83 +32,6 @@ export default function SliderPuzzle() {
 		}
 		return true;
 	}, []);
-
-	const loadBestScore = useCallback(async () => {
-		try {
-			const response = await fetch("/api/puzzles/scores?puzzleType=slider-puzzle");
-
-			if (!response.ok) {
-				return;
-			}
-
-			const payload = (await response.json()) as PuzzleScoresResponse;
-			setSignedIn(payload.signedIn);
-
-			const best = payload.bestByPuzzle?.["slider-puzzle"];
-			if (best) {
-				setBestScore(best);
-			}
-		} catch {
-			// Ignore load failures for non-essential UI.
-		}
-	}, []);
-
-	const saveScore = useCallback(
-		async (finalMoves: number, finalDurationMs: number) => {
-			setSaveState("saving");
-
-			try {
-				const response = await fetch("/api/puzzles/scores", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						puzzleType: "slider-puzzle",
-						moves: finalMoves,
-						durationMs: finalDurationMs,
-					}),
-				});
-
-				if (response.status === 401) {
-					setSignedIn(false);
-					setSaveState("signin");
-					return;
-				}
-
-				if (!response.ok) {
-					setSaveState("error");
-					return;
-				}
-
-				const payload = (await response.json()) as {
-					personalBest: boolean;
-					saved?: boolean;
-				};
-
-				if (payload.personalBest) {
-					setSaveState("saved");
-					setBestScore({
-						puzzleType: "slider-puzzle",
-						moves: finalMoves,
-						durationMs: finalDurationMs,
-					});
-				} else {
-					setSaveState("not-best");
-				}
-
-				if (payload.personalBest) {
-					toast.success(
-						"New personal best",
-						`Slider Puzzle solved in ${finalMoves} moves (${formatDuration(finalDurationMs)}).`,
-					);
-				}
-			} catch {
-				setSaveState("error");
-			}
-		},
-		[toast],
-	);
 
 	useEffect(() => {
 		const frameId = window.requestAnimationFrame(() => {
@@ -149,7 +48,7 @@ export default function SliderPuzzle() {
 
 		const intervalId = window.setInterval(() => {
 			setTickMs(currentTimeMs());
-		}, 250);
+		}, PUZZLE_TIMER_TICK_MS);
 
 		return () => {
 			window.clearInterval(intervalId);
@@ -186,7 +85,7 @@ export default function SliderPuzzle() {
 		setIsPlaying(true);
 		setStartTimeMs(currentTimeMs());
 		setElapsedMs(0);
-		setSaveState("idle");
+		resetSaveState();
 	};
 
 	const handleTileClick = (index: number) => {

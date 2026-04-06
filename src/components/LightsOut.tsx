@@ -2,31 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { FaArrowRotateRight } from "react-icons/fa6";
-import { useToast } from "../hooks/useToast";
+import { PUZZLE_TIMER_TICK_MS, PUZZLE_TYPES } from "../constants/puzzles";
+import { usePuzzleScore } from "../hooks/usePuzzleScore";
+import { currentTimeMs, formatDuration } from "../lib/puzzles";
 
 const GRID_SIZE = 3;
-
-interface PuzzleScore {
-	puzzleType: string;
-	moves: number;
-	durationMs: number;
-}
-
-interface PuzzleScoresResponse {
-	signedIn: boolean;
-	bestByPuzzle: Record<string, PuzzleScore>;
-}
-
-function formatDuration(durationMs: number) {
-	const totalSeconds = Math.floor(durationMs / 1000);
-	const minutes = Math.floor(totalSeconds / 60);
-	const seconds = totalSeconds % 60;
-	return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-}
-
-function currentTimeMs() {
-	return Date.now();
-}
 
 const toggleCells = (currentBoard: boolean[], index: number) => {
 	const newBoard = [...currentBoard];
@@ -76,89 +56,8 @@ export default function LightsOut() {
 	const [startTimeMs, setStartTimeMs] = useState<number>(() => currentTimeMs());
 	const [elapsedMs, setElapsedMs] = useState<number>(0);
 	const [tickMs, setTickMs] = useState<number>(() => currentTimeMs());
-	const [bestScore, setBestScore] = useState<PuzzleScore | null>(null);
-	const [signedIn, setSignedIn] = useState<boolean>(true);
-	const [saveState, setSaveState] = useState<
-		"idle" | "saving" | "saved" | "not-best" | "error" | "signin"
-	>("idle");
-	const toast = useToast();
-
-	const loadBestScore = useCallback(async () => {
-		try {
-			const response = await fetch("/api/puzzles/scores?puzzleType=lights-out");
-
-			if (!response.ok) {
-				return;
-			}
-
-			const payload = (await response.json()) as PuzzleScoresResponse;
-			setSignedIn(payload.signedIn);
-
-			const best = payload.bestByPuzzle?.["lights-out"];
-			if (best) {
-				setBestScore(best);
-			}
-		} catch {
-			// Ignore load failures for non-essential UI.
-		}
-	}, []);
-
-	const saveScore = useCallback(
-		async (finalMoves: number, finalDurationMs: number) => {
-			setSaveState("saving");
-
-			try {
-				const response = await fetch("/api/puzzles/scores", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						puzzleType: "lights-out",
-						moves: finalMoves,
-						durationMs: finalDurationMs,
-					}),
-				});
-
-				if (response.status === 401) {
-					setSignedIn(false);
-					setSaveState("signin");
-					return;
-				}
-
-				if (!response.ok) {
-					setSaveState("error");
-					return;
-				}
-
-				const payload = (await response.json()) as {
-					personalBest: boolean;
-					saved?: boolean;
-				};
-
-				if (payload.personalBest) {
-					setSaveState("saved");
-					setBestScore({
-						puzzleType: "lights-out",
-						moves: finalMoves,
-						durationMs: finalDurationMs,
-					});
-				} else {
-					setSaveState("not-best");
-				}
-
-				if (payload.personalBest) {
-					toast.success(
-						"New personal best",
-						`Lights Out solved in ${finalMoves} moves (${formatDuration(finalDurationMs)}).`,
-					);
-				}
-			} catch {
-				setSaveState("error");
-			}
-		},
-		[toast],
-	);
+	const { bestScore, signedIn, saveState, loadBestScore, saveScore, resetSaveState } =
+		usePuzzleScore(PUZZLE_TYPES.LIGHTS_OUT);
 
 	useEffect(() => {
 		const frameId = window.requestAnimationFrame(() => {
@@ -175,7 +74,7 @@ export default function LightsOut() {
 
 		const intervalId = window.setInterval(() => {
 			setTickMs(currentTimeMs());
-		}, 250);
+		}, PUZZLE_TIMER_TICK_MS);
 
 		return () => {
 			window.clearInterval(intervalId);
@@ -189,8 +88,8 @@ export default function LightsOut() {
 		setIsWon(false);
 		setStartTimeMs(currentTimeMs());
 		setElapsedMs(0);
-		setSaveState("idle");
-	}, []);
+		resetSaveState();
+	}, [resetSaveState]);
 
 	const handleCellClick = (index: number) => {
 		if (isWon) return;
