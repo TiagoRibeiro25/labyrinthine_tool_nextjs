@@ -45,7 +45,7 @@ export default function SliderPuzzle() {
 	const [bestScore, setBestScore] = useState<PuzzleScore | null>(null);
 	const [signedIn, setSignedIn] = useState<boolean>(true);
 	const [saveState, setSaveState] = useState<
-		"idle" | "saving" | "saved" | "error" | "signin"
+		"idle" | "saving" | "saved" | "not-best" | "error" | "signin"
 	>("idle");
 	const toast = useToast();
 
@@ -107,20 +107,18 @@ export default function SliderPuzzle() {
 
 				const payload = (await response.json()) as {
 					personalBest: boolean;
+					saved?: boolean;
 				};
 
-				setSaveState("saved");
-
-				if (
-					!bestScore ||
-					finalMoves < bestScore.moves ||
-					(finalMoves === bestScore.moves && finalDurationMs < bestScore.durationMs)
-				) {
+				if (payload.personalBest) {
+					setSaveState("saved");
 					setBestScore({
 						puzzleType: "slider-puzzle",
 						moves: finalMoves,
 						durationMs: finalDurationMs,
 					});
+				} else {
+					setSaveState("not-best");
 				}
 
 				if (payload.personalBest) {
@@ -133,7 +131,7 @@ export default function SliderPuzzle() {
 				setSaveState("error");
 			}
 		},
-		[bestScore, toast],
+		[toast],
 	);
 
 	useEffect(() => {
@@ -296,7 +294,13 @@ export default function SliderPuzzle() {
 
 			{isSolved && saveState === "saved" && (
 				<p className="mt-4 text-[10px] uppercase tracking-widest font-bold text-emerald-500">
-					Score saved to your profile.
+					Personal best saved to your profile.
+				</p>
+			)}
+
+			{isSolved && saveState === "not-best" && (
+				<p className="mt-4 text-[10px] uppercase tracking-widest font-bold text-neutral-500">
+					Run completed, but it did not beat your personal best.
 				</p>
 			)}
 

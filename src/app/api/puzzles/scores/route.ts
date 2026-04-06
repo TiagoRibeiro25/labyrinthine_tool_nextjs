@@ -179,6 +179,17 @@ export async function POST(req: Request) {
 		const previousBest = previousBestRows[0];
 		const personalBest = isBetterScore(previousBest, { moves, durationMs });
 
+		if (!personalBest) {
+			return NextResponse.json(
+				{
+					message: "Run completed, but it did not beat your personal best.",
+					personalBest: false,
+					saved: false,
+				},
+				{ status: 200 },
+			);
+		}
+
 		await db.insert(puzzleScores).values({
 			userId,
 			puzzleType,
@@ -186,31 +197,30 @@ export async function POST(req: Request) {
 			durationMs,
 		});
 
-		if (personalBest) {
-			await recordActivityEvent({
-				actorUserId: userId,
-				eventType: "puzzle_completed",
-				puzzleType,
-				scoreValue: moves,
-				metadata: `${puzzleLabel(puzzleType)} personal best: ${moves} moves in ${Math.round(durationMs / 1000)}s.`,
-			});
+		await recordActivityEvent({
+			actorUserId: userId,
+			eventType: "puzzle_completed",
+			puzzleType,
+			scoreValue: moves,
+			metadata: `${puzzleLabel(puzzleType)} personal best: ${moves} moves in ${Math.round(durationMs / 1000)}s.`,
+		});
 
-			await createNotifications([
-				{
-					userId,
-					actorUserId: userId,
-					type: "puzzle_personal_best",
-					title: `New ${puzzleLabel(puzzleType)} personal best`,
-					message: `${moves} moves in ${Math.round(durationMs / 1000)}s.`,
-					href: `/puzzles/${puzzleType}`,
-				},
-			]);
-		}
+		await createNotifications([
+			{
+				userId,
+				actorUserId: userId,
+				type: "puzzle_personal_best",
+				title: `New ${puzzleLabel(puzzleType)} personal best`,
+				message: `${moves} moves in ${Math.round(durationMs / 1000)}s.`,
+				href: `/puzzles/${puzzleType}`,
+			},
+		]);
 
 		return NextResponse.json(
 			{
-				message: "Puzzle score saved.",
-				personalBest,
+				message: "Puzzle personal best saved.",
+				personalBest: true,
+				saved: true,
 			},
 			{ status: 201 },
 		);
