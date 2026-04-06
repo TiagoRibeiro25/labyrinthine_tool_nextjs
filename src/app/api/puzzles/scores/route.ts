@@ -186,15 +186,15 @@ export async function POST(req: Request) {
 			durationMs,
 		});
 
-		await recordActivityEvent({
-			actorUserId: userId,
-			eventType: "puzzle_completed",
-			puzzleType,
-			scoreValue: moves,
-			metadata: `${puzzleLabel(puzzleType)} completed in ${moves} moves.`,
-		});
-
 		if (personalBest) {
+			await recordActivityEvent({
+				actorUserId: userId,
+				eventType: "puzzle_completed",
+				puzzleType,
+				scoreValue: moves,
+				metadata: `${puzzleLabel(puzzleType)} personal best: ${moves} moves in ${Math.round(durationMs / 1000)}s.`,
+			});
+
 			await createNotifications([
 				{
 					userId,
