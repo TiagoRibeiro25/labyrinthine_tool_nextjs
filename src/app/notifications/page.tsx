@@ -57,6 +57,15 @@ export default function NotificationsPage() {
 	return (
 		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
 			<div className="w-full max-w-4xl bg-black/80 backdrop-blur-md border border-neutral-800 border-t-4 border-t-neutral-600 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative p-6 sm:p-10 flex flex-col">
+				<div className="mb-6">
+					<Link
+						href="/dashboard"
+						className="text-xs text-neutral-500 font-bold uppercase tracking-widest hover:text-neutral-300 transition-colors flex items-center justify-center sm:justify-start gap-2 w-fit"
+					>
+						<FaArrowLeft /> Return to Safehouse
+					</Link>
+				</div>
+
 				<div className="mb-8 text-center sm:text-left border-b border-neutral-800/80 pb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
 					<div>
 						<h1 className="text-3xl sm:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-100 to-neutral-500 uppercase mb-2 flex items-center justify-center sm:justify-start gap-3">
@@ -148,15 +157,6 @@ export default function NotificationsPage() {
 						})}
 					</div>
 				)}
-
-				<div className="mt-8 border-t border-neutral-800/80 pt-6">
-					<Link
-						href="/dashboard"
-						className="text-xs text-neutral-500 font-bold uppercase tracking-widest hover:text-neutral-300 transition-colors flex items-center justify-center sm:justify-start gap-2"
-					>
-						<FaArrowLeft /> Return to Safehouse
-					</Link>
-				</div>
 			</div>
 		</main>
 	);

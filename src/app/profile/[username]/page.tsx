@@ -1,14 +1,21 @@
-import { and, eq, or } from "drizzle-orm";
+import { and, asc, eq, or } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { FaDiscord, FaShirt, FaSteam, FaUserGroup } from "react-icons/fa6";
+import {
+    FaDiscord,
+    FaLightbulb,
+    FaPuzzlePiece,
+    FaShirt,
+    FaSteam,
+    FaUserGroup,
+} from "react-icons/fa6";
 import EditProfileButton from "../../../components/EditProfileButton";
 import FriendActions from "../../../components/FriendActions";
 import { getBannerImageById } from "../../../data/profile-banners";
 import { db } from "../../../db";
-import { friendRequests, userCosmetics, users } from "../../../db/schema";
+import { friendRequests, puzzleScores, userCosmetics, users } from "../../../db/schema";
 import { authOptions } from "../../../lib/auth";
 import { getCosmeticById } from "../../../lib/cosmetics";
 
@@ -19,6 +26,13 @@ interface ProfilePageProps {
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
+	const formatDuration = (durationMs: number) => {
+		const totalSeconds = Math.floor(durationMs / 1000);
+		const minutes = Math.floor(totalSeconds / 60);
+		const seconds = totalSeconds % 60;
+		return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+	};
+
 	const { username } = await params;
 	const session = await getServerSession(authOptions);
 
@@ -105,6 +119,34 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 		.from(userCosmetics)
 		.where(eq(userCosmetics.userId, targetUser.id));
 	const unlockedCount = unlockedCosmeticsResult.length;
+
+	const [lightsOutBestResult, sliderPuzzleBestResult] = await Promise.all([
+		db
+			.select({ durationMs: puzzleScores.durationMs, moves: puzzleScores.moves })
+			.from(puzzleScores)
+			.where(
+				and(
+					eq(puzzleScores.userId, targetUser.id),
+					eq(puzzleScores.puzzleType, "lights-out"),
+				),
+			)
+			.orderBy(asc(puzzleScores.durationMs), asc(puzzleScores.moves))
+			.limit(1),
+		db
+			.select({ durationMs: puzzleScores.durationMs, moves: puzzleScores.moves })
+			.from(puzzleScores)
+			.where(
+				and(
+					eq(puzzleScores.userId, targetUser.id),
+					eq(puzzleScores.puzzleType, "slider-puzzle"),
+				),
+			)
+			.orderBy(asc(puzzleScores.durationMs), asc(puzzleScores.moves))
+			.limit(1),
+	]);
+
+	const lightsOutBest = lightsOutBestResult[0] ?? null;
+	const sliderPuzzleBest = sliderPuzzleBestResult[0] ?? null;
 
 	return (
 		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
@@ -298,6 +340,40 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 								<p className="text-sm font-bold text-neutral-200 uppercase tracking-wide">
 									{favoriteCosmetic?.name || "No favorite cosmetic selected"}
 								</p>
+							</div>
+
+							<div className="mt-4 p-4 bg-neutral-900/30 border border-neutral-800 rounded-sm">
+								<p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-3">
+									Puzzle Records
+								</p>
+								<div className="space-y-3">
+									<div className="flex items-center justify-between gap-3">
+										<div className="flex items-center gap-2 text-neutral-300">
+											<FaLightbulb className="text-amber-400" />
+											<span className="text-xs font-bold uppercase tracking-widest">
+												Lights Out
+											</span>
+										</div>
+										<span className="text-xs font-bold text-neutral-200 uppercase tracking-widest">
+											{lightsOutBest
+												? `${formatDuration(lightsOutBest.durationMs)} (${lightsOutBest.moves} moves)`
+												: "No record"}
+										</span>
+									</div>
+									<div className="flex items-center justify-between gap-3">
+										<div className="flex items-center gap-2 text-neutral-300">
+											<FaPuzzlePiece className="text-sky-400" />
+											<span className="text-xs font-bold uppercase tracking-widest">
+												Slider Puzzle
+											</span>
+										</div>
+										<span className="text-xs font-bold text-neutral-200 uppercase tracking-widest">
+											{sliderPuzzleBest
+												? `${formatDuration(sliderPuzzleBest.durationMs)} (${sliderPuzzleBest.moves} moves)`
+												: "No record"}
+										</span>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
