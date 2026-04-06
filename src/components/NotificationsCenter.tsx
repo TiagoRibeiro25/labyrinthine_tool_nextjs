@@ -7,6 +7,7 @@ import { REALTIME_TOPICS, type RealtimeStreamSnapshot } from "../constants/realt
 import { useApi } from "../hooks/useApi";
 import { useOnClickOutside } from "../hooks/useOnClickOutside";
 import { useRealtimeStream } from "../hooks/useRealtimeStream";
+import RealtimeStatusBadge from "./RealtimeStatusBadge";
 
 interface NotificationPreview {
 	id: string;
@@ -58,7 +59,7 @@ export default function NotificationsCenter() {
 		[handleRealtimeUpdate],
 	);
 
-	useRealtimeStream({
+	const { status: realtimeStatus, reconnect: reconnectRealtime } = useRealtimeStream({
 		topics: [REALTIME_TOPICS.NOTIFICATIONS],
 		onUpdate: handleRealtimeStreamPayload,
 	});
@@ -138,6 +139,12 @@ export default function NotificationsCenter() {
 							<p className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold mt-1">
 								{unreadCount} unread
 							</p>
+							<div className="mt-1">
+								<RealtimeStatusBadge
+									status={realtimeStatus}
+									onReconnect={reconnectRealtime}
+								/>
+							</div>
 						</div>
 						<div className="flex items-center gap-2">
 							<button

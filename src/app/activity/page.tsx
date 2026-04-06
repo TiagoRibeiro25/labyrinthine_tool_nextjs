@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { FaArrowLeft, FaClockRotateLeft } from "react-icons/fa6";
+import RealtimeStatusBadge from "../../components/RealtimeStatusBadge";
 import { REALTIME_TOPICS, type RealtimeStreamSnapshot } from "../../constants/realtime";
 import { useApi } from "../../hooks/useApi";
 import { useRealtimeStream } from "../../hooks/useRealtimeStream";
@@ -67,7 +68,7 @@ export default function ActivityPage() {
 		[handleRealtimeUpdate],
 	);
 
-	useRealtimeStream({
+	const { status: realtimeStatus, reconnect: reconnectRealtime } = useRealtimeStream({
 		topics: [REALTIME_TOPICS.ACTIVITY],
 		onUpdate: handleRealtimeStreamPayload,
 	});
@@ -96,6 +97,12 @@ export default function ActivityPage() {
 					<p className="text-sm text-neutral-400 font-medium tracking-wide">
 						Live updates from your friends&apos; collection and puzzle progress.
 					</p>
+					<div className="mt-2">
+						<RealtimeStatusBadge
+							status={realtimeStatus}
+							onReconnect={reconnectRealtime}
+						/>
+					</div>
 				</div>
 
 				{loading && (

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { FaArrowLeft, FaBell } from "react-icons/fa6";
+import RealtimeStatusBadge from "../../components/RealtimeStatusBadge";
 import { REALTIME_TOPICS, type RealtimeStreamSnapshot } from "../../constants/realtime";
 import { useApi } from "../../hooks/useApi";
 import { useRealtimeStream } from "../../hooks/useRealtimeStream";
@@ -72,7 +73,7 @@ export default function NotificationsPage() {
 		[handleRealtimeUpdate],
 	);
 
-	useRealtimeStream({
+	const { status: realtimeStatus, reconnect: reconnectRealtime } = useRealtimeStream({
 		topics: [REALTIME_TOPICS.NOTIFICATIONS],
 		onUpdate: handleRealtimeStreamPayload,
 	});
@@ -117,6 +118,12 @@ export default function NotificationsPage() {
 						<p className="text-sm text-neutral-400 font-medium tracking-wide">
 							{unreadCount} unread notification{unreadCount === 1 ? "" : "s"}.
 						</p>
+						<div className="mt-2">
+							<RealtimeStatusBadge
+								status={realtimeStatus}
+								onReconnect={reconnectRealtime}
+							/>
+						</div>
 					</div>
 					<button
 						type="button"
