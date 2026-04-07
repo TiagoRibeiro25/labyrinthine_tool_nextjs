@@ -8,7 +8,7 @@ export default function FeatureHighlightsSection() {
 					Built For Every Run
 				</h2>
 				<p className="text-neutral-400 max-w-3xl mx-auto">
-					From first map clears to late-game collection grinding, this toolkit keeps your
+					From first map clears to late game collection grinding, this toolkit keeps your
 					progress visible and your team coordinated.
 				</p>
 			</div>
