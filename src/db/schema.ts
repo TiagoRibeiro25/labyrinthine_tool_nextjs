@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
 	boolean,
 	index,
@@ -7,6 +7,7 @@ import {
 	text,
 	timestamp,
 	unique,
+	uniqueIndex,
 	uuid,
 	varchar,
 } from "drizzle-orm/pg-core";
@@ -33,6 +34,7 @@ export const users = pgTable(
 	(table) => [
 		index("users_id_idx").on(table.id),
 		index("users_username_idx").on(table.username),
+		uniqueIndex("users_username_lower_unique_idx").on(sql`lower(${table.username})`),
 	]
 );
 

@@ -173,6 +173,22 @@ describe("register route", () => {
 		);
 	});
 
+	it("returns 409 when insert hits unique violation", async () => {
+		const selectChain = { from: vi.fn(), where: vi.fn(), limit: vi.fn() };
+		selectChain.from.mockReturnValue(selectChain);
+		selectChain.where.mockReturnValue(selectChain);
+		selectChain.limit.mockResolvedValue([]);
+		mockedDb.select.mockReturnValue(selectChain);
+
+		const insertValues = vi
+			.fn()
+			.mockRejectedValue(Object.assign(new Error("duplicate key"), { code: "23505" }));
+		mockedDb.insert.mockReturnValue({ values: insertValues });
+
+		const response = await POST(buildRequest({ username: "alpha", password: "hunter2" }));
+		expect(response.status).toBe(409);
+	});
+
 	it("returns 500 on unexpected errors", async () => {
 		mockedDb.select.mockImplementation(() => {
 			throw new Error("db crashed");

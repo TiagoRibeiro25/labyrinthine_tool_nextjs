@@ -1,11 +1,20 @@
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "../../../db";
 import { users } from "../../../db/schema";
 import { rateLimit, toRateLimitHeaders } from "../../../lib/rate-limit";
 import { getClientIpFromHeaders } from "../../../lib/request";
 import { getFirstZodErrorMessage, registerBodySchema } from "../../../lib/validation";
+
+function isUniqueViolation(error: unknown) {
+	return (
+		typeof error === "object" &&
+		error !== null &&
+		"code" in error &&
+		(error as { code?: string }).code === "23505"
+	);
+}
 
 export async function POST(req: Request) {
 	try {
@@ -65,7 +74,7 @@ export async function POST(req: Request) {
 		const existingUserResult = await db
 			.select()
 			.from(users)
-			.where(eq(users.username, username))
+			.where(sql`lower(${users.username}) = ${username.toLowerCase()}`)
 			.limit(1);
 
 		if (existingUserResult.length > 0) {
@@ -77,12 +86,23 @@ export async function POST(req: Request) {
 
 		const hashedPassword = await bcrypt.hash(password, 10);
 
-		await db.insert(users).values({
-			username,
-			password: hashedPassword,
-			profilePictureId: "1",
-			profileBannerId: "chap1",
-		});
+		try {
+			await db.insert(users).values({
+				username,
+				password: hashedPassword,
+				profilePictureId: "1",
+				profileBannerId: "chap1",
+			});
+		} catch (error) {
+			if (isUniqueViolation(error)) {
+				return NextResponse.json(
+					{ message: "A user with this username already exists." },
+					{ status: 409, headers: toRateLimitHeaders(ipLimit) }
+				);
+			}
+
+			throw error;
+		}
 
 		return NextResponse.json(
 			{ message: "User registered successfully." },

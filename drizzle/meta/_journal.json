@@ -8,6 +8,13 @@
 			"when": 1775479626894,
 			"tag": "0000_square_titanium_man",
 			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "7",
+			"when": 1775577600000,
+			"tag": "0001_case_insensitive_usernames",
+			"breakpoints": true
 		}
 	]
 }
