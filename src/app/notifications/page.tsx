@@ -70,7 +70,7 @@ export default function NotificationsPage() {
 
 			handleRealtimeUpdate();
 		},
-		[handleRealtimeUpdate],
+		[handleRealtimeUpdate]
 	);
 
 	const { status: realtimeStatus, reconnect: reconnectRealtime } = useRealtimeStream({

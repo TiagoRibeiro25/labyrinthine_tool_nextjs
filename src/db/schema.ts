@@ -1,14 +1,14 @@
 import { relations } from "drizzle-orm";
 import {
-    boolean,
-    index,
-    integer,
-    pgTable,
-    text,
-    timestamp,
-    unique,
-    uuid,
-    varchar,
+	boolean,
+	index,
+	integer,
+	pgTable,
+	text,
+	timestamp,
+	unique,
+	uuid,
+	varchar,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable(
@@ -33,7 +33,7 @@ export const users = pgTable(
 	(table) => [
 		index("users_id_idx").on(table.id),
 		index("users_username_idx").on(table.username),
-	],
+	]
 );
 
 export const userCosmetics = pgTable(
@@ -54,7 +54,7 @@ export const userCosmetics = pgTable(
 		index("user_cosmetics_user_id_idx").on(table.userId),
 		index("user_cosmetics_cosmetic_id_idx").on(table.cosmeticId),
 		unique("user_cosmetics_user_cosmetic_unique").on(table.userId, table.cosmeticId),
-	],
+	]
 );
 
 export const friendRequests = pgTable(
@@ -78,7 +78,7 @@ export const friendRequests = pgTable(
 		index("friend_requests_sender_id_idx").on(table.senderId),
 		index("friend_requests_receiver_id_idx").on(table.receiverId),
 		unique("friend_requests_sender_receiver_unique").on(table.senderId, table.receiverId),
-	],
+	]
 );
 
 export const activityEvents = pgTable(
@@ -98,7 +98,7 @@ export const activityEvents = pgTable(
 	(table) => [
 		index("activity_events_actor_user_id_idx").on(table.actorUserId),
 		index("activity_events_created_at_idx").on(table.createdAt),
-	],
+	]
 );
 
 export const notifications = pgTable(
@@ -125,9 +125,9 @@ export const notifications = pgTable(
 		index("notifications_user_read_created_idx").on(
 			table.userId,
 			table.isRead,
-			table.createdAt,
+			table.createdAt
 		),
-	],
+	]
 );
 
 export const puzzleScores = pgTable(
@@ -147,10 +147,10 @@ export const puzzleScores = pgTable(
 		index("puzzle_scores_type_moves_duration_idx").on(
 			table.puzzleType,
 			table.moves,
-			table.durationMs,
+			table.durationMs
 		),
 		index("puzzle_scores_created_at_idx").on(table.createdAt),
-	],
+	]
 );
 
 // --- RELATIONS ---

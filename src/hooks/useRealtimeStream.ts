@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-    REALTIME_STREAM_API_PATH,
-    type RealtimeStreamSnapshot,
-    type RealtimeTopic,
+	REALTIME_STREAM_API_PATH,
+	type RealtimeStreamSnapshot,
+	type RealtimeTopic,
 } from "../constants/realtime";
 
 export type RealtimeConnectionStatus =
@@ -62,7 +62,7 @@ export function useRealtimeStream({
 
 		const handleOnline = () => {
 			setConnectionStatus((previous) =>
-				previous === "offline" ? "reconnecting" : previous,
+				previous === "offline" ? "reconnecting" : previous
 			);
 		};
 

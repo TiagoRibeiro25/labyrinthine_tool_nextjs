@@ -67,7 +67,7 @@ describe("activity route", () => {
 		mockedGetAcceptedFriendIds.mockResolvedValue([]);
 
 		const response = await GET(
-			new Request("http://localhost/api/activity?page=1&limit=10"),
+			new Request("http://localhost/api/activity?page=1&limit=10")
 		);
 		const payload = (await response.json()) as {
 			data: unknown[];
@@ -116,7 +116,7 @@ describe("activity route", () => {
 			.mockImplementationOnce(() => rowsChain);
 
 		const response = await GET(
-			new Request("http://localhost/api/activity?page=1&limit=10"),
+			new Request("http://localhost/api/activity?page=1&limit=10")
 		);
 		const payload = (await response.json()) as {
 			data: Array<{ title: string; description: string }>;
@@ -138,7 +138,7 @@ describe("activity route", () => {
 		mockedDb.select.mockImplementationOnce(() => totalChain);
 
 		const response = await GET(
-			new Request("http://localhost/api/activity?page=1&limit=10"),
+			new Request("http://localhost/api/activity?page=1&limit=10")
 		);
 		expect(response.status).toBe(500);
 	});

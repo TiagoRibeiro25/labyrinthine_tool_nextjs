@@ -83,7 +83,7 @@ describe("puzzle scores route", () => {
 		mockedGetServerSession.mockResolvedValue({ user: { id: "u1" } } as never);
 
 		const response = await GET(
-			new Request("http://localhost/api/puzzles/scores?puzzleType=invalid"),
+			new Request("http://localhost/api/puzzles/scores?puzzleType=invalid")
 		);
 		expect(response.status).toBe(400);
 		expect(mockedDb.select).not.toHaveBeenCalled();
@@ -97,7 +97,7 @@ describe("puzzle scores route", () => {
 				puzzleType: "lights-out",
 				moves: 10,
 				durationMs: 20000,
-			}),
+			})
 		);
 
 		expect(response.status).toBe(401);
@@ -111,7 +111,7 @@ describe("puzzle scores route", () => {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: "{invalid-json",
-			}),
+			})
 		);
 
 		expect(response.status).toBe(400);
@@ -120,7 +120,7 @@ describe("puzzle scores route", () => {
 	it("does not save when run is not a personal best", async () => {
 		mockedGetServerSession.mockResolvedValue({ user: { id: "u1" } } as never);
 		mockedDb.select.mockImplementation(() =>
-			createSelectChain([{ moves: 5, durationMs: 10000 }]),
+			createSelectChain([{ moves: 5, durationMs: 10000 }])
 		);
 		const insertValues = vi.fn().mockResolvedValue(undefined);
 		mockedDb.insert.mockReturnValue({ values: insertValues });
@@ -130,7 +130,7 @@ describe("puzzle scores route", () => {
 				puzzleType: "lights-out",
 				moves: 6,
 				durationMs: 15000,
-			}),
+			})
 		);
 		const payload = (await response.json()) as { personalBest: boolean; saved: boolean };
 
@@ -145,7 +145,7 @@ describe("puzzle scores route", () => {
 	it("saves and notifies when run is a personal best", async () => {
 		mockedGetServerSession.mockResolvedValue({ user: { id: "u1" } } as never);
 		mockedDb.select.mockImplementation(() =>
-			createSelectChain([{ moves: 12, durationMs: 16000 }]),
+			createSelectChain([{ moves: 12, durationMs: 16000 }])
 		);
 		const insertValues = vi.fn().mockResolvedValue(undefined);
 		mockedDb.insert.mockReturnValue({ values: insertValues });
@@ -155,7 +155,7 @@ describe("puzzle scores route", () => {
 				puzzleType: "slider-puzzle",
 				moves: 10,
 				durationMs: 15000,
-			}),
+			})
 		);
 		const payload = (await response.json()) as { personalBest: boolean; saved: boolean };
 

@@ -30,7 +30,7 @@ export async function PUT(req: Request) {
 		if (!parsed.success) {
 			return NextResponse.json(
 				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -56,13 +56,13 @@ export async function PUT(req: Request) {
 
 		return NextResponse.json(
 			{ message: "Profile updated successfully." },
-			{ status: 200 },
+			{ status: 200 }
 		);
 	} catch (error) {
 		console.error("Error updating profile:", error);
 		return NextResponse.json(
 			{ message: "An internal server error occurred." },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

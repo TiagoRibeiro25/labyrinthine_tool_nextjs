@@ -50,20 +50,20 @@ export default function EditProfileModal({
 	}, [isOpen]);
 
 	const [discordUsername, setDiscordUsername] = useState<string>(
-		initialData.discordUsername || "",
+		initialData.discordUsername || ""
 	);
 	const [bio, setBio] = useState<string>(initialData.bio || "");
 	const [steamProfileUrl, setSteamProfileUrl] = useState<string>(
-		initialData.steamProfileUrl || "",
+		initialData.steamProfileUrl || ""
 	);
 	const [profilePictureId, setProfilePictureId] = useState<string>(
-		initialData.profilePictureId || "1",
+		initialData.profilePictureId || "1"
 	);
 	const [profileBannerId, setProfileBannerId] = useState<string>(
-		initialData.profileBannerId || "chap1",
+		initialData.profileBannerId || "chap1"
 	);
 	const [favoriteCosmeticId, setFavoriteCosmeticId] = useState<string>(
-		initialData.favoriteCosmeticId ? String(initialData.favoriteCosmeticId) : "",
+		initialData.favoriteCosmeticId ? String(initialData.favoriteCosmeticId) : ""
 	);
 	const [localError, setLocalError] = useState<string>("");
 	const { loading, error: apiError, execute, setError: setApiError } = useApi();
@@ -83,7 +83,7 @@ export default function EditProfileModal({
 				/^https?:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/;
 			if (!steamRegex.test(steamProfileUrl)) {
 				setLocalError(
-					"Invalid Steam Profile URL. Must be a valid steamcommunity.com link.",
+					"Invalid Steam Profile URL. Must be a valid steamcommunity.com link."
 				);
 				return;
 			}

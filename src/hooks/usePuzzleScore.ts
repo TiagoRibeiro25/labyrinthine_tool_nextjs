@@ -3,11 +3,11 @@
 import { useCallback, useState } from "react";
 import { PUZZLE_SCORE_API_PATH, type PuzzleType } from "../constants/puzzles";
 import {
-    formatDuration,
-    getPuzzleLabel,
-    type PuzzleSaveState,
-    type PuzzleScore,
-    type PuzzleScoresResponse,
+	formatDuration,
+	getPuzzleLabel,
+	type PuzzleSaveState,
+	type PuzzleScore,
+	type PuzzleScoresResponse,
 } from "../lib/puzzles";
 import { useToast } from "./useToast";
 
@@ -81,7 +81,7 @@ export function usePuzzleScore(puzzleType: PuzzleType) {
 					});
 					toast.success(
 						"New personal best",
-						`${getPuzzleLabel(puzzleType)} solved in ${finalMoves} moves (${formatDuration(finalDurationMs)}).`,
+						`${getPuzzleLabel(puzzleType)} solved in ${finalMoves} moves (${formatDuration(finalDurationMs)}).`
 					);
 					return;
 				}
@@ -91,7 +91,7 @@ export function usePuzzleScore(puzzleType: PuzzleType) {
 				setSaveState("error");
 			}
 		},
-		[puzzleType, toast],
+		[puzzleType, toast]
 	);
 
 	const resetSaveState = useCallback(() => {

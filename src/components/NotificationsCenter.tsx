@@ -56,7 +56,7 @@ export default function NotificationsCenter() {
 
 			handleRealtimeUpdate();
 		},
-		[handleRealtimeUpdate],
+		[handleRealtimeUpdate]
 	);
 
 	const { status: realtimeStatus, reconnect: reconnectRealtime } = useRealtimeStream({

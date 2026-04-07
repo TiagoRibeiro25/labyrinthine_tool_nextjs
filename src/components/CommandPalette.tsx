@@ -176,7 +176,7 @@ export default function CommandPalette() {
 			closePalette();
 			router.push(href);
 		},
-		[closePalette, router],
+		[closePalette, router]
 	);
 
 	const filteredCommands = useMemo(() => {
@@ -217,7 +217,7 @@ export default function CommandPalette() {
 					{
 						method: "GET",
 						signal: controller.signal,
-					},
+					}
 				);
 
 				if (!response.ok) {

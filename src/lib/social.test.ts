@@ -54,7 +54,7 @@ describe("social helpers", () => {
 				eventType: "puzzle_completed",
 				puzzleType: "lights-out",
 				scoreValue: 12,
-			}),
+			})
 		);
 	});
 

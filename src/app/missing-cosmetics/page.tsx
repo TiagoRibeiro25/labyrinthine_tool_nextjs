@@ -27,7 +27,7 @@ function MissingCosmeticsContent() {
 	const [searchQuery, setSearchQuery] = useState<string>(initialCosmetic?.name || "");
 	const [debouncedQuery] = useDebounce(searchQuery, 300);
 	const [selectedCosmetic, setSelectedCosmetic] = useState<CosmeticItem | null>(
-		initialCosmetic,
+		initialCosmetic
 	);
 	const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);

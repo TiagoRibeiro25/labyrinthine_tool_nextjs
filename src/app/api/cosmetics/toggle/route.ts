@@ -6,13 +6,13 @@ import { userCosmetics, users } from "../../../../db/schema";
 import { authOptions } from "../../../../lib/auth";
 import { getCosmeticById } from "../../../../lib/cosmetics";
 import {
-    createNotifications,
-    getAcceptedFriendIds,
-    recordActivityEvent,
+	createNotifications,
+	getAcceptedFriendIds,
+	recordActivityEvent,
 } from "../../../../lib/social";
 import {
-    cosmeticsToggleBodySchema,
-    getFirstZodErrorMessage,
+	cosmeticsToggleBodySchema,
+	getFirstZodErrorMessage,
 } from "../../../../lib/validation";
 
 export async function POST(req: Request) {
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
 		if (!parsed.success) {
 			return NextResponse.json(
 				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -93,13 +93,13 @@ export async function POST(req: Request) {
 							title: `${actor.username} unlocked cosmetics`,
 							message: `${toInsert.length} new items were added to their collection.`,
 							href: `/profile/${actor.username}`,
-						})),
+						}))
 					);
 				}
 
 				return NextResponse.json(
 					{ message: "Cosmetics bulk unlocked." },
-					{ status: 200 },
+					{ status: 200 }
 				);
 			} else if (action === "lock") {
 				await db
@@ -107,8 +107,8 @@ export async function POST(req: Request) {
 					.where(
 						and(
 							eq(userCosmetics.userId, userId),
-							inArray(userCosmetics.cosmeticId, cosmeticIds),
-						),
+							inArray(userCosmetics.cosmeticId, cosmeticIds)
+						)
 					);
 
 				return NextResponse.json({ message: "Cosmetics bulk locked." }, { status: 200 });
@@ -125,7 +125,7 @@ export async function POST(req: Request) {
 			.select()
 			.from(userCosmetics)
 			.where(
-				and(eq(userCosmetics.userId, userId), eq(userCosmetics.cosmeticId, cosmeticId)),
+				and(eq(userCosmetics.userId, userId), eq(userCosmetics.cosmeticId, cosmeticId))
 			)
 			.limit(1);
 
@@ -134,12 +134,12 @@ export async function POST(req: Request) {
 			await db
 				.delete(userCosmetics)
 				.where(
-					and(eq(userCosmetics.userId, userId), eq(userCosmetics.cosmeticId, cosmeticId)),
+					and(eq(userCosmetics.userId, userId), eq(userCosmetics.cosmeticId, cosmeticId))
 				);
 
 			return NextResponse.json(
 				{ message: "Cosmetic locked.", unlocked: false },
-				{ status: 200 },
+				{ status: 200 }
 			);
 		} else {
 			// Insert it to unlock
@@ -170,19 +170,19 @@ export async function POST(req: Request) {
 						? `${cosmeticName} was unlocked.`
 						: "A new cosmetic was unlocked.",
 					href: `/profile/${actor.username}`,
-				})),
+				}))
 			);
 
 			return NextResponse.json(
 				{ message: "Cosmetic unlocked.", unlocked: true },
-				{ status: 200 },
+				{ status: 200 }
 			);
 		}
 	} catch (error) {
 		console.error("Error toggling cosmetic:", error);
 		return NextResponse.json(
 			{ message: "An internal server error occurred." },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

@@ -7,8 +7,8 @@ import { authOptions } from "../../../lib/auth";
 import { getCosmeticById } from "../../../lib/cosmetics";
 import { getAcceptedFriendIds } from "../../../lib/social";
 import {
-    activityFeedQuerySchema,
-    getFirstZodErrorMessage,
+	activityFeedQuerySchema,
+	getFirstZodErrorMessage,
 } from "../../../lib/validation";
 
 function getEventSummary(event: {
@@ -77,7 +77,7 @@ export async function GET(req: Request) {
 		if (!parsed.success) {
 			return NextResponse.json(
 				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -97,7 +97,7 @@ export async function GET(req: Request) {
 						hasPreviousPage: false,
 					},
 				},
-				{ status: 200 },
+				{ status: 200 }
 			);
 		}
 
@@ -157,13 +157,13 @@ export async function GET(req: Request) {
 					hasPreviousPage: safePage > 1,
 				},
 			},
-			{ status: 200 },
+			{ status: 200 }
 		);
 	} catch (error) {
 		console.error("Error fetching activity feed:", error);
 		return NextResponse.json(
 			{ message: "An internal server error occurred." },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

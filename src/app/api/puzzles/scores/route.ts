@@ -8,9 +8,9 @@ import { authOptions } from "../../../../lib/auth";
 import { getPuzzleLabel, isBetterPuzzleScore } from "../../../../lib/puzzles";
 import { createNotifications, recordActivityEvent } from "../../../../lib/social";
 import {
-    getFirstZodErrorMessage,
-    puzzleScoreBodySchema,
-    puzzleScoreQuerySchema,
+	getFirstZodErrorMessage,
+	puzzleScoreBodySchema,
+	puzzleScoreQuerySchema,
 } from "../../../../lib/validation";
 
 export async function GET(req: Request) {
@@ -25,7 +25,7 @@ export async function GET(req: Request) {
 					bestByPuzzle: {},
 					recentScores: [],
 				},
-				{ status: 200 },
+				{ status: 200 }
 			);
 		}
 
@@ -39,7 +39,7 @@ export async function GET(req: Request) {
 		if (!parsed.success) {
 			return NextResponse.json(
 				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -58,17 +58,17 @@ export async function GET(req: Request) {
 					})
 					.from(puzzleScores)
 					.where(
-						and(eq(puzzleScores.userId, userId), eq(puzzleScores.puzzleType, puzzleType)),
+						and(eq(puzzleScores.userId, userId), eq(puzzleScores.puzzleType, puzzleType))
 					)
 					.orderBy(
 						asc(puzzleScores.moves),
 						asc(puzzleScores.durationMs),
-						desc(puzzleScores.createdAt),
+						desc(puzzleScores.createdAt)
 					)
 					.limit(1);
 
 				return rows[0] ?? null;
-			}),
+			})
 		);
 
 		const recentScores = await db
@@ -84,9 +84,9 @@ export async function GET(req: Request) {
 				selectedPuzzle
 					? and(
 							eq(puzzleScores.userId, userId),
-							eq(puzzleScores.puzzleType, selectedPuzzle),
+							eq(puzzleScores.puzzleType, selectedPuzzle)
 						)
-					: eq(puzzleScores.userId, userId),
+					: eq(puzzleScores.userId, userId)
 			)
 			.orderBy(desc(puzzleScores.createdAt))
 			.limit(10);
@@ -102,13 +102,13 @@ export async function GET(req: Request) {
 				}, {}),
 				recentScores,
 			},
-			{ status: 200 },
+			{ status: 200 }
 		);
 	} catch (error) {
 		console.error("Error fetching puzzle scores:", error);
 		return NextResponse.json(
 			{ message: "An internal server error occurred." },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }
@@ -138,7 +138,7 @@ export async function POST(req: Request) {
 		if (!parsed.success) {
 			return NextResponse.json(
 				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -148,7 +148,7 @@ export async function POST(req: Request) {
 			.select({ moves: puzzleScores.moves, durationMs: puzzleScores.durationMs })
 			.from(puzzleScores)
 			.where(
-				and(eq(puzzleScores.userId, userId), eq(puzzleScores.puzzleType, puzzleType)),
+				and(eq(puzzleScores.userId, userId), eq(puzzleScores.puzzleType, puzzleType))
 			)
 			.orderBy(asc(puzzleScores.moves), asc(puzzleScores.durationMs))
 			.limit(1);
@@ -163,7 +163,7 @@ export async function POST(req: Request) {
 					personalBest: false,
 					saved: false,
 				},
-				{ status: 200 },
+				{ status: 200 }
 			);
 		}
 
@@ -199,13 +199,13 @@ export async function POST(req: Request) {
 				personalBest: true,
 				saved: true,
 			},
-			{ status: 201 },
+			{ status: 201 }
 		);
 	} catch (error) {
 		console.error("Error saving puzzle score:", error);
 		return NextResponse.json(
 			{ message: "An internal server error occurred." },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

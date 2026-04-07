@@ -1,9 +1,9 @@
 import cosmeticsData from "../data/cosmetics.json";
 
 export interface CosmeticItem {
-    id: number;
-    name: string;
-    type: string;
+	id: number;
+	name: string;
+	type: string;
 }
 
 export type CosmeticsCategoryMap = Record<string, CosmeticItem[]>;
@@ -16,24 +16,24 @@ export const allCosmetics: CosmeticItem[] = Object.values(categories).flat();
 
 // An array of all unique cosmetic types
 export const allTypes: string[] = Array.from(
-    new Set(allCosmetics.map((c) => c.type)),
+	new Set(allCosmetics.map((c) => c.type))
 ).sort();
 
 /**
  * Returns the category name for a given cosmetic ID.
  */
 export function getCategoryForCosmetic(id: number): string | null {
-    for (const [category, items] of Object.entries(categories)) {
-        if (items.some((item) => item.id === id)) {
-            return category;
-        }
-    }
-    return null;
+	for (const [category, items] of Object.entries(categories)) {
+		if (items.some((item) => item.id === id)) {
+			return category;
+		}
+	}
+	return null;
 }
 
 /**
  * Finds a specific cosmetic by its ID
  */
 export function getCosmeticById(id: number): CosmeticItem | undefined {
-    return allCosmetics.find((item) => item.id === id);
+	return allCosmetics.find((item) => item.id === id);
 }

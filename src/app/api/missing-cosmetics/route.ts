@@ -5,8 +5,8 @@ import { db } from "../../../db";
 import { friendRequests, userCosmetics, users } from "../../../db/schema";
 import { authOptions } from "../../../lib/auth";
 import {
-    getFirstZodErrorMessage,
-    missingCosmeticsQuerySchema,
+	getFirstZodErrorMessage,
+	missingCosmeticsQuerySchema,
 } from "../../../lib/validation";
 
 export async function GET(req: Request) {
@@ -26,7 +26,7 @@ export async function GET(req: Request) {
 		if (!parsedQuery.success) {
 			return NextResponse.json(
 				{ message: getFirstZodErrorMessage(parsedQuery.error) },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -40,12 +40,12 @@ export async function GET(req: Request) {
 			.where(
 				and(
 					eq(friendRequests.status, "accepted"),
-					or(eq(friendRequests.senderId, userId), eq(friendRequests.receiverId, userId)),
-				),
+					or(eq(friendRequests.senderId, userId), eq(friendRequests.receiverId, userId))
+				)
 			);
 
 		const friendIds = friendsList.map((f) =>
-			f.senderId === userId ? f.receiverId : f.senderId,
+			f.senderId === userId ? f.receiverId : f.senderId
 		);
 
 		if (friendIds.length === 0) {
@@ -59,8 +59,8 @@ export async function GET(req: Request) {
 			.where(
 				and(
 					eq(userCosmetics.cosmeticId, cosmeticId),
-					inArray(userCosmetics.userId, friendIds),
-				),
+					inArray(userCosmetics.userId, friendIds)
+				)
 			);
 
 		const friendIdsWithCosmetic = new Set(friendsWithCosmetic.map((f) => f.userId));
@@ -87,7 +87,7 @@ export async function GET(req: Request) {
 		console.error("Error fetching missing cosmetics for friends:", error);
 		return NextResponse.json(
 			{ message: "An internal server error occurred." },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

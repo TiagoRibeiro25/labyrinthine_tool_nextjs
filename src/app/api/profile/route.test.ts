@@ -33,7 +33,7 @@ describe("profile route", () => {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ bio: "x" }),
-			}),
+			})
 		);
 
 		expect(response.status).toBe(401);
@@ -46,7 +46,7 @@ describe("profile route", () => {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: "{bad-json",
-			}),
+			})
 		);
 
 		expect(response.status).toBe(400);
@@ -59,7 +59,7 @@ describe("profile route", () => {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ steamProfileUrl: "https://not-steam" }),
-			}),
+			})
 		);
 
 		expect(response.status).toBe(400);
@@ -87,7 +87,7 @@ describe("profile route", () => {
 					profileBannerId: "chap1",
 					favoriteCosmeticId: 12,
 				}),
-			}),
+			})
 		);
 		const payload = (await response.json()) as { message: string };
 
@@ -102,7 +102,7 @@ describe("profile route", () => {
 				profilePictureId: "1",
 				profileBannerId: "chap1",
 				favoriteCosmeticId: 12,
-			}),
+			})
 		);
 	});
 
@@ -121,7 +121,7 @@ describe("profile route", () => {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ bio: "ok" }),
-			}),
+			})
 		);
 
 		expect(response.status).toBe(500);

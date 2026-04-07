@@ -75,13 +75,13 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 				or(
 					and(
 						eq(friendRequests.senderId, currentUserId),
-						eq(friendRequests.receiverId, targetUser.id),
+						eq(friendRequests.receiverId, targetUser.id)
 					),
 					and(
 						eq(friendRequests.senderId, targetUser.id),
-						eq(friendRequests.receiverId, currentUserId),
-					),
-				),
+						eq(friendRequests.receiverId, currentUserId)
+					)
+				)
 			)
 			.limit(1);
 
@@ -107,10 +107,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 			and(
 				or(
 					eq(friendRequests.senderId, targetUser.id),
-					eq(friendRequests.receiverId, targetUser.id),
+					eq(friendRequests.receiverId, targetUser.id)
 				),
-				eq(friendRequests.status, "accepted"),
-			),
+				eq(friendRequests.status, "accepted")
+			)
 		);
 	const friendsCount = friendsResult.length;
 
@@ -128,8 +128,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 			.where(
 				and(
 					eq(puzzleScores.userId, targetUser.id),
-					eq(puzzleScores.puzzleType, "lights-out"),
-				),
+					eq(puzzleScores.puzzleType, "lights-out")
+				)
 			)
 			.orderBy(asc(puzzleScores.durationMs), asc(puzzleScores.moves))
 			.limit(1),
@@ -139,8 +139,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 			.where(
 				and(
 					eq(puzzleScores.userId, targetUser.id),
-					eq(puzzleScores.puzzleType, "slider-puzzle"),
-				),
+					eq(puzzleScores.puzzleType, "slider-puzzle")
+				)
 			)
 			.orderBy(asc(puzzleScores.durationMs), asc(puzzleScores.moves))
 			.limit(1),
@@ -150,17 +150,17 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 	const sliderPuzzleBest = sliderPuzzleBestResult[0] ?? null;
 
 	const unlockedCosmeticIds = new Set(
-		unlockedCosmeticsResult.map((row) => row.cosmeticId),
+		unlockedCosmeticsResult.map((row) => row.cosmeticId)
 	);
 	const totalCosmeticsCount = allCosmetics.length;
 	const categoryEntries = Object.entries(categories);
 	const completedCategoryCount = categoryEntries.filter(([, items]) =>
-		items.every((item) => unlockedCosmeticIds.has(item.id)),
+		items.every((item) => unlockedCosmeticIds.has(item.id))
 	).length;
 	const totalCategoryCount = categoryEntries.length;
 	const bestDurationMs = Math.min(
 		lightsOutBest?.durationMs ?? Number.POSITIVE_INFINITY,
-		sliderPuzzleBest?.durationMs ?? Number.POSITIVE_INFINITY,
+		sliderPuzzleBest?.durationMs ?? Number.POSITIVE_INFINITY
 	);
 
 	const achievements = [
@@ -242,7 +242,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 	];
 
 	const unlockedAchievementsCount = achievements.filter(
-		(achievement) => achievement.unlocked,
+		(achievement) => achievement.unlocked
 	).length;
 
 	return (

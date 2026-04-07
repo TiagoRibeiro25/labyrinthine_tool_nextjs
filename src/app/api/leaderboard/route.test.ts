@@ -52,7 +52,7 @@ describe("leaderboard route", () => {
 			.mockImplementationOnce(() => rowsChain);
 
 		const response = await GET(
-			new Request("http://localhost/api/leaderboard?page=1&limit=20"),
+			new Request("http://localhost/api/leaderboard?page=1&limit=20")
 		);
 		const payload = (await response.json()) as {
 			data: Array<{ id: string }>;
@@ -72,7 +72,7 @@ describe("leaderboard route", () => {
 		mockedDb.select.mockImplementationOnce(() => totalChain);
 
 		const response = await GET(
-			new Request("http://localhost/api/leaderboard?page=1&limit=20"),
+			new Request("http://localhost/api/leaderboard?page=1&limit=20")
 		);
 		expect(response.status).toBe(500);
 	});

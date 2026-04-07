@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import {
-    currentTimeMs,
-    formatDuration,
-    getPuzzleLabel,
-    isBetterPuzzleScore,
+	currentTimeMs,
+	formatDuration,
+	getPuzzleLabel,
+	isBetterPuzzleScore,
 } from "./puzzles";
 
 describe("puzzle utilities", () => {
@@ -25,26 +25,26 @@ describe("puzzle utilities", () => {
 		expect(
 			isBetterPuzzleScore(
 				{ moves: 12, durationMs: 9000 },
-				{ moves: 11, durationMs: 9500 },
-			),
+				{ moves: 11, durationMs: 9500 }
+			)
 		).toBe(true);
 		expect(
 			isBetterPuzzleScore(
 				{ moves: 12, durationMs: 9000 },
-				{ moves: 12, durationMs: 8500 },
-			),
+				{ moves: 12, durationMs: 8500 }
+			)
 		).toBe(true);
 		expect(
 			isBetterPuzzleScore(
 				{ moves: 12, durationMs: 9000 },
-				{ moves: 12, durationMs: 9000 },
-			),
+				{ moves: 12, durationMs: 9000 }
+			)
 		).toBe(false);
 		expect(
 			isBetterPuzzleScore(
 				{ moves: 12, durationMs: 9000 },
-				{ moves: 13, durationMs: 8000 },
-			),
+				{ moves: 13, durationMs: 8000 }
+			)
 		).toBe(false);
 	});
 

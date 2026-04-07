@@ -43,14 +43,14 @@ describe("missing cosmetics route", () => {
 	it("returns 401 for unauthenticated requests", async () => {
 		mockedGetServerSession.mockResolvedValue(null);
 		const response = await GET(
-			new Request("http://localhost/api/missing-cosmetics?cosmeticId=1"),
+			new Request("http://localhost/api/missing-cosmetics?cosmeticId=1")
 		);
 		expect(response.status).toBe(401);
 	});
 
 	it("returns 400 for invalid query", async () => {
 		const response = await GET(
-			new Request("http://localhost/api/missing-cosmetics?cosmeticId=-1"),
+			new Request("http://localhost/api/missing-cosmetics?cosmeticId=-1")
 		);
 		expect(response.status).toBe(400);
 	});
@@ -58,7 +58,7 @@ describe("missing cosmetics route", () => {
 	it("returns empty array when user has no accepted friends", async () => {
 		queueWhereResults([]);
 		const response = await GET(
-			new Request("http://localhost/api/missing-cosmetics?cosmeticId=1"),
+			new Request("http://localhost/api/missing-cosmetics?cosmeticId=1")
 		);
 		const payload = (await response.json()) as unknown[];
 		expect(response.status).toBe(200);
@@ -71,10 +71,10 @@ describe("missing cosmetics route", () => {
 				{ senderId: "u1", receiverId: "f1", status: "accepted" },
 				{ senderId: "f2", receiverId: "u1", status: "accepted" },
 			],
-			[{ userId: "f1" }, { userId: "f2" }],
+			[{ userId: "f1" }, { userId: "f2" }]
 		);
 		const response = await GET(
-			new Request("http://localhost/api/missing-cosmetics?cosmeticId=1"),
+			new Request("http://localhost/api/missing-cosmetics?cosmeticId=1")
 		);
 		const payload = (await response.json()) as unknown[];
 		expect(response.status).toBe(200);
@@ -88,10 +88,10 @@ describe("missing cosmetics route", () => {
 				{ senderId: "f2", receiverId: "u1", status: "accepted" },
 			],
 			[{ userId: "f2" }],
-			[{ id: "f1", username: "friend-one", profilePictureId: "1" }],
+			[{ id: "f1", username: "friend-one", profilePictureId: "1" }]
 		);
 		const response = await GET(
-			new Request("http://localhost/api/missing-cosmetics?cosmeticId=1"),
+			new Request("http://localhost/api/missing-cosmetics?cosmeticId=1")
 		);
 		const payload = (await response.json()) as Array<{ id: string; username: string }>;
 		expect(response.status).toBe(200);

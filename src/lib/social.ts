@@ -11,8 +11,8 @@ export async function getAcceptedFriendIds(userId: string): Promise<string[]> {
 		.where(
 			and(
 				eq(friendRequests.status, "accepted"),
-				or(eq(friendRequests.senderId, userId), eq(friendRequests.receiverId, userId)),
-			),
+				or(eq(friendRequests.senderId, userId), eq(friendRequests.receiverId, userId))
+			)
 		);
 
 	return rows.map((row) => (row.senderId === userId ? row.receiverId : row.senderId));
@@ -62,7 +62,7 @@ export async function createNotifications(items: NotificationInput[]) {
 			title: item.title,
 			message: item.message,
 			href: item.href ?? null,
-		})),
+		}))
 	);
 
 	emitRealtimeHint({

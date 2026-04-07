@@ -65,7 +65,7 @@ export default function ActivityPage() {
 
 			handleRealtimeUpdate();
 		},
-		[handleRealtimeUpdate],
+		[handleRealtimeUpdate]
 	);
 
 	const { status: realtimeStatus, reconnect: reconnectRealtime } = useRealtimeStream({

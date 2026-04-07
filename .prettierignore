@@ -1,0 +1,17 @@
+/node_modules
+/drizzle
+/.next
+/dist
+/out
+/build
+/coverage
+/.turbo
+/.vscode
+/.idea
+/.eslintcache
+/.prettiercache
+/.env
+/.env.local
+/.env.development
+/.env.production
+/.env.test

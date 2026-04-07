@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 				{
 					message: "Too many registration attempts. Please try again later.",
 				},
-				{ status: 429, headers: toRateLimitHeaders(ipLimit) },
+				{ status: 429, headers: toRateLimitHeaders(ipLimit) }
 			);
 		}
 
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 		} catch {
 			return NextResponse.json(
 				{ message: "Invalid JSON body." },
-				{ status: 400, headers: toRateLimitHeaders(ipLimit) },
+				{ status: 400, headers: toRateLimitHeaders(ipLimit) }
 			);
 		}
 
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 		if (!parsed.success) {
 			return NextResponse.json(
 				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400, headers: toRateLimitHeaders(ipLimit) },
+				{ status: 400, headers: toRateLimitHeaders(ipLimit) }
 			);
 		}
 
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 				{
 					message: "Too many attempts for this username. Please try again later.",
 				},
-				{ status: 429, headers: toRateLimitHeaders(usernameLimit) },
+				{ status: 429, headers: toRateLimitHeaders(usernameLimit) }
 			);
 		}
 
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
 		if (existingUserResult.length > 0) {
 			return NextResponse.json(
 				{ message: "A user with this username already exists." },
-				{ status: 409, headers: toRateLimitHeaders(ipLimit) },
+				{ status: 409, headers: toRateLimitHeaders(ipLimit) }
 			);
 		}
 
@@ -86,13 +86,13 @@ export async function POST(req: Request) {
 
 		return NextResponse.json(
 			{ message: "User registered successfully." },
-			{ status: 201, headers: toRateLimitHeaders(ipLimit) },
+			{ status: 201, headers: toRateLimitHeaders(ipLimit) }
 		);
 	} catch (error) {
 		console.error("Error during registration:", error);
 		return NextResponse.json(
 			{ message: "An internal server error occurred." },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

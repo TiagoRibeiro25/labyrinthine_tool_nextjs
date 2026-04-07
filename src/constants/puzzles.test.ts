@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
-    DEFAULT_PUZZLE_TYPE,
-    PUZZLE_LABELS,
-    PUZZLE_SCORE_API_PATH,
-    PUZZLE_TIMER_TICK_MS,
-    PUZZLE_TYPES,
-    PUZZLE_TYPE_VALUES,
+	DEFAULT_PUZZLE_TYPE,
+	PUZZLE_LABELS,
+	PUZZLE_SCORE_API_PATH,
+	PUZZLE_TIMER_TICK_MS,
+	PUZZLE_TYPES,
+	PUZZLE_TYPE_VALUES,
 } from "./puzzles";
 
 describe("puzzle constants", () => {

@@ -90,7 +90,7 @@ describe("friends route", () => {
 	it("returns 401 when unauthenticated", async () => {
 		mockedGetServerSession.mockResolvedValue(null);
 		const response = await POST(
-			requestWithBody({ action: "add", receiverUsername: "x" }),
+			requestWithBody({ action: "add", receiverUsername: "x" })
 		);
 		expect(response.status).toBe(401);
 	});
@@ -117,7 +117,7 @@ describe("friends route", () => {
 		});
 
 		const response = await POST(
-			requestWithBody({ action: "add", receiverUsername: "x" }),
+			requestWithBody({ action: "add", receiverUsername: "x" })
 		);
 		expect(response.status).toBe(429);
 	});
@@ -126,7 +126,7 @@ describe("friends route", () => {
 		queueSelectResults([{ username: "me" }], [{ id: "u1", username: "me" }]);
 
 		const response = await POST(
-			requestWithBody({ action: "add", receiverUsername: "me" }),
+			requestWithBody({ action: "add", receiverUsername: "me" })
 		);
 		expect(response.status).toBe(400);
 	});
@@ -137,7 +137,7 @@ describe("friends route", () => {
 		mockedDb.insert.mockReturnValue({ values: insertValues });
 
 		const response = await POST(
-			requestWithBody({ action: "add", receiverUsername: "friend" }),
+			requestWithBody({ action: "add", receiverUsername: "friend" })
 		);
 		const payload = (await response.json()) as { message: string };
 
@@ -148,7 +148,7 @@ describe("friends route", () => {
 				senderId: "u1",
 				receiverId: "u2",
 				status: "pending",
-			}),
+			})
 		);
 		expect(mockedCreateNotifications).toHaveBeenCalledTimes(1);
 	});
@@ -156,7 +156,7 @@ describe("friends route", () => {
 	it("accepts friend request and notifies sender", async () => {
 		queueSelectResults(
 			[{ username: "receiver" }],
-			[{ id: "req1", senderId: "u2", receiverId: "u1", status: "pending" }],
+			[{ id: "req1", senderId: "u2", receiverId: "u1", status: "pending" }]
 		);
 		const where = vi.fn().mockResolvedValue(undefined);
 		const set = vi.fn().mockReturnValue({ where });
@@ -166,7 +166,7 @@ describe("friends route", () => {
 			requestWithBody({
 				action: "accept",
 				requestId: "11111111-1111-1111-1111-111111111111",
-			}),
+			})
 		);
 
 		expect(response.status).toBe(200);
@@ -178,7 +178,7 @@ describe("friends route", () => {
 		queueSelectResults([{ username: "me" }], []);
 
 		const response = await POST(
-			requestWithBody({ action: "remove", receiverUsername: "ghost" }),
+			requestWithBody({ action: "remove", receiverUsername: "ghost" })
 		);
 		expect(response.status).toBe(404);
 	});

@@ -88,7 +88,7 @@ describe("notifications route", () => {
 			.mockImplementationOnce(() => unreadChain);
 
 		const response = await GET(
-			new Request("http://localhost/api/notifications?page=1&limit=10"),
+			new Request("http://localhost/api/notifications?page=1&limit=10")
 		);
 		const payload = (await response.json()) as {
 			data: Array<{ actor: { username: string } | null }>;
@@ -111,7 +111,7 @@ describe("notifications route", () => {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ markAll: true }),
-			}),
+			})
 		);
 		expect(response.status).toBe(401);
 	});
@@ -126,7 +126,7 @@ describe("notifications route", () => {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ markAll: true }),
-			}),
+			})
 		);
 		expect(response.status).toBe(200);
 		expect(set).toHaveBeenCalled();
@@ -142,7 +142,7 @@ describe("notifications route", () => {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ notificationId: "11111111-1111-1111-1111-111111111111" }),
-			}),
+			})
 		);
 		expect(response.status).toBe(200);
 		expect(set).toHaveBeenCalled();

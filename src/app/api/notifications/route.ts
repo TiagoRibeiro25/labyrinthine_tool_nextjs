@@ -7,9 +7,9 @@ import { notifications, users } from "../../../db/schema";
 import { authOptions } from "../../../lib/auth";
 import { emitRealtimeHint } from "../../../lib/realtime";
 import {
-    getFirstZodErrorMessage,
-    notificationsMarkReadBodySchema,
-    notificationsQuerySchema,
+	getFirstZodErrorMessage,
+	notificationsMarkReadBodySchema,
+	notificationsQuerySchema,
 } from "../../../lib/validation";
 
 export async function GET(req: Request) {
@@ -31,7 +31,7 @@ export async function GET(req: Request) {
 		if (!parsed.success) {
 			return NextResponse.json(
 				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -74,7 +74,7 @@ export async function GET(req: Request) {
 				...rows
 					.map((row) => row.actorUserId)
 					.filter((value): value is string => Boolean(value)),
-			]),
+			])
 		);
 
 		const userRows = userIds.length
@@ -95,7 +95,7 @@ export async function GET(req: Request) {
 			.select({ count: sql<number>`count(*)`.mapWith(Number) })
 			.from(notifications)
 			.where(
-				and(eq(notifications.userId, sessionUser.id), eq(notifications.isRead, false)),
+				and(eq(notifications.userId, sessionUser.id), eq(notifications.isRead, false))
 			);
 
 		return NextResponse.json(
@@ -133,13 +133,13 @@ export async function GET(req: Request) {
 					hasPreviousPage: safePage > 1,
 				},
 			},
-			{ status: 200 },
+			{ status: 200 }
 		);
 	} catch (error) {
 		console.error("Error fetching notifications:", error);
 		return NextResponse.json(
 			{ message: "An internal server error occurred." },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }
@@ -165,7 +165,7 @@ export async function PATCH(req: Request) {
 		if (!parsed.success) {
 			return NextResponse.json(
 				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -176,7 +176,7 @@ export async function PATCH(req: Request) {
 				.update(notifications)
 				.set({ isRead: true, readAt: new Date() })
 				.where(
-					and(eq(notifications.userId, sessionUser.id), eq(notifications.isRead, false)),
+					and(eq(notifications.userId, sessionUser.id), eq(notifications.isRead, false))
 				);
 
 			emitRealtimeHint({
@@ -186,14 +186,14 @@ export async function PATCH(req: Request) {
 
 			return NextResponse.json(
 				{ message: "All notifications marked as read." },
-				{ status: 200 },
+				{ status: 200 }
 			);
 		}
 
 		if (!notificationId) {
 			return NextResponse.json(
 				{ message: "Notification ID is required." },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -203,8 +203,8 @@ export async function PATCH(req: Request) {
 			.where(
 				and(
 					eq(notifications.id, notificationId),
-					eq(notifications.userId, sessionUser.id),
-				),
+					eq(notifications.userId, sessionUser.id)
+				)
 			);
 
 		emitRealtimeHint({
@@ -214,13 +214,13 @@ export async function PATCH(req: Request) {
 
 		return NextResponse.json(
 			{ message: "Notification marked as read." },
-			{ status: 200 },
+			{ status: 200 }
 		);
 	} catch (error) {
 		console.error("Error updating notifications:", error);
 		return NextResponse.json(
 			{ message: "An internal server error occurred." },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

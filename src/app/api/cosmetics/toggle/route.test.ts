@@ -26,9 +26,9 @@ import { getServerSession } from "next-auth";
 import { db } from "../../../../db";
 import { getCosmeticById } from "../../../../lib/cosmetics";
 import {
-    createNotifications,
-    getAcceptedFriendIds,
-    recordActivityEvent,
+	createNotifications,
+	getAcceptedFriendIds,
+	recordActivityEvent,
 } from "../../../../lib/social";
 import { POST } from "./route";
 
@@ -106,7 +106,7 @@ describe("cosmetics toggle route", () => {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: "{bad-json",
-			}),
+			})
 		);
 		expect(response.status).toBe(400);
 	});
@@ -114,7 +114,7 @@ describe("cosmetics toggle route", () => {
 	it("bulk unlock inserts only missing cosmetics and emits activity", async () => {
 		queueSelects(
 			{ rows: [{ username: "me" }], withLimit: true },
-			{ rows: [{ cosmeticId: 1 }] },
+			{ rows: [{ cosmeticId: 1 }] }
 		);
 		const insertValues = vi.fn().mockResolvedValue(undefined);
 		mockedDb.insert.mockReturnValue({ values: insertValues });
@@ -144,7 +144,7 @@ describe("cosmetics toggle route", () => {
 	it("single toggle locks when already unlocked", async () => {
 		queueSelects(
 			{ rows: [{ username: "me" }], withLimit: true },
-			{ rows: [{ id: "uc1" }], withLimit: true },
+			{ rows: [{ id: "uc1" }], withLimit: true }
 		);
 		const where = vi.fn().mockResolvedValue(undefined);
 		mockedDb.delete.mockReturnValue({ where });
@@ -160,7 +160,7 @@ describe("cosmetics toggle route", () => {
 	it("single toggle unlocks when missing and emits activity/notifications", async () => {
 		queueSelects(
 			{ rows: [{ username: "me" }], withLimit: true },
-			{ rows: [], withLimit: true },
+			{ rows: [], withLimit: true }
 		);
 		const insertValues = vi.fn().mockResolvedValue(undefined);
 		mockedDb.insert.mockReturnValue({ values: insertValues });

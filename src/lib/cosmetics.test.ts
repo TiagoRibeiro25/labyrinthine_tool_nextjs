@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
-    allCosmetics,
-    allTypes,
-    categories,
-    getCategoryForCosmetic,
-    getCosmeticById,
+	allCosmetics,
+	allTypes,
+	categories,
+	getCategoryForCosmetic,
+	getCosmeticById,
 } from "./cosmetics";
 
 describe("cosmetics library", () => {

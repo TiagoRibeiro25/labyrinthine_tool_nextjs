@@ -2,8 +2,8 @@ import { sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "../../../../db";
 import {
-    getFirstZodErrorMessage,
-    puzzleLeaderboardQuerySchema,
+	getFirstZodErrorMessage,
+	puzzleLeaderboardQuerySchema,
 } from "../../../../lib/validation";
 
 type LeaderboardRow = {
@@ -27,7 +27,7 @@ export async function GET(req: Request) {
 		if (!parsedQuery.success) {
 			return NextResponse.json(
 				{ message: getFirstZodErrorMessage(parsedQuery.error) },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -99,7 +99,7 @@ export async function GET(req: Request) {
 		console.error("Error fetching puzzle leaderboard:", error);
 		return NextResponse.json(
 			{ message: "An internal server error occurred." },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

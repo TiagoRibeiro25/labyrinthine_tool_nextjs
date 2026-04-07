@@ -1,12 +1,12 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import {
-    REALTIME_STREAM_POLL_MS,
-    REALTIME_TOPICS,
-    type RealtimeActivitySnapshot,
-    type RealtimeNotificationsSnapshot,
-    type RealtimeStreamSnapshot,
-    type RealtimeTopic,
+	REALTIME_STREAM_POLL_MS,
+	REALTIME_TOPICS,
+	type RealtimeActivitySnapshot,
+	type RealtimeNotificationsSnapshot,
+	type RealtimeStreamSnapshot,
+	type RealtimeTopic,
 } from "../../../../constants/realtime";
 import { db } from "../../../../db";
 import { activityEvents, notifications } from "../../../../db/schema";
@@ -54,7 +54,7 @@ function parseTopics(req: Request): RealtimeTopicSet {
 }
 
 async function getNotificationsSnapshot(
-	userId: string,
+	userId: string
 ): Promise<RealtimeNotificationsSnapshot> {
 	const latestRows = await db
 		.select({ id: notifications.id })
@@ -110,7 +110,7 @@ async function getActivitySnapshot(userId: string): Promise<RealtimeActivitySnap
 
 async function getSnapshot(
 	userId: string,
-	topics: RealtimeTopicSet,
+	topics: RealtimeTopicSet
 ): Promise<RealtimeStreamSnapshot> {
 	const snapshot: RealtimeStreamSnapshot = {};
 
@@ -146,7 +146,7 @@ function stripSignatures(snapshot: RealtimeStreamSnapshot): RealtimeStreamSnapsh
 
 function detectChanges(
 	previous: RealtimeStreamSnapshot,
-	next: RealtimeStreamSnapshot,
+	next: RealtimeStreamSnapshot
 ): RealtimeStreamSnapshot {
 	const changed: RealtimeStreamSnapshot = {};
 

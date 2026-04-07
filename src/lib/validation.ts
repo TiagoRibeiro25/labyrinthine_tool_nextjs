@@ -12,7 +12,7 @@ export const registerBodySchema = z.object({
 		.max(32, "Username must be at most 32 characters long.")
 		.regex(
 			/^[a-zA-Z0-9_-]+$/,
-			"Username can only contain letters, numbers, underscores, and hyphens.",
+			"Username can only contain letters, numbers, underscores, and hyphens."
 		),
 	password: z
 		.string()
@@ -32,13 +32,13 @@ export const friendsActionSchema = z
 				.max(32, "Receiver username must be at most 32 characters long.")
 				.regex(
 					/^[a-zA-Z0-9_-]+$/,
-					"Receiver username can only contain letters, numbers, underscores, and hyphens.",
+					"Receiver username can only contain letters, numbers, underscores, and hyphens."
 				)
-				.optional(),
+				.optional()
 		),
 		requestId: z.preprocess(
 			(value) => (value === null ? undefined : value),
-			z.string().uuid("Invalid request ID format.").optional(),
+			z.string().uuid("Invalid request ID format.").optional()
 		),
 	})
 	.superRefine((data, ctx) => {
@@ -86,7 +86,7 @@ export const profileUpdateSchema = z.object({
 		.trim()
 		.regex(
 			steamProfileRegex,
-			"Invalid Steam Profile URL. Must be a valid steamcommunity.com link.",
+			"Invalid Steam Profile URL. Must be a valid steamcommunity.com link."
 		)
 		.optional()
 		.or(z.literal("")),
@@ -120,7 +120,7 @@ export const cosmeticsToggleBodySchema = z.union([
 				z
 					.number()
 					.int("Each cosmetic ID must be an integer.")
-					.nonnegative("Each cosmetic ID must be zero or greater."),
+					.nonnegative("Each cosmetic ID must be zero or greater.")
 			)
 			.min(1, "At least one cosmetic ID must be provided."),
 		action: z.enum(["unlock", "lock"]),
@@ -184,7 +184,7 @@ export const notificationsQuerySchema = z.object({
 		.default(30),
 	unreadOnly: z.preprocess(
 		(value) => value === true || value === "true",
-		z.boolean().default(false),
+		z.boolean().default(false)
 	),
 });
 

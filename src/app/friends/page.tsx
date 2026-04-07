@@ -31,7 +31,7 @@ export default async function FriendsPage() {
 	const allConnections = await db.query.friendRequests.findMany({
 		where: or(
 			eq(friendRequests.senderId, currentUserId),
-			eq(friendRequests.receiverId, currentUserId),
+			eq(friendRequests.receiverId, currentUserId)
 		),
 		with: {
 			sender: {

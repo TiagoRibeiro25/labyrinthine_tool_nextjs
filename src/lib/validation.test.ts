@@ -1,21 +1,20 @@
 import { describe, expect, it } from "vitest";
 import {
-    friendsActionSchema,
-    notificationsMarkReadBodySchema,
-    profileUpdateSchema,
-    puzzleLeaderboardQuerySchema,
-    puzzleScoreBodySchema,
-    registerBodySchema,
+	friendsActionSchema,
+	notificationsMarkReadBodySchema,
+	profileUpdateSchema,
+	puzzleLeaderboardQuerySchema,
+	puzzleScoreBodySchema,
+	registerBodySchema,
 } from "./validation";
 
 describe("validation schemas", () => {
 	it("validates register body", () => {
 		expect(
-			registerBodySchema.safeParse({ username: "player_1", password: "hunter22" })
-				.success,
+			registerBodySchema.safeParse({ username: "player_1", password: "hunter22" }).success
 		).toBe(true);
 		expect(registerBodySchema.safeParse({ username: "x", password: "123" }).success).toBe(
-			false,
+			false
 		);
 	});
 
@@ -23,17 +22,17 @@ describe("validation schemas", () => {
 		expect(friendsActionSchema.safeParse({ action: "add" }).success).toBe(false);
 		expect(
 			friendsActionSchema.safeParse({ action: "add", receiverUsername: "friend_1" })
-				.success,
+				.success
 		).toBe(true);
 		expect(
 			friendsActionSchema.safeParse({
 				action: "accept",
 				requestId: "11111111-1111-1111-1111-111111111111",
-			}).success,
+			}).success
 		).toBe(true);
 		expect(
 			friendsActionSchema.safeParse({ action: "remove", receiverUsername: "friend_2" })
-				.success,
+				.success
 		).toBe(true);
 	});
 
@@ -42,12 +41,12 @@ describe("validation schemas", () => {
 			profileUpdateSchema.safeParse({
 				bio: "hi",
 				steamProfileUrl: "https://steamcommunity.com/id/test-user/",
-			}).success,
+			}).success
 		).toBe(true);
 		expect(
 			profileUpdateSchema.safeParse({
 				steamProfileUrl: "https://example.com/not-steam",
-			}).success,
+			}).success
 		).toBe(false);
 	});
 
@@ -57,21 +56,21 @@ describe("validation schemas", () => {
 				puzzleType: "lights-out",
 				moves: 20,
 				durationMs: 35_000,
-			}).success,
+			}).success
 		).toBe(true);
 		expect(
 			puzzleScoreBodySchema.safeParse({
 				puzzleType: "lights-out",
 				moves: 0,
 				durationMs: 35_000,
-			}).success,
+			}).success
 		).toBe(false);
 		expect(
 			puzzleScoreBodySchema.safeParse({
 				puzzleType: "unknown",
 				moves: 10,
 				durationMs: 10_000,
-			}).success,
+			}).success
 		).toBe(false);
 	});
 
@@ -88,10 +87,10 @@ describe("validation schemas", () => {
 		expect(
 			notificationsMarkReadBodySchema.safeParse({
 				notificationId: "11111111-1111-1111-1111-111111111111",
-			}).success,
+			}).success
 		).toBe(true);
 		expect(notificationsMarkReadBodySchema.safeParse({ markAll: true }).success).toBe(
-			true,
+			true
 		);
 	});
 });

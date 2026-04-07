@@ -5,12 +5,12 @@ import { redirect } from "next/navigation";
 import { FaArrowLeft, FaShield, FaUsers } from "react-icons/fa6";
 import { db } from "../../db";
 import {
-    activityEvents,
-    friendRequests,
-    notifications,
-    puzzleScores,
-    userCosmetics,
-    users,
+	activityEvents,
+	friendRequests,
+	notifications,
+	puzzleScores,
+	userCosmetics,
+	users,
 } from "../../db/schema";
 import { authOptions } from "../../lib/auth";
 

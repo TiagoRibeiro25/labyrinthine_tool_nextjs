@@ -25,7 +25,7 @@ describe("puzzle leaderboard route", () => {
 
 	it("returns validation error for invalid query", async () => {
 		const response = await GET(
-			new Request("http://localhost/api/puzzles/leaderboard?puzzleType=bad"),
+			new Request("http://localhost/api/puzzles/leaderboard?puzzleType=bad")
 		);
 
 		expect(response.status).toBe(400);
@@ -54,8 +54,8 @@ describe("puzzle leaderboard route", () => {
 
 		const response = await GET(
 			new Request(
-				"http://localhost/api/puzzles/leaderboard?puzzleType=lights-out&page=1&limit=20",
-			),
+				"http://localhost/api/puzzles/leaderboard?puzzleType=lights-out&page=1&limit=20"
+			)
 		);
 		const payload = (await response.json()) as {
 			data: Array<{ id: string; rank: number }>;
@@ -76,7 +76,7 @@ describe("puzzle leaderboard route", () => {
 		mockedDb.execute.mockRejectedValueOnce(new Error("db exploded"));
 
 		const response = await GET(
-			new Request("http://localhost/api/puzzles/leaderboard?puzzleType=lights-out"),
+			new Request("http://localhost/api/puzzles/leaderboard?puzzleType=lights-out")
 		);
 		const payload = (await response.json()) as { message: string };
 

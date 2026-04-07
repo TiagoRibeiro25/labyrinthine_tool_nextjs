@@ -49,10 +49,10 @@ export default async function DashboardPage() {
 			and(
 				or(
 					eq(friendRequests.senderId, targetUser.id),
-					eq(friendRequests.receiverId, targetUser.id),
+					eq(friendRequests.receiverId, targetUser.id)
 				),
-				eq(friendRequests.status, "accepted"),
-			),
+				eq(friendRequests.status, "accepted")
+			)
 		);
 	const friendsCount = friendsResult.length;
 

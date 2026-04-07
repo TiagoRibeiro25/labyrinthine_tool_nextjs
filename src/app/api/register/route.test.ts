@@ -83,7 +83,7 @@ describe("register route", () => {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: "{bad-json",
-			}),
+			})
 		);
 		expect(response.status).toBe(400);
 	});
@@ -169,7 +169,7 @@ describe("register route", () => {
 				password: "hashed-password",
 				profilePictureId: "1",
 				profileBannerId: "chap1",
-			}),
+			})
 		);
 	});
 

@@ -39,7 +39,7 @@ export function getPuzzleLabel(puzzleType: string) {
 
 export function isBetterPuzzleScore(
 	previous: { moves: number; durationMs: number } | undefined,
-	current: { moves: number; durationMs: number },
+	current: { moves: number; durationMs: number }
 ) {
 	if (!previous) {
 		return true;

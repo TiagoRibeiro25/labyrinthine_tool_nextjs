@@ -32,7 +32,7 @@ export async function proxy(req: NextRequest) {
 		}
 
 		return NextResponse.redirect(
-			new URL(`/login?callbackUrl=${encodeURIComponent(from)}`, req.url),
+			new URL(`/login?callbackUrl=${encodeURIComponent(from)}`, req.url)
 		);
 	}
 

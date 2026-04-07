@@ -45,7 +45,7 @@ export async function POST(req: Request) {
 					message:
 						"Too many friend actions in a short period. Please try again in a moment.",
 				},
-				{ status: 429, headers: toRateLimitHeaders(userRateLimit) },
+				{ status: 429, headers: toRateLimitHeaders(userRateLimit) }
 			);
 		}
 
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
 		} catch {
 			return NextResponse.json(
 				{ message: "Invalid JSON body." },
-				{ status: 400, headers: toRateLimitHeaders(userRateLimit) },
+				{ status: 400, headers: toRateLimitHeaders(userRateLimit) }
 			);
 		}
 
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
 		if (!parsed.success) {
 			return NextResponse.json(
 				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400, headers: toRateLimitHeaders(userRateLimit) },
+				{ status: 400, headers: toRateLimitHeaders(userRateLimit) }
 			);
 		}
 
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
 					{
 						message: "Too many friend request attempts. Please try again later.",
 					},
-					{ status: 429, headers: toRateLimitHeaders(addRateLimit) },
+					{ status: 429, headers: toRateLimitHeaders(addRateLimit) }
 				);
 			}
 		}
@@ -92,7 +92,7 @@ export async function POST(req: Request) {
 			if (!receiverUsername) {
 				return NextResponse.json(
 					{ message: "Receiver username is required." },
-					{ status: 400 },
+					{ status: 400 }
 				);
 			}
 
@@ -112,7 +112,7 @@ export async function POST(req: Request) {
 			if (receiver.id === senderId) {
 				return NextResponse.json(
 					{ message: "You cannot add yourself as a friend." },
-					{ status: 400 },
+					{ status: 400 }
 				);
 			}
 
@@ -124,13 +124,13 @@ export async function POST(req: Request) {
 					or(
 						and(
 							eq(friendRequests.senderId, senderId),
-							eq(friendRequests.receiverId, receiver.id),
+							eq(friendRequests.receiverId, receiver.id)
 						),
 						and(
 							eq(friendRequests.senderId, receiver.id),
-							eq(friendRequests.receiverId, senderId),
-						),
-					),
+							eq(friendRequests.receiverId, senderId)
+						)
+					)
 				)
 				.limit(1);
 
@@ -139,7 +139,7 @@ export async function POST(req: Request) {
 					{
 						message: "Friend request already exists or you are already friends.",
 					},
-					{ status: 400 },
+					{ status: 400 }
 				);
 			}
 
@@ -175,7 +175,7 @@ export async function POST(req: Request) {
 				.select()
 				.from(friendRequests)
 				.where(
-					and(eq(friendRequests.id, requestId), eq(friendRequests.receiverId, senderId)),
+					and(eq(friendRequests.id, requestId), eq(friendRequests.receiverId, senderId))
 				)
 				.limit(1);
 
@@ -184,7 +184,7 @@ export async function POST(req: Request) {
 			if (!targetRequest) {
 				return NextResponse.json(
 					{ message: "Friend request not found or unauthorized." },
-					{ status: 404 },
+					{ status: 404 }
 				);
 			}
 
@@ -213,7 +213,7 @@ export async function POST(req: Request) {
 			if (!requestId && !receiverUsername) {
 				return NextResponse.json(
 					{ message: "Request ID or receiver username is required." },
-					{ status: 400 },
+					{ status: 400 }
 				);
 			}
 
@@ -239,20 +239,20 @@ export async function POST(req: Request) {
 						or(
 							and(
 								eq(friendRequests.senderId, senderId),
-								eq(friendRequests.receiverId, receiver.id),
+								eq(friendRequests.receiverId, receiver.id)
 							),
 							and(
 								eq(friendRequests.senderId, receiver.id),
-								eq(friendRequests.receiverId, senderId),
-							),
-						),
+								eq(friendRequests.receiverId, senderId)
+							)
+						)
 					)
 					.limit(1);
 
 				if (existingRequest.length === 0) {
 					return NextResponse.json(
 						{ message: "Friend request not found." },
-						{ status: 404 },
+						{ status: 404 }
 					);
 				}
 
@@ -272,9 +272,9 @@ export async function POST(req: Request) {
 						eq(friendRequests.id, targetRequestId),
 						or(
 							eq(friendRequests.senderId, senderId),
-							eq(friendRequests.receiverId, senderId),
-						),
-					),
+							eq(friendRequests.receiverId, senderId)
+						)
+					)
 				);
 
 			return NextResponse.json({ message: "Friend removed/rejected." }, { status: 200 });
@@ -285,7 +285,7 @@ export async function POST(req: Request) {
 		console.error("Error managing friends:", error);
 		return NextResponse.json(
 			{ message: "An internal server error occurred." },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }
