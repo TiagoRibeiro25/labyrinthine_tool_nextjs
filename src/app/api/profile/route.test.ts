@@ -81,7 +81,6 @@ describe("profile route", () => {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					bio: "  bio text  ",
-					discordUsername: "  user#1234  ",
 					steamProfileUrl: "https://steamcommunity.com/id/test-user/",
 					profilePictureId: "1",
 					profileBannerId: "chap1",
@@ -97,7 +96,6 @@ describe("profile route", () => {
 		expect(chain.set).toHaveBeenCalledWith(
 			expect.objectContaining({
 				bio: "bio text",
-				discordUsername: "user#1234",
 				steamProfileUrl: "https://steamcommunity.com/id/test-user/",
 				profilePictureId: "1",
 				profileBannerId: "chap1",

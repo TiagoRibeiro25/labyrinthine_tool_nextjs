@@ -6,7 +6,7 @@ export async function proxy(req: NextRequest) {
 	// Retrieve the current user's session token
 	const token = await getToken({
 		req,
-		secret: process.env.NEXTAUTH_SECRET || "labyrinthine_super_secret_dev_key",
+		secret: process.env.NEXTAUTH_SECRET!,
 	});
 
 	const isAuthPage =

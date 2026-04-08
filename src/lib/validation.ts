@@ -74,13 +74,6 @@ export const profileUpdateSchema = z.object({
 		.max(280, "Bio must be at most 280 characters long.")
 		.optional()
 		.or(z.literal("")),
-	discordUsername: z
-		.string()
-		.trim()
-		.min(2, "Discord username must be at least 2 characters long.")
-		.max(64, "Discord username must be at most 64 characters long.")
-		.optional()
-		.or(z.literal("")),
 	steamProfileUrl: z
 		.string()
 		.trim()

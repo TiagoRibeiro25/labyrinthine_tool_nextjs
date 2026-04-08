@@ -34,7 +34,6 @@ export async function PUT(req: Request) {
 			);
 		}
 
-		const discordUsername = parsed.data.discordUsername?.trim() || null;
 		const steamProfileUrl = parsed.data.steamProfileUrl?.trim() || null;
 		const profilePictureId = parsed.data.profilePictureId?.trim() || null;
 		const profileBannerId = parsed.data.profileBannerId?.trim() || null;
@@ -45,7 +44,6 @@ export async function PUT(req: Request) {
 			.update(users)
 			.set({
 				bio,
-				discordUsername: discordUsername || null,
 				steamProfileUrl: steamProfileUrl || null,
 				profilePictureId: profilePictureId || null,
 				profileBannerId,

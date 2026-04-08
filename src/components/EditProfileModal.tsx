@@ -49,9 +49,6 @@ export default function EditProfileModal({
 		};
 	}, [isOpen]);
 
-	const [discordUsername, setDiscordUsername] = useState<string>(
-		initialData.discordUsername || ""
-	);
 	const [bio, setBio] = useState<string>(initialData.bio || "");
 	const [steamProfileUrl, setSteamProfileUrl] = useState<string>(
 		initialData.steamProfileUrl || ""
@@ -94,7 +91,6 @@ export default function EditProfileModal({
 				method: "PUT",
 				body: JSON.stringify({
 					bio,
-					discordUsername,
 					steamProfileUrl,
 					profilePictureId,
 					profileBannerId,
@@ -110,6 +106,15 @@ export default function EditProfileModal({
 				err instanceof Error ? err.message : "Failed to save profile changes.";
 			toast.error("Could not update profile", message);
 		}
+	};
+
+	const handleConnectDiscord = () => {
+		const currentPath =
+			typeof window !== "undefined"
+				? `${window.location.pathname}${window.location.search}`
+				: "/";
+		const authUrl = `/api/auth/discord/connect?returnTo=${encodeURIComponent(currentPath)}`;
+		window.location.href = authUrl;
 	};
 
 	const modalContent = (
@@ -159,15 +164,26 @@ export default function EditProfileModal({
 
 					<div className="space-y-2">
 						<label className="block text-xs font-bold text-neutral-400 uppercase tracking-widest">
-							Discord Username
+							Discord
 						</label>
-						<input
-							type="text"
-							placeholder="Survivor#1234"
-							value={discordUsername}
-							onChange={(e) => setDiscordUsername(e.target.value)}
-							className="w-full bg-neutral-900/50 border border-neutral-800 text-neutral-100 px-4 py-3 rounded-sm focus:outline-none focus:border-neutral-500 focus:bg-neutral-900 transition-all placeholder:text-neutral-700"
-						/>
+						<div className="w-full bg-neutral-900/50 border border-neutral-800 text-neutral-100 px-4 py-3 rounded-sm">
+							<p className="text-sm text-neutral-300">
+								{initialData.discordUsername
+									? `Linked as ${initialData.discordUsername}`
+									: "No Discord account linked yet."}
+							</p>
+							<p className="mt-1 text-xs text-neutral-500">
+								Connect with Discord to sync your username automatically.
+							</p>
+							<button
+								type="button"
+								onClick={handleConnectDiscord}
+								disabled={loading}
+								className="mt-3 px-4 py-2 rounded-sm bg-neutral-800 text-neutral-100 font-bold text-xs uppercase tracking-widest border border-neutral-600 hover:bg-neutral-700 hover:border-neutral-400 transition-all duration-300 disabled:opacity-50 cursor-pointer"
+							>
+								{initialData.discordUsername ? "Reconnect Discord" : "Connect Discord"}
+							</button>
+						</div>
 					</div>
 
 					<div className="space-y-2">

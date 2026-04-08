@@ -1,11 +1,11 @@
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
+import { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "../db";
 import { users } from "../db/schema";
-import { getClientIpFromHeaders } from "./request";
 import { rateLimit } from "./rate-limit";
+import { getClientIpFromHeaders } from "./request";
 
 export const authOptions: NextAuthOptions = {
 	providers: [
@@ -95,5 +95,5 @@ export const authOptions: NextAuthOptions = {
 		},
 	},
 	// Use an environment variable for production!
-	secret: process.env.NEXTAUTH_SECRET || "labyrinthine_super_secret_dev_key",
+	secret: process.env.NEXTAUTH_SECRET!,
 };
