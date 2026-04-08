@@ -42,6 +42,7 @@ const PAGE_SIZE = 25;
 export default function NotificationsPage() {
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const { data, loading, error, execute } = useApi<NotificationsResponse>();
+	const { execute: executeMarkRead } = useApi<{ message: string }>();
 	const notifications = data?.data ?? [];
 	const unreadCount = data?.unreadCount ?? 0;
 	const pagination = data?.pagination;
@@ -80,11 +81,8 @@ export default function NotificationsPage() {
 
 	const markAllRead = async () => {
 		try {
-			await fetch("/api/notifications", {
+			await executeMarkRead("/api/notifications", {
 				method: "PATCH",
-				headers: {
-					"Content-Type": "application/json",
-				},
 				body: JSON.stringify({ markAll: true }),
 			});
 			await fetchNotifications();

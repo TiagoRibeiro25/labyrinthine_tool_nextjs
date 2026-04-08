@@ -1,4 +1,14 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
+
+export class ApiError extends Error {
+	status: number;
+
+	constructor(message: string, status: number) {
+		super(message);
+		this.name = "ApiError";
+		this.status = status;
+	}
+}
 
 export function useApi<T = unknown>() {
 	const [data, setData] = useState<T | null>(null);
@@ -27,7 +37,7 @@ export function useApi<T = unknown>() {
 					// Fallback to status text if JSON parsing fails
 					errorMessage = `HTTP error! status: ${res.status}`;
 				}
-				throw new Error(errorMessage);
+				throw new ApiError(errorMessage, res.status);
 			}
 
 			// Only attempt to parse JSON if there's content

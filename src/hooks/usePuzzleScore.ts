@@ -3,12 +3,13 @@
 import { useCallback, useState } from "react";
 import { PUZZLE_SCORE_API_PATH, type PuzzleType } from "../constants/puzzles";
 import {
-	formatDuration,
-	getPuzzleLabel,
-	type PuzzleSaveState,
-	type PuzzleScore,
-	type PuzzleScoresResponse,
+    formatDuration,
+    getPuzzleLabel,
+    type PuzzleSaveState,
+    type PuzzleScore,
+    type PuzzleScoresResponse,
 } from "../lib/puzzles";
+import { ApiError, useApi } from "./useApi";
 import { useToast } from "./useToast";
 
 interface SavePuzzleScoreResponse {
@@ -20,17 +21,18 @@ export function usePuzzleScore(puzzleType: PuzzleType) {
 	const [bestScore, setBestScore] = useState<PuzzleScore | null>(null);
 	const [signedIn, setSignedIn] = useState<boolean>(true);
 	const [saveState, setSaveState] = useState<PuzzleSaveState>("idle");
+	const { execute: executeLoad } = useApi<PuzzleScoresResponse>();
+	const { execute: executeSave } = useApi<SavePuzzleScoreResponse>();
 	const toast = useToast();
 
 	const loadBestScore = useCallback(async () => {
 		try {
-			const response = await fetch(`${PUZZLE_SCORE_API_PATH}?puzzleType=${puzzleType}`);
-
-			if (!response.ok) {
+			const payload = await executeLoad(
+				`${PUZZLE_SCORE_API_PATH}?puzzleType=${puzzleType}`
+			);
+			if (!payload) {
 				return;
 			}
-
-			const payload = (await response.json()) as PuzzleScoresResponse;
 			setSignedIn(payload.signedIn);
 
 			const best = payload.bestByPuzzle?.[puzzleType];
@@ -40,18 +42,15 @@ export function usePuzzleScore(puzzleType: PuzzleType) {
 		} catch {
 			// Ignore load failures for non-essential UI.
 		}
-	}, [puzzleType]);
+	}, [executeLoad, puzzleType]);
 
 	const saveScore = useCallback(
 		async (finalMoves: number, finalDurationMs: number) => {
 			setSaveState("saving");
 
 			try {
-				const response = await fetch(PUZZLE_SCORE_API_PATH, {
+				const payload = await executeSave(PUZZLE_SCORE_API_PATH, {
 					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
 					body: JSON.stringify({
 						puzzleType,
 						moves: finalMoves,
@@ -59,18 +58,10 @@ export function usePuzzleScore(puzzleType: PuzzleType) {
 					}),
 				});
 
-				if (response.status === 401) {
-					setSignedIn(false);
-					setSaveState("signin");
-					return;
-				}
-
-				if (!response.ok) {
+				if (!payload) {
 					setSaveState("error");
 					return;
 				}
-
-				const payload = (await response.json()) as SavePuzzleScoreResponse;
 
 				if (payload.personalBest) {
 					setSaveState("saved");
@@ -87,11 +78,17 @@ export function usePuzzleScore(puzzleType: PuzzleType) {
 				}
 
 				setSaveState("not-best");
-			} catch {
+			} catch (error) {
+				if (error instanceof ApiError && error.status === 401) {
+					setSignedIn(false);
+					setSaveState("signin");
+					return;
+				}
+
 				setSaveState("error");
 			}
 		},
-		[puzzleType, toast]
+		[executeSave, puzzleType, toast]
 	);
 
 	const resetSaveState = useCallback(() => {

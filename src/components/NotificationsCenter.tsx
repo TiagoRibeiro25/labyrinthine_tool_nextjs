@@ -27,6 +27,7 @@ export default function NotificationsCenter() {
 	const [isOpen, setIsOpen] = useState(false);
 	const panelRef = useRef<HTMLDivElement>(null);
 	const { data, loading, execute } = useApi<NotificationsResponse>();
+	const { execute: executeMarkRead } = useApi<{ message: string }>();
 	const notifications = data?.data ?? [];
 	const unreadCount = data?.unreadCount ?? 0;
 
@@ -66,11 +67,8 @@ export default function NotificationsCenter() {
 
 	const markAllRead = async () => {
 		try {
-			await fetch("/api/notifications", {
+			await executeMarkRead("/api/notifications", {
 				method: "PATCH",
-				headers: {
-					"Content-Type": "application/json",
-				},
 				body: JSON.stringify({ markAll: true }),
 			});
 			await refresh();
@@ -81,11 +79,8 @@ export default function NotificationsCenter() {
 
 	const markOneRead = async (notificationId: string) => {
 		try {
-			await fetch("/api/notifications", {
+			await executeMarkRead("/api/notifications", {
 				method: "PATCH",
-				headers: {
-					"Content-Type": "application/json",
-				},
 				body: JSON.stringify({ notificationId }),
 			});
 			await refresh();

@@ -3,17 +3,18 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-	FaArrowRight,
-	FaCompass,
-	FaDoorOpen,
-	FaMagnifyingGlass,
-	FaShield,
-	FaShirt,
-	FaTrophy,
-	FaUserGroup,
-	FaWandMagicSparkles,
+    FaArrowRight,
+    FaCompass,
+    FaDoorOpen,
+    FaMagnifyingGlass,
+    FaShield,
+    FaShirt,
+    FaTrophy,
+    FaUserGroup,
+    FaWandMagicSparkles,
 } from "react-icons/fa6";
 import { useDebounce } from "use-debounce";
+import { useApi } from "../hooks/useApi";
 
 interface UserSearchResult {
 	id: string;
@@ -157,6 +158,7 @@ export default function CommandPalette() {
 
 	const [users, setUsers] = useState<UserSearchResult[]>([]);
 	const [isSearchingUsers, setIsSearchingUsers] = useState(false);
+	const { execute: executeSearch } = useApi<UserSearchResult[]>();
 
 	const [debouncedQuery] = useDebounce(query.trim(), 250);
 
@@ -212,20 +214,13 @@ export default function CommandPalette() {
 		const run = async () => {
 			setIsSearchingUsers(true);
 			try {
-				const response = await fetch(
+				const data = await executeSearch(
 					`/api/search?q=${encodeURIComponent(debouncedQuery)}`,
 					{
 						method: "GET",
 						signal: controller.signal,
 					}
 				);
-
-				if (!response.ok) {
-					setUsers([]);
-					return;
-				}
-
-				const data = (await response.json()) as UserSearchResult[];
 				setUsers(Array.isArray(data) ? data.slice(0, 6) : []);
 			} catch {
 				setUsers([]);
@@ -238,7 +233,7 @@ export default function CommandPalette() {
 
 		// If the user types a new character or closes the palette, abort the ongoing request
 		return () => controller.abort();
-	}, [debouncedQuery, isOpen]);
+	}, [debouncedQuery, executeSearch, isOpen]);
 
 	const items = useMemo<PaletteItem[]>(() => {
 		const commandItems: PaletteItem[] = filteredCommands.map((command) => ({
