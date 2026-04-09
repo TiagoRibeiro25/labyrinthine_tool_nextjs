@@ -1,117 +1,31 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import { FaArrowRotateRight } from "react-icons/fa6";
-import { PUZZLE_TIMER_TICK_MS, PUZZLE_TYPES } from "../constants/puzzles";
-import { usePuzzleScore } from "../hooks/usePuzzleScore";
-import { currentTimeMs, formatDuration } from "../lib/puzzles";
-
-const GRID_SIZE = 3;
-
-const toggleCells = (currentBoard: boolean[], index: number) => {
-	const newBoard = [...currentBoard];
-	const row = Math.floor(index / GRID_SIZE);
-	const col = index % GRID_SIZE;
-
-	// Toggle clicked cell
-	newBoard[index] = !newBoard[index];
-
-	// Toggle Top
-	if (row > 0)
-		newBoard[(row - 1) * GRID_SIZE + col] = !newBoard[(row - 1) * GRID_SIZE + col];
-	// Toggle Bottom
-	if (row < GRID_SIZE - 1)
-		newBoard[(row + 1) * GRID_SIZE + col] = !newBoard[(row + 1) * GRID_SIZE + col];
-	// Toggle Left
-	if (col > 0)
-		newBoard[row * GRID_SIZE + (col - 1)] = !newBoard[row * GRID_SIZE + (col - 1)];
-	// Toggle Right
-	if (col < GRID_SIZE - 1)
-		newBoard[row * GRID_SIZE + (col + 1)] = !newBoard[row * GRID_SIZE + (col + 1)];
-
-	return newBoard;
-};
-
-const generateBoard = () => {
-	let newBoard = Array(GRID_SIZE * GRID_SIZE).fill(true); // Start fully lit
-
-	// Apply random valid moves to scramble
-	const numMoves = 10 + Math.floor(Math.random() * 10);
-	for (let i = 0; i < numMoves; i++) {
-		const randomIdx = Math.floor(Math.random() * (GRID_SIZE * GRID_SIZE));
-		newBoard = toggleCells(newBoard, randomIdx);
-	}
-
-	// If it accidentally solved itself, do one more move
-	if (newBoard.every((cell) => cell)) {
-		newBoard = toggleCells(newBoard, Math.floor(Math.random() * (GRID_SIZE * GRID_SIZE)));
-	}
-	return newBoard;
-};
+import { useLightsOut } from "../hooks/useLightsOut";
+import { LightsOutBoard } from "./lightsOut/LightsOutBoard";
+import { LightsOutMessages } from "./lightsOut/LightsOutMessages";
+import { LightsOutStats } from "./lightsOut/LightsOutStats";
+import { lightsOutAnimationStyles } from "./lightsOut/lightsOutStyles";
 
 export default function LightsOut() {
-	const [board, setBoard] = useState<boolean[]>(() => generateBoard());
-	const [isWon, setIsWon] = useState<boolean>(false);
-	const [moves, setMoves] = useState<number>(0);
-	const [startTimeMs, setStartTimeMs] = useState<number>(() => currentTimeMs());
-	const [elapsedMs, setElapsedMs] = useState<number>(0);
-	const [tickMs, setTickMs] = useState<number>(() => currentTimeMs());
-	const { bestScore, signedIn, saveState, loadBestScore, saveScore, resetSaveState } =
-		usePuzzleScore(PUZZLE_TYPES.LIGHTS_OUT);
-
-	useEffect(() => {
-		const frameId = window.requestAnimationFrame(() => {
-			loadBestScore().catch(() => {});
-		});
-
-		return () => window.cancelAnimationFrame(frameId);
-	}, [loadBestScore]);
-
-	useEffect(() => {
-		if (isWon) {
-			return;
-		}
-
-		const intervalId = window.setInterval(() => {
-			setTickMs(currentTimeMs());
-		}, PUZZLE_TIMER_TICK_MS);
-
-		return () => {
-			window.clearInterval(intervalId);
-		};
-	}, [isWon]);
-
-	// Initialize board with random moves to ensure solvability
-	const startNewGame = useCallback(() => {
-		setBoard(generateBoard());
-		setMoves(0);
-		setIsWon(false);
-		setStartTimeMs(currentTimeMs());
-		setElapsedMs(0);
-		resetSaveState();
-	}, [resetSaveState]);
-
-	const handleCellClick = (index: number) => {
-		if (isWon) return;
-
-		const newBoard = toggleCells(board, index);
-		setBoard(newBoard);
-		const finalMoves = moves + 1;
-		setMoves(finalMoves);
-
-		// Check win condition (all lights are ON)
-		if (newBoard.every((cell) => cell)) {
-			const duration = currentTimeMs() - startTimeMs;
-			setIsWon(true);
-			setElapsedMs(duration);
-			saveScore(finalMoves, duration).catch(() => {});
-		}
-	};
-
-	const visibleDurationMs = isWon ? elapsedMs : Math.max(0, tickMs - startTimeMs);
+	const {
+		board,
+		isWon,
+		moves,
+		animatingCells,
+		bestScore,
+		signedIn,
+		saveState,
+		visibleDurationMs,
+		elapsedMs,
+		handleCellClick,
+		startNewGame,
+	} = useLightsOut();
 
 	return (
 		<div className="flex flex-col items-center justify-center p-6 bg-black/40 border border-neutral-800 rounded-lg shadow-2xl backdrop-blur-md max-w-lg w-full">
+			<style>{lightsOutAnimationStyles}</style>
+
 			<h2 className="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-linear-to-b from-neutral-200 to-neutral-500 uppercase mb-6">
 				Lights Out
 			</h2>
@@ -120,87 +34,34 @@ export default function LightsOut() {
 				Click a square to toggle it and its adjacent squares. Goal: Light up all squares!
 			</p>
 
-			<div className="mb-6 text-neutral-300 font-mono text-lg flex justify-between w-full max-w-62.5">
-				<span>
-					Moves: <span className="text-white font-bold">{moves}</span>
-				</span>
-				<span>
-					Time:{" "}
-					<span className="text-white font-bold">
-						{formatDuration(visibleDurationMs)}
-					</span>
-				</span>
-			</div>
+			<LightsOutStats
+				moves={moves}
+				visibleDurationMs={visibleDurationMs}
+				bestScore={bestScore}
+			/>
 
-			<div className="mb-6 text-[11px] text-neutral-500 font-bold uppercase tracking-widest w-full max-w-62.5 flex justify-between">
-				<span>Best</span>
-				<span>{bestScore ? `${bestScore.moves} moves` : "--"}</span>
-			</div>
-
-			<div className="grid grid-cols-3 gap-2 sm:gap-3 mb-8 w-full max-w-75 aspect-square">
-				{board.map((isLit, index) => (
-					<button
-						key={index}
-						onClick={() => handleCellClick(index)}
-						disabled={isWon}
-						className={`w-full h-full rounded-md shadow-inner transition-all duration-300 transform active:scale-95 ${
-							isLit
-								? "bg-amber-300 shadow-[0_0_15px_rgba(252,211,77,0.6)] border-2 border-amber-100"
-								: "bg-neutral-900 border-2 border-neutral-800 hover:bg-neutral-800"
-						}`}
-						aria-label={`Toggle cell ${index}`}
-					/>
-				))}
-			</div>
-
-			{isWon && (
-				<div className="mb-6 p-4 bg-green-900/40 border border-green-500/50 rounded-md text-center animate-pulse">
-					<p className="text-green-400 font-bold text-xl tracking-widest uppercase">
-						Puzzle Solved!
-					</p>
-					<p className="text-green-300 text-xs mt-2 font-bold uppercase tracking-widest">
-						{moves} moves in {formatDuration(elapsedMs)}
-					</p>
-				</div>
-			)}
+			<LightsOutBoard
+				board={board}
+				animatingCells={animatingCells}
+				isWon={isWon}
+				onCellClick={handleCellClick}
+			/>
 
 			<button
 				onClick={startNewGame}
-				className="group flex items-center justify-center gap-3 px-8 py-3 rounded-sm bg-neutral-900 text-neutral-100 font-bold text-sm uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:-translate-y-1 active:translate-y-0"
+				className="group flex items-center justify-center gap-3 px-8 py-3 rounded-lg bg-neutral-900 text-neutral-100 font-bold text-sm uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] hover:-translate-y-1 active:translate-y-0 mb-6"
 			>
 				<FaArrowRotateRight className="group-hover:rotate-180 transition-transform duration-500" />
 				{isWon ? "Play Again" : "Reset Puzzle"}
 			</button>
 
-			{isWon && saveState === "saved" && (
-				<p className="mt-4 text-[10px] uppercase tracking-widest font-bold text-emerald-500">
-					Personal best saved to your profile.
-				</p>
-			)}
-
-			{isWon && saveState === "not-best" && (
-				<p className="mt-4 text-[10px] uppercase tracking-widest font-bold text-neutral-500">
-					Run completed, but it did not beat your personal best.
-				</p>
-			)}
-
-			{isWon && saveState === "signin" && (
-				<p className="mt-4 text-[10px] uppercase tracking-widest font-bold text-amber-500">
-					Sign in to save puzzle scores.
-				</p>
-			)}
-
-			{isWon && saveState === "error" && (
-				<p className="mt-4 text-[10px] uppercase tracking-widest font-bold text-red-500">
-					Could not save this run.
-				</p>
-			)}
-
-			{!signedIn && (
-				<p className="mt-2 text-[10px] uppercase tracking-widest font-bold text-neutral-600">
-					Guest mode active.
-				</p>
-			)}
+			<LightsOutMessages
+				isWon={isWon}
+				moves={moves}
+				elapsedMs={elapsedMs}
+				saveState={saveState}
+				signedIn={signedIn}
+			/>
 		</div>
 	);
 }
