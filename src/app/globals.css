@@ -3,3 +3,23 @@
 body {
 	background-color: #000;
 }
+
+/* Custom Scrollbar */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #fff transparent;
+}
+
+*::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+	background-color: #fff;
+	border-radius: 9999px;
+}
