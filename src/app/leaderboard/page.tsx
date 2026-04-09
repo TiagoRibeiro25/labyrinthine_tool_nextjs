@@ -5,11 +5,14 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaArrowLeft, FaMedal, FaTrophy } from "react-icons/fa6";
 import { useApi } from "../../hooks/useApi";
+import { getUserAvatarUrl } from "../../lib/avatar";
 
 interface LeaderboardEntry {
 	id: string;
 	username: string;
 	profilePictureId: string | null;
+	discordAvatarUrl: string | null;
+	useDiscordAvatar: boolean;
 	cosmeticsCount: number;
 }
 
@@ -137,11 +140,7 @@ export default function LeaderboardPage() {
 										{/* Profile Picture */}
 										<div className="relative w-12 h-12 shrink-0 border border-black shadow-md overflow-hidden bg-neutral-950">
 											<Image
-												src={
-													user.profilePictureId
-														? `/images/profile_pictures/${user.profilePictureId}.webp`
-														: `/images/profile_pictures/1.webp`
-												}
+												src={getUserAvatarUrl(user)}
 												alt={user.username}
 												fill
 												className="object-cover group-hover:scale-110 transition-transform duration-500"

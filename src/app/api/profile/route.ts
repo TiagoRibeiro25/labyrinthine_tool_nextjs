@@ -36,6 +36,7 @@ export async function PUT(req: Request) {
 
 		const steamProfileUrl = parsed.data.steamProfileUrl?.trim() || null;
 		const profilePictureId = parsed.data.profilePictureId?.trim() || null;
+		const useDiscordAvatar = parsed.data.useDiscordAvatar;
 		const profileBannerId = parsed.data.profileBannerId?.trim() || null;
 		const bio = parsed.data.bio?.trim() || null;
 		const favoriteCosmeticId = parsed.data.favoriteCosmeticId ?? null;
@@ -46,6 +47,7 @@ export async function PUT(req: Request) {
 				bio,
 				steamProfileUrl: steamProfileUrl || null,
 				profilePictureId: profilePictureId || null,
+				...(typeof useDiscordAvatar === "boolean" ? { useDiscordAvatar } : {}),
 				profileBannerId,
 				favoriteCosmeticId,
 				updatedAt: new Date(),

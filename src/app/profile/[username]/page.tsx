@@ -18,6 +18,7 @@ import { getBannerImageById } from "../../../data/profile-banners";
 import { db } from "../../../db";
 import { friendRequests, puzzleScores, userCosmetics, users } from "../../../db/schema";
 import { authOptions } from "../../../lib/auth";
+import { getUserAvatarUrl } from "../../../lib/avatar";
 import { allCosmetics, categories, getCosmeticById } from "../../../lib/cosmetics";
 
 interface ProfilePageProps {
@@ -55,9 +56,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 	const isOwnProfile = currentUserId === targetUser.id;
 
 	// Default profile picture logic
-	const profilePictureUrl = targetUser.profilePictureId
-		? `/images/profile_pictures/${targetUser.profilePictureId}.webp`
-		: `/images/profile_pictures/1.webp`;
+	const profilePictureUrl = getUserAvatarUrl({
+		profilePictureId: targetUser.profilePictureId,
+		discordAvatarUrl: targetUser.discordAvatarUrl,
+		useDiscordAvatar: targetUser.useDiscordAvatar,
+	});
 	const profileBannerUrl = getBannerImageById(targetUser.profileBannerId);
 	const favoriteCosmetic = targetUser.favoriteCosmeticId
 		? getCosmeticById(targetUser.favoriteCosmeticId)
@@ -282,6 +285,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 									initialData={{
 										bio: targetUser.bio,
 										discordUsername: targetUser.discordUsername,
+										discordAvatarUrl: targetUser.discordAvatarUrl,
+										useDiscordAvatar: targetUser.useDiscordAvatar,
 										steamProfileUrl: targetUser.steamProfileUrl,
 										profilePictureId: targetUser.profilePictureId,
 										profileBannerId: targetUser.profileBannerId,

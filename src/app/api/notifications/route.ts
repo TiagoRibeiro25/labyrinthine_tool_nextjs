@@ -83,6 +83,8 @@ export async function GET(req: Request) {
 						id: users.id,
 						username: users.username,
 						profilePictureId: users.profilePictureId,
+						discordAvatarUrl: users.discordAvatarUrl,
+						useDiscordAvatar: users.useDiscordAvatar,
 					})
 					.from(users)
 					.where(inArray(users.id, userIds))
@@ -119,6 +121,8 @@ export async function GET(req: Request) {
 									id: displayUser.id,
 									username: displayUser.username,
 									profilePictureId: displayUser.profilePictureId,
+									discordAvatarUrl: displayUser.discordAvatarUrl,
+									useDiscordAvatar: displayUser.useDiscordAvatar,
 								}
 							: null,
 					};

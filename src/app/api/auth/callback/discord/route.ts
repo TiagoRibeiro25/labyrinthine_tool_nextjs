@@ -13,8 +13,10 @@ interface DiscordTokenResponse {
 }
 
 interface DiscordUserResponse {
+	id: string;
 	username: string;
 	discriminator: string;
+	avatar: string | null;
 }
 
 function sanitizeReturnTo(returnTo: string | null | undefined): string {
@@ -35,6 +37,15 @@ function formatDiscordUsername(user: DiscordUserResponse): string {
 	}
 
 	return user.username;
+}
+
+function getDiscordAvatarUrl(user: DiscordUserResponse): string | null {
+	if (!user.avatar) {
+		return null;
+	}
+
+	const extension = user.avatar.startsWith("a_") ? "gif" : "png";
+	return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${extension}`;
 }
 
 function redirectWithCleanup(req: NextRequest, returnTo: string) {
@@ -119,10 +130,11 @@ export async function GET(req: NextRequest) {
 
 		const discordUser = (await userResponse.json()) as DiscordUserResponse;
 		const discordUsername = formatDiscordUsername(discordUser);
+		const discordAvatarUrl = getDiscordAvatarUrl(discordUser);
 
 		await db
 			.update(users)
-			.set({ discordUsername, updatedAt: new Date() })
+			.set({ discordUsername, discordAvatarUrl, updatedAt: new Date() })
 			.where(eq(users.id, sessionUser.id));
 	} catch (error) {
 		console.error("Discord OAuth callback failed:", error);

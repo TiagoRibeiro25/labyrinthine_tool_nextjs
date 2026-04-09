@@ -8,6 +8,7 @@ import RealtimeStatusBadge from "../../components/RealtimeStatusBadge";
 import { REALTIME_TOPICS, type RealtimeStreamSnapshot } from "../../constants/realtime";
 import { useApi } from "../../hooks/useApi";
 import { useRealtimeStream } from "../../hooks/useRealtimeStream";
+import { getUserAvatarUrl } from "../../lib/avatar";
 
 interface NotificationItem {
 	id: string;
@@ -21,6 +22,8 @@ interface NotificationItem {
 		id: string;
 		username: string;
 		profilePictureId: string | null;
+		discordAvatarUrl: string | null;
+		useDiscordAvatar: boolean;
 	} | null;
 }
 
@@ -163,11 +166,7 @@ export default function NotificationsPage() {
 								>
 									<div className="relative w-10 h-10 shrink-0 border border-black shadow-md overflow-hidden bg-neutral-950">
 										<Image
-											src={
-												notification.actor?.profilePictureId
-													? `/images/profile_pictures/${notification.actor.profilePictureId}.webp`
-													: "/images/profile_pictures/1.webp"
-											}
+											src={getUserAvatarUrl(notification.actor ?? {})}
 											alt={notification.actor?.username || "System"}
 											fill
 											className="object-cover"

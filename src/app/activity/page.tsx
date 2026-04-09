@@ -8,6 +8,7 @@ import RealtimeStatusBadge from "../../components/RealtimeStatusBadge";
 import { REALTIME_TOPICS, type RealtimeStreamSnapshot } from "../../constants/realtime";
 import { useApi } from "../../hooks/useApi";
 import { useRealtimeStream } from "../../hooks/useRealtimeStream";
+import { getUserAvatarUrl } from "../../lib/avatar";
 
 interface ActivityItem {
 	id: string;
@@ -15,6 +16,8 @@ interface ActivityItem {
 		id: string;
 		username: string;
 		profilePictureId: string | null;
+		discordAvatarUrl: string | null;
+		useDiscordAvatar: boolean;
 	};
 	title: string;
 	description: string;
@@ -137,11 +140,7 @@ export default function ActivityPage() {
 									className="relative w-11 h-11 shrink-0 border border-black shadow-md overflow-hidden bg-neutral-950"
 								>
 									<Image
-										src={
-											item.actor.profilePictureId
-												? `/images/profile_pictures/${item.actor.profilePictureId}.webp`
-												: "/images/profile_pictures/1.webp"
-										}
+										src={getUserAvatarUrl(item.actor)}
 										alt={item.actor.username}
 										fill
 										className="object-cover"

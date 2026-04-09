@@ -83,6 +83,7 @@ describe("profile route", () => {
 					bio: "  bio text  ",
 					steamProfileUrl: "https://steamcommunity.com/id/test-user/",
 					profilePictureId: "1",
+					useDiscordAvatar: true,
 					profileBannerId: "chap1",
 					favoriteCosmeticId: 12,
 				}),
@@ -98,6 +99,7 @@ describe("profile route", () => {
 				bio: "bio text",
 				steamProfileUrl: "https://steamcommunity.com/id/test-user/",
 				profilePictureId: "1",
+				useDiscordAvatar: true,
 				profileBannerId: "chap1",
 				favoriteCosmeticId: 12,
 			})

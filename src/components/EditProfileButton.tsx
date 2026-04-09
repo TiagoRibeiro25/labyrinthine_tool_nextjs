@@ -7,6 +7,8 @@ interface EditProfileButtonProps {
 	initialData: {
 		bio: string | null;
 		discordUsername: string | null;
+		discordAvatarUrl: string | null;
+		useDiscordAvatar: boolean;
 		steamProfileUrl: string | null;
 		profilePictureId: string | null;
 		profileBannerId: string | null;

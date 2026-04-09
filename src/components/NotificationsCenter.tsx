@@ -16,6 +16,13 @@ interface NotificationPreview {
 	href: string | null;
 	isRead: boolean;
 	createdAt: string;
+	actor: {
+		id: string;
+		username: string;
+		profilePictureId: string | null;
+		discordAvatarUrl: string | null;
+		useDiscordAvatar: boolean;
+	} | null;
 }
 
 interface NotificationsResponse {

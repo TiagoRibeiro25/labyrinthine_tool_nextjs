@@ -26,6 +26,8 @@ export async function GET(req: Request) {
 				id: users.id,
 				username: users.username,
 				profilePictureId: users.profilePictureId,
+				discordAvatarUrl: users.discordAvatarUrl,
+				useDiscordAvatar: users.useDiscordAvatar,
 				isAdministrator: users.isAdministrator,
 			})
 			.from(users)

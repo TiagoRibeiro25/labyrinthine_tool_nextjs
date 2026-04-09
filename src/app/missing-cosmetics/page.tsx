@@ -8,12 +8,15 @@ import { FaArrowLeft, FaMagnifyingGlass, FaShirt } from "react-icons/fa6";
 import { useDebounce } from "use-debounce";
 import { useApi } from "../../hooks/useApi";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
+import { getUserAvatarUrl } from "../../lib/avatar";
 import { allCosmetics, CosmeticItem } from "../../lib/cosmetics";
 
 interface FriendResult {
 	id: string;
 	username: string;
 	profilePictureId: string | null;
+	discordAvatarUrl: string | null;
+	useDiscordAvatar: boolean;
 }
 
 function MissingCosmeticsContent() {
@@ -187,11 +190,7 @@ function MissingCosmeticsContent() {
 									>
 										<div className="relative w-12 h-12 shrink-0 border border-black shadow-md overflow-hidden bg-neutral-950">
 											<Image
-												src={
-													friend.profilePictureId
-														? `/images/profile_pictures/${friend.profilePictureId}.webp`
-														: `/images/profile_pictures/1.webp`
-												}
+												src={getUserAvatarUrl(friend)}
 												alt={friend.username}
 												fill
 												className="object-cover group-hover:scale-110 transition-transform duration-500"

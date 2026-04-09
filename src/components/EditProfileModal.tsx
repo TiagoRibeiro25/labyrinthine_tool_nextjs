@@ -19,6 +19,8 @@ interface EditProfileModalProps {
 	initialData: {
 		bio: string | null;
 		discordUsername: string | null;
+		discordAvatarUrl: string | null;
+		useDiscordAvatar: boolean;
 		steamProfileUrl: string | null;
 		profilePictureId: string | null;
 		profileBannerId: string | null;
@@ -55,6 +57,9 @@ export default function EditProfileModal({
 	);
 	const [profilePictureId, setProfilePictureId] = useState<string>(
 		initialData.profilePictureId || "1"
+	);
+	const [useDiscordAvatar, setUseDiscordAvatar] = useState<boolean>(
+		initialData.useDiscordAvatar
 	);
 	const [profileBannerId, setProfileBannerId] = useState<string>(
 		initialData.profileBannerId || "chap1"
@@ -93,6 +98,7 @@ export default function EditProfileModal({
 					bio,
 					steamProfileUrl,
 					profilePictureId,
+					useDiscordAvatar,
 					profileBannerId,
 					favoriteCosmeticId: favoriteCosmeticId ? Number(favoriteCosmeticId) : null,
 				}),
@@ -173,8 +179,25 @@ export default function EditProfileModal({
 									: "No Discord account linked yet."}
 							</p>
 							<p className="mt-1 text-xs text-neutral-500">
-								Connect with Discord to sync your username automatically.
+								Connect with Discord to sync your username and avatar automatically.
 							</p>
+							<label className="mt-3 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-400">
+								<input
+									type="checkbox"
+									checked={useDiscordAvatar}
+									onChange={(event) => setUseDiscordAvatar(event.target.checked)}
+									disabled={
+										loading || (!initialData.discordAvatarUrl && !useDiscordAvatar)
+									}
+									className="h-4 w-4 accent-neutral-200"
+								/>
+								Use Discord avatar
+							</label>
+							{!initialData.discordAvatarUrl && (
+								<p className="mt-1 text-[10px] text-neutral-600 uppercase tracking-widest">
+									Link Discord with an avatar to enable this option.
+								</p>
+							)}
 							<button
 								type="button"
 								onClick={handleConnectDiscord}

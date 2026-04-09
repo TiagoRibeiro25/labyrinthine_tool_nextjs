@@ -23,6 +23,8 @@ export const users = pgTable(
 		bio: text("bio"),
 		favoriteCosmeticId: integer("favorite_cosmetic_id"),
 		discordUsername: text("discord_username"),
+		discordAvatarUrl: text("discord_avatar_url"),
+		useDiscordAvatar: boolean("use_discord_avatar").default(false).notNull(),
 		steamProfileUrl: text("steam_profile_url"),
 		isAdministrator: boolean("is_administrator").default(false).notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),

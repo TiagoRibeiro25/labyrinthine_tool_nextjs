@@ -10,6 +10,8 @@ type LeaderboardRow = {
 	id: string;
 	username: string;
 	profilePictureId: string | null;
+	discordAvatarUrl: string | null;
+	useDiscordAvatar: boolean;
 	moves: number;
 	durationMs: number;
 	rank: number;
@@ -65,6 +67,8 @@ export async function GET(req: Request) {
 				u.id,
 				u.username,
 				u.profile_picture_id as "profilePictureId",
+				u.discord_avatar_url as "discordAvatarUrl",
+				u.use_discord_avatar as "useDiscordAvatar",
 				r.moves,
 				r.duration_ms as "durationMs",
 				row_number() over (order by r.duration_ms asc, r.moves asc, u.username asc)::int as rank
@@ -81,6 +85,8 @@ export async function GET(req: Request) {
 				id: row.id,
 				username: row.username,
 				profilePictureId: row.profilePictureId,
+				discordAvatarUrl: row.discordAvatarUrl,
+				useDiscordAvatar: row.useDiscordAvatar,
 				moves: Number(row.moves),
 				durationMs: Number(row.durationMs),
 				rank: Number(row.rank),

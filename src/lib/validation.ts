@@ -88,6 +88,7 @@ export const profileUpdateSchema = z.object({
 		.trim()
 		.regex(/^\d+$/, "Profile picture ID must be numeric.")
 		.optional(),
+	useDiscordAvatar: z.boolean().optional(),
 	profileBannerId: z
 		.enum(["entrance", "candle", "chap1", "house", "puzzles"])
 		.optional()

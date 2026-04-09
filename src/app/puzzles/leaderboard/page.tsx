@@ -6,11 +6,14 @@ import { useEffect, useState } from "react";
 import { FaArrowLeft, FaLightbulb, FaPuzzlePiece, FaTrophy } from "react-icons/fa6";
 import { type PuzzleType } from "../../../constants/puzzles";
 import { useApi } from "../../../hooks/useApi";
+import { getUserAvatarUrl } from "../../../lib/avatar";
 
 interface PuzzleLeaderboardEntry {
 	id: string;
 	username: string;
 	profilePictureId: string | null;
+	discordAvatarUrl: string | null;
+	useDiscordAvatar: boolean;
 	moves: number;
 	durationMs: number;
 	rank: number;
@@ -146,11 +149,7 @@ export default function PuzzleLeaderboardPage() {
 								</div>
 								<div className="relative w-11 h-11 shrink-0 border border-black shadow-md overflow-hidden bg-neutral-950">
 									<Image
-										src={
-											entry.profilePictureId
-												? `/images/profile_pictures/${entry.profilePictureId}.webp`
-												: "/images/profile_pictures/1.webp"
-										}
+										src={getUserAvatarUrl(entry)}
 										alt={entry.username}
 										fill
 										className="object-cover"
