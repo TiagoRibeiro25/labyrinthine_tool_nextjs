@@ -27,7 +27,6 @@ export default async function FriendsPage() {
 	const currentUserId = sessionUser.id;
 
 	// Fetch all friend requests involving the current user
-	// Using Drizzle's relational query API for clean joins
 	const allConnections = await db.query.friendRequests.findMany({
 		where: or(
 			eq(friendRequests.senderId, currentUserId),
@@ -73,7 +72,6 @@ export default async function FriendsPage() {
 		}
 	});
 
-	// Reusable user row component
 	const UserRow = ({
 		user,
 		actions,

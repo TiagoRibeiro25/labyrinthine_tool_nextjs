@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -26,13 +26,13 @@ export default function LoginPage() {
 
 			if (res?.error) {
 				setError("Invalid username or password.");
-				setLoading(false);
 			} else {
 				router.push("/dashboard");
 				router.refresh();
 			}
 		} catch {
 			setError("An unexpected error occurred.");
+		} finally {
 			setLoading(false);
 		}
 	};
