@@ -7,8 +7,8 @@ import { FaArrowLeft, FaUserGroup } from "react-icons/fa6";
 import ManageFriendButton from "../../components/ManageFriendButton";
 import { db } from "../../db";
 import { friendRequests } from "../../db/schema";
-import { getUserAvatarUrl } from "../../lib/avatar";
 import { authOptions } from "../../lib/auth";
+import { getUserAvatarUrl } from "../../lib/avatar";
 
 type ConnectionUser = {
 	id: string;
@@ -41,8 +41,8 @@ export default async function FriendsPage() {
 					id: true,
 					username: true,
 					profilePictureId: true,
-						discordAvatarUrl: true,
-						useDiscordAvatar: true,
+					discordAvatarUrl: true,
+					useDiscordAvatar: true,
 					isAdministrator: true,
 				},
 			},
@@ -51,8 +51,8 @@ export default async function FriendsPage() {
 					id: true,
 					username: true,
 					profilePictureId: true,
-						discordAvatarUrl: true,
-						useDiscordAvatar: true,
+					discordAvatarUrl: true,
+					useDiscordAvatar: true,
 					isAdministrator: true,
 				},
 			},

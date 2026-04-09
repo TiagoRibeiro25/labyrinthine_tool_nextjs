@@ -1,7 +1,7 @@
+import { desc, eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "../../../db";
 import { userCosmetics, users } from "../../../db/schema";
-import { eq, sql, desc } from "drizzle-orm";
 import {
 	getFirstZodErrorMessage,
 	leaderboardPaginationQuerySchema,
