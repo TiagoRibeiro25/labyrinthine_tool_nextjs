@@ -1,0 +1,1 @@
+export const ADMIN_CLEANUP_RETENTION_DAYS = 30;

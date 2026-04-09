@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ADMIN_CLEANUP_RETENTION_DAYS } from "../constants/admin";
 import { DEFAULT_PUZZLE_TYPE, PUZZLE_TYPE_VALUES } from "../constants/puzzles";
 
 const steamProfileRegex =
@@ -234,9 +235,12 @@ export const adminCleanupBodySchema = z.object({
 	retentionDays: z.coerce
 		.number()
 		.int("Retention days must be an integer.")
-		.min(7, "Retention must be at least 7 days.")
+		.min(
+			ADMIN_CLEANUP_RETENTION_DAYS,
+			`Retention must be at least ${ADMIN_CLEANUP_RETENTION_DAYS} days.`
+		)
 		.max(365, "Retention cannot exceed 365 days.")
-		.default(90),
+		.default(ADMIN_CLEANUP_RETENTION_DAYS),
 });
 
 export function getFirstZodErrorMessage(error: z.ZodError): string {

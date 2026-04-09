@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FaArrowLeft, FaShield, FaUsers } from "react-icons/fa6";
+import AdminCleanupSection from "../../components/AdminCleanupSection";
 import { db } from "../../db";
 import {
 	activityEvents,
@@ -113,6 +114,8 @@ export default async function AdminPage() {
 						</div>
 					))}
 				</div>
+
+				<AdminCleanupSection />
 
 				<div className="mt-8 p-5 bg-black/50 border border-neutral-800 rounded-sm">
 					<h3 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4 border-b border-neutral-800/50 pb-2 flex items-center gap-2">
