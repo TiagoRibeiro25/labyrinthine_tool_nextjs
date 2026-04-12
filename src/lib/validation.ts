@@ -94,6 +94,10 @@ export const profileUpdateSchema = z.object({
 		.enum(["entrance", "candle", "chap1", "house", "puzzles"])
 		.optional()
 		.or(z.literal("")),
+	profileCommentVisibility: z
+		.enum(["everyone", "friends_only", "no_one"])
+		.optional(),
+	allowNonFriendProfileComments: z.boolean().optional(),
 	favoriteCosmeticId: z.preprocess((value) => {
 		if (value === "" || value === null || value === undefined) {
 			return undefined;
@@ -243,6 +247,57 @@ export const adminCleanupBodySchema = z.object({
 		.default(ADMIN_CLEANUP_RETENTION_DAYS),
 });
 
+export const profileCommentsQuerySchema = z.object({
+	page: z.coerce
+		.number()
+		.int("Page must be an integer.")
+		.min(1, "Page must be at least 1.")
+		.default(1),
+	limit: z.coerce
+		.number()
+		.int("Limit must be an integer.")
+		.min(1, "Limit must be at least 1.")
+		.max(50, "Limit cannot be greater than 50.")
+		.default(20),
+	sort: z.enum(["newest", "top"]).default("newest"),
+});
+
+export const profileCommentCreateBodySchema = z.object({
+	content: z
+		.string()
+		.trim()
+		.min(1, "Comment cannot be empty.")
+		.max(300, "Comment must be at most 300 characters long."),
+});
+
+export const profileCommentUpdateBodySchema = z
+	.object({
+		action: z.enum(["edit", "delete", "pin", "hide", "unhide", "like", "unlike"]),
+		content: z
+			.string()
+			.trim()
+			.min(1, "Comment cannot be empty.")
+			.max(300, "Comment must be at most 300 characters long.")
+			.optional(),
+	})
+	.superRefine((data, ctx) => {
+		if (data.action === "edit" && !data.content) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ["content"],
+				message: "Content is required when editing a comment.",
+			});
+		}
+	});
+
+export const profileCommentReportBodySchema = z.object({
+	reason: z
+		.string()
+		.trim()
+		.min(5, "Report reason must be at least 5 characters long.")
+		.max(240, "Report reason must be at most 240 characters long."),
+});
+
 export function getFirstZodErrorMessage(error: z.ZodError): string {
 	return error.issues[0]?.message ?? "Invalid request payload.";
 }
@@ -254,3 +309,6 @@ export type CosmeticsToggleBody = z.infer<typeof cosmeticsToggleBodySchema>;
 export type NotificationsMarkReadBody = z.infer<typeof notificationsMarkReadBodySchema>;
 export type PuzzleScoreBody = z.infer<typeof puzzleScoreBodySchema>;
 export type AdminCleanupBody = z.infer<typeof adminCleanupBodySchema>;
+export type ProfileCommentCreateBody = z.infer<typeof profileCommentCreateBodySchema>;
+export type ProfileCommentUpdateBody = z.infer<typeof profileCommentUpdateBodySchema>;
+export type ProfileCommentReportBody = z.infer<typeof profileCommentReportBodySchema>;

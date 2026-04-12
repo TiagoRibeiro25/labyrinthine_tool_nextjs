@@ -10,6 +10,8 @@ interface EditProfileButtonProps {
 		discordAvatarUrl: string | null;
 		useDiscordAvatar: boolean;
 		steamProfileUrl: string | null;
+		profileCommentVisibility: "everyone" | "friends_only" | "no_one";
+		allowNonFriendProfileComments: boolean;
 		profilePictureId: string | null;
 		profileBannerId: string | null;
 		favoriteCosmeticId: number | null;

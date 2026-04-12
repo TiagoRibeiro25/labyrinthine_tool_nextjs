@@ -39,7 +39,7 @@ interface ActivityResponse {
 const PAGE_SIZE = 20;
 
 export default function ActivityPage() {
-	const [currentPage, setCurrentPage] = useState(1);
+	const [currentPage, setCurrentPage] = useState<number>(1);
 	const { data, loading, error, execute } = useApi<ActivityResponse>();
 	const items = data?.data ?? [];
 	const pagination = data?.pagination;

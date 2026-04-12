@@ -26,7 +26,7 @@ export function useRealtimeStream({
 }: UseRealtimeStreamOptions) {
 	const [connectionStatus, setConnectionStatus] =
 		useState<RealtimeConnectionStatus>("connecting");
-	const [reconnectNonce, setReconnectNonce] = useState(0);
+	const [reconnectNonce, setReconnectNonce] = useState<number>(0);
 	const topicKey = Array.from(new Set(topics)).sort().join(",");
 	const isUnsupportedEnvironment =
 		typeof window !== "undefined" && typeof EventSource === "undefined";

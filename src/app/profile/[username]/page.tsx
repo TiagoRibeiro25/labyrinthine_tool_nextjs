@@ -1,4 +1,4 @@
-import { and, asc, eq, or } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, or } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,9 +14,16 @@ import {
 } from "react-icons/fa6";
 import EditProfileButton from "../../../components/EditProfileButton";
 import FriendActions from "../../../components/FriendActions";
+import ProfileCommentsSection from "../../../components/ProfileCommentsSection";
 import { getBannerImageById } from "../../../data/profile-banners";
 import { db } from "../../../db";
-import { friendRequests, puzzleScores, userCosmetics, users } from "../../../db/schema";
+import {
+	friendRequests,
+	profileComments,
+	puzzleScores,
+	userCosmetics,
+	users,
+} from "../../../db/schema";
 import { authOptions } from "../../../lib/auth";
 import { getUserAvatarUrl } from "../../../lib/avatar";
 import { allCosmetics, categories, getCosmeticById } from "../../../lib/cosmetics";
@@ -248,6 +255,41 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 		(achievement) => achievement.unlocked
 	).length;
 
+	const rawCommentHistory = await db
+		.select({
+			id: profileComments.id,
+			content: profileComments.content,
+			createdAt: profileComments.createdAt,
+			profileUserId: profileComments.profileUserId,
+		})
+		.from(profileComments)
+		.where(
+			and(
+				eq(profileComments.authorUserId, targetUser.id),
+				eq(profileComments.isHidden, false)
+			)
+		)
+		.orderBy(desc(profileComments.createdAt))
+		.limit(5);
+
+	const historyProfileIds = Array.from(
+		new Set(rawCommentHistory.map((item) => item.profileUserId))
+	);
+	const historyProfiles = historyProfileIds.length
+		? await db
+				.select({ id: users.id, username: users.username })
+				.from(users)
+				.where(inArray(users.id, historyProfileIds))
+		: [];
+	const historyProfileMap = new Map(historyProfiles.map((item) => [item.id, item.username]));
+
+	const commentHistory = rawCommentHistory.map((item) => ({
+		id: item.id,
+		content: item.content,
+		createdAt: item.createdAt.toISOString(),
+		profileUsername: historyProfileMap.get(item.profileUserId) || "Unknown",
+	}));
+
 	return (
 		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
 			<div className="w-full max-w-4xl bg-black/80 backdrop-blur-md border border-neutral-800 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative overflow-hidden flex flex-col">
@@ -288,6 +330,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 										discordAvatarUrl: targetUser.discordAvatarUrl,
 										useDiscordAvatar: targetUser.useDiscordAvatar,
 										steamProfileUrl: targetUser.steamProfileUrl,
+										profileCommentVisibility: targetUser.profileCommentVisibility,
+										allowNonFriendProfileComments:
+											targetUser.allowNonFriendProfileComments,
 										profilePictureId: targetUser.profilePictureId,
 										profileBannerId: targetUser.profileBannerId,
 										favoriteCosmeticId: targetUser.favoriteCosmeticId,
@@ -522,6 +567,13 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 									Completed categories: {completedCategoryCount}/{totalCategoryCount}
 								</p>
 							</div>
+
+							<ProfileCommentsSection
+								profileUsername={targetUser.username}
+								isOwnProfile={isOwnProfile}
+								isLoggedIn={Boolean(currentUserId)}
+								historyItems={commentHistory}
+							/>
 						</div>
 					</div>
 				</div>

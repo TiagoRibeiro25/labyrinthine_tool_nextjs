@@ -40,6 +40,12 @@ export async function PUT(req: Request) {
 		const profileBannerId = parsed.data.profileBannerId?.trim() || null;
 		const bio = parsed.data.bio?.trim() || null;
 		const favoriteCosmeticId = parsed.data.favoriteCosmeticId ?? null;
+		const profileCommentVisibility =
+			parsed.data.profileCommentVisibility ?? undefined;
+		const allowNonFriendProfileComments =
+			typeof parsed.data.allowNonFriendProfileComments === "boolean"
+				? parsed.data.allowNonFriendProfileComments
+				: undefined;
 
 		await db
 			.update(users)
@@ -48,6 +54,10 @@ export async function PUT(req: Request) {
 				steamProfileUrl: steamProfileUrl || null,
 				profilePictureId: profilePictureId || null,
 				...(typeof useDiscordAvatar === "boolean" ? { useDiscordAvatar } : {}),
+				...(profileCommentVisibility ? { profileCommentVisibility } : {}),
+				...(typeof allowNonFriendProfileComments === "boolean"
+					? { allowNonFriendProfileComments }
+					: {}),
 				profileBannerId,
 				favoriteCosmeticId,
 				updatedAt: new Date(),

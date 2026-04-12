@@ -22,6 +22,8 @@ interface EditProfileModalProps {
 		discordAvatarUrl: string | null;
 		useDiscordAvatar: boolean;
 		steamProfileUrl: string | null;
+		profileCommentVisibility: "everyone" | "friends_only" | "no_one";
+		allowNonFriendProfileComments: boolean;
 		profilePictureId: string | null;
 		profileBannerId: string | null;
 		favoriteCosmeticId: number | null;
@@ -58,6 +60,11 @@ export default function EditProfileModal({
 	const [profilePictureId, setProfilePictureId] = useState<string>(
 		initialData.profilePictureId || "1"
 	);
+	const [profileCommentVisibility, setProfileCommentVisibility] = useState<
+		"everyone" | "friends_only" | "no_one"
+	>(initialData.profileCommentVisibility || "everyone");
+	const [allowNonFriendProfileComments, setAllowNonFriendProfileComments] =
+		useState<boolean>(initialData.allowNonFriendProfileComments);
 	const [useDiscordAvatar, setUseDiscordAvatar] = useState<boolean>(
 		initialData.useDiscordAvatar
 	);
@@ -97,6 +104,8 @@ export default function EditProfileModal({
 				body: JSON.stringify({
 					bio,
 					steamProfileUrl,
+					profileCommentVisibility,
+					allowNonFriendProfileComments,
 					profilePictureId,
 					useDiscordAvatar,
 					profileBannerId,
@@ -206,6 +215,43 @@ export default function EditProfileModal({
 							>
 								{initialData.discordUsername ? "Reconnect Discord" : "Connect Discord"}
 							</button>
+						</div>
+					</div>
+
+					<div className="space-y-3">
+						<label className="block text-xs font-bold text-neutral-400 uppercase tracking-widest">
+							Wall Comment Permissions
+						</label>
+						<div className="space-y-2 p-3 bg-neutral-900/40 border border-neutral-800 rounded-sm">
+							<select
+								value={profileCommentVisibility}
+								onChange={(event) =>
+									setProfileCommentVisibility(
+										event.target.value as "everyone" | "friends_only" | "no_one"
+									)
+								}
+								className="w-full bg-neutral-900 border border-neutral-700 text-neutral-100 px-3 py-2 rounded-sm focus:outline-none focus:border-neutral-500"
+							>
+								<option value="everyone">Everyone</option>
+								<option value="friends_only">Friends only</option>
+								<option value="no_one">No one</option>
+							</select>
+
+							<label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-400">
+								<input
+									type="checkbox"
+									checked={allowNonFriendProfileComments}
+									onChange={(event) =>
+										setAllowNonFriendProfileComments(event.target.checked)
+									}
+									disabled={profileCommentVisibility !== "everyone"}
+									className="h-4 w-4 accent-neutral-200"
+								/>
+								Allow comments from non-friends
+							</label>
+							<p className="text-[10px] text-neutral-600 uppercase tracking-widest">
+								Use this to keep a Steam-style guestbook open or friend-only.
+							</p>
 						</div>
 					</div>
 

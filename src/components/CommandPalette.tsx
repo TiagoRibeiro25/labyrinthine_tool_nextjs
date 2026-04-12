@@ -3,15 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-    FaArrowRight,
-    FaCompass,
-    FaDoorOpen,
-    FaMagnifyingGlass,
-    FaShield,
-    FaShirt,
-    FaTrophy,
-    FaUserGroup,
-    FaWandMagicSparkles,
+	FaArrowRight,
+	FaCompass,
+	FaDoorOpen,
+	FaMagnifyingGlass,
+	FaShield,
+	FaShirt,
+	FaTrophy,
+	FaUserGroup,
+	FaWandMagicSparkles,
 } from "react-icons/fa6";
 import { useDebounce } from "use-debounce";
 import { useApi } from "../hooks/useApi";
@@ -152,12 +152,12 @@ export default function CommandPalette() {
 	const router = useRouter();
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const [isOpen, setIsOpen] = useState(false);
-	const [query, setQuery] = useState("");
-	const [selectedIndex, setSelectedIndex] = useState(0);
+	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [query, setQuery] = useState<string>("");
+	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
 	const [users, setUsers] = useState<UserSearchResult[]>([]);
-	const [isSearchingUsers, setIsSearchingUsers] = useState(false);
+	const [isSearchingUsers, setIsSearchingUsers] = useState<boolean>(false);
 	const { execute: executeSearch } = useApi<UserSearchResult[]>();
 
 	const [debouncedQuery] = useDebounce(query.trim(), 250);

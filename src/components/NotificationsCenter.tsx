@@ -31,7 +31,7 @@ interface NotificationsResponse {
 }
 
 export default function NotificationsCenter() {
-	const [isOpen, setIsOpen] = useState(false);
+	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const panelRef = useRef<HTMLDivElement>(null);
 	const { data, loading, execute } = useApi<NotificationsResponse>();
 	const { execute: executeMarkRead } = useApi<{ message: string }>();

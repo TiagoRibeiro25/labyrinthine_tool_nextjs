@@ -26,6 +26,12 @@ export const users = pgTable(
 		discordAvatarUrl: text("discord_avatar_url"),
 		useDiscordAvatar: boolean("use_discord_avatar").default(false).notNull(),
 		steamProfileUrl: text("steam_profile_url"),
+		profileCommentVisibility: text("profile_comment_visibility")
+			.default("everyone")
+			.notNull(),
+		allowNonFriendProfileComments: boolean("allow_non_friend_profile_comments")
+			.default(true)
+			.notNull(),
 		isAdministrator: boolean("is_administrator").default(false).notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")
@@ -157,6 +163,109 @@ export const puzzleScores = pgTable(
 	]
 );
 
+export const profileComments = pgTable(
+	"profile_comments",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		profileUserId: uuid("profile_user_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		authorUserId: uuid("author_user_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		content: text("content").notNull(),
+		isPinned: boolean("is_pinned").default(false).notNull(),
+		isEdited: boolean("is_edited").default(false).notNull(),
+		isHidden: boolean("is_hidden").default(false).notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.$onUpdate(() => new Date())
+			.notNull(),
+	},
+	(table) => [
+		index("profile_comments_profile_user_id_idx").on(table.profileUserId),
+		index("profile_comments_author_user_id_idx").on(table.authorUserId),
+		index("profile_comments_profile_hidden_created_idx").on(
+			table.profileUserId,
+			table.isHidden,
+			table.createdAt
+		),
+		index("profile_comments_profile_pinned_created_idx").on(
+			table.profileUserId,
+			table.isPinned,
+			table.createdAt
+		),
+	]
+);
+
+export const profileCommentReactions = pgTable(
+	"profile_comment_reactions",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		commentId: uuid("comment_id")
+			.notNull()
+			.references(() => profileComments.id, { onDelete: "cascade" }),
+		userId: uuid("user_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => [
+		index("profile_comment_reactions_comment_id_idx").on(table.commentId),
+		index("profile_comment_reactions_user_id_idx").on(table.userId),
+		unique("profile_comment_reactions_comment_user_unique").on(
+			table.commentId,
+			table.userId
+		),
+	]
+);
+
+export const profileCommentReports = pgTable(
+	"profile_comment_reports",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		commentId: uuid("comment_id")
+			.notNull()
+			.references(() => profileComments.id, { onDelete: "cascade" }),
+		reporterUserId: uuid("reporter_user_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		reason: text("reason").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => [
+		index("profile_comment_reports_comment_id_idx").on(table.commentId),
+		index("profile_comment_reports_reporter_user_id_idx").on(table.reporterUserId),
+		unique("profile_comment_reports_comment_reporter_unique").on(
+			table.commentId,
+			table.reporterUserId
+		),
+	]
+);
+
+export const userBlocks = pgTable(
+	"user_blocks",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		blockerUserId: uuid("blocker_user_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		blockedUserId: uuid("blocked_user_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => [
+		index("user_blocks_blocker_user_id_idx").on(table.blockerUserId),
+		index("user_blocks_blocked_user_id_idx").on(table.blockedUserId),
+		unique("user_blocks_blocker_blocked_unique").on(
+			table.blockerUserId,
+			table.blockedUserId
+		),
+	]
+);
+
 // --- RELATIONS ---
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -171,6 +280,14 @@ export const usersRelations = relations(users, ({ many }) => ({
 		relationName: "notificationsByActor",
 	}),
 	puzzleScores: many(puzzleScores),
+	profileComments: many(profileComments, { relationName: "profileCommentsForUser" }),
+	authoredProfileComments: many(profileComments, {
+		relationName: "profileCommentsByAuthor",
+	}),
+	profileCommentReactions: many(profileCommentReactions),
+	profileCommentReports: many(profileCommentReports),
+	blockedUsers: many(userBlocks, { relationName: "usersBlockedByUser" }),
+	blockedByUsers: many(userBlocks, { relationName: "usersBlockedUser" }),
 }));
 
 export const userCosmeticsRelations = relations(userCosmetics, ({ one }) => ({
@@ -217,5 +334,61 @@ export const puzzleScoresRelations = relations(puzzleScores, ({ one }) => ({
 	user: one(users, {
 		fields: [puzzleScores.userId],
 		references: [users.id],
+	}),
+}));
+
+export const profileCommentsRelations = relations(profileComments, ({ one, many }) => ({
+	profileUser: one(users, {
+		fields: [profileComments.profileUserId],
+		references: [users.id],
+		relationName: "profileCommentsForUser",
+	}),
+	authorUser: one(users, {
+		fields: [profileComments.authorUserId],
+		references: [users.id],
+		relationName: "profileCommentsByAuthor",
+	}),
+	reactions: many(profileCommentReactions),
+	reports: many(profileCommentReports),
+}));
+
+export const profileCommentReactionsRelations = relations(
+	profileCommentReactions,
+	({ one }) => ({
+		comment: one(profileComments, {
+			fields: [profileCommentReactions.commentId],
+			references: [profileComments.id],
+		}),
+		user: one(users, {
+			fields: [profileCommentReactions.userId],
+			references: [users.id],
+		}),
+	})
+);
+
+export const profileCommentReportsRelations = relations(
+	profileCommentReports,
+	({ one }) => ({
+		comment: one(profileComments, {
+			fields: [profileCommentReports.commentId],
+			references: [profileComments.id],
+		}),
+		reporter: one(users, {
+			fields: [profileCommentReports.reporterUserId],
+			references: [users.id],
+		}),
+	})
+);
+
+export const userBlocksRelations = relations(userBlocks, ({ one }) => ({
+	blockerUser: one(users, {
+		fields: [userBlocks.blockerUserId],
+		references: [users.id],
+		relationName: "usersBlockedByUser",
+	}),
+	blockedUser: one(users, {
+		fields: [userBlocks.blockedUserId],
+		references: [users.id],
+		relationName: "usersBlockedUser",
 	}),
 }));
