@@ -97,7 +97,6 @@ export const profileUpdateSchema = z.object({
 	profileCommentVisibility: z
 		.enum(["everyone", "friends_only", "no_one"])
 		.optional(),
-	allowNonFriendProfileComments: z.boolean().optional(),
 	favoriteCosmeticId: z.preprocess((value) => {
 		if (value === "" || value === null || value === undefined) {
 			return undefined;

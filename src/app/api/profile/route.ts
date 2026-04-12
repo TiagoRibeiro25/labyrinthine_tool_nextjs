@@ -42,10 +42,6 @@ export async function PUT(req: Request) {
 		const favoriteCosmeticId = parsed.data.favoriteCosmeticId ?? null;
 		const profileCommentVisibility =
 			parsed.data.profileCommentVisibility ?? undefined;
-		const allowNonFriendProfileComments =
-			typeof parsed.data.allowNonFriendProfileComments === "boolean"
-				? parsed.data.allowNonFriendProfileComments
-				: undefined;
 
 		await db
 			.update(users)
@@ -55,9 +51,6 @@ export async function PUT(req: Request) {
 				profilePictureId: profilePictureId || null,
 				...(typeof useDiscordAvatar === "boolean" ? { useDiscordAvatar } : {}),
 				...(profileCommentVisibility ? { profileCommentVisibility } : {}),
-				...(typeof allowNonFriendProfileComments === "boolean"
-					? { allowNonFriendProfileComments }
-					: {}),
 				profileBannerId,
 				favoriteCosmeticId,
 				updatedAt: new Date(),

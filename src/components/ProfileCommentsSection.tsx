@@ -51,10 +51,9 @@ interface ProfileCommentsSectionProps {
 }
 
 interface CommentsApiResponse {
-	data: WallComment[];
+	comments: WallComment[];
 	policy: {
 		visibility: "everyone" | "friends_only" | "no_one";
-		allowNonFriendProfileComments: boolean;
 		canCurrentUserComment: boolean;
 	};
 	pagination: {
@@ -116,7 +115,6 @@ export default function ProfileCommentsSection({
 	});
 	const [policy, setPolicy] = useState<CommentsApiResponse["policy"]>({
 		visibility: "everyone",
-		allowNonFriendProfileComments: true,
 		canCurrentUserComment: false,
 	});
 	const [actionModal, setActionModal] = useState<ProfileCommentActionModalState | null>(
@@ -130,10 +128,6 @@ export default function ProfileCommentsSection({
 
 		if (policy.visibility === "friends_only") {
 			return "Friends only can comment.";
-		}
-
-		if (!policy.allowNonFriendProfileComments) {
-			return "Only friends can comment right now.";
 		}
 
 		return "Public wall comments enabled.";
@@ -157,7 +151,7 @@ export default function ProfileCommentsSection({
 				throw new Error("Failed to load comments.");
 			}
 
-			setComments(payload.data);
+			setComments(payload.comments);
 			setPolicy(payload.policy);
 			setPagination(payload.pagination);
 		} catch (err) {

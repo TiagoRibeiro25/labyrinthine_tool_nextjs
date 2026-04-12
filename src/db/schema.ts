@@ -29,9 +29,6 @@ export const users = pgTable(
 		profileCommentVisibility: text("profile_comment_visibility")
 			.default("everyone")
 			.notNull(),
-		allowNonFriendProfileComments: boolean("allow_non_friend_profile_comments")
-			.default(true)
-			.notNull(),
 		isAdministrator: boolean("is_administrator").default(false).notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")

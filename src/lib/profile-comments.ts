@@ -29,7 +29,6 @@ export interface ProfileCommentPermissionInput {
 	profileUserId: string;
 	authorUserId: string;
 	visibility: string;
-	allowNonFriendProfileComments: boolean;
 }
 
 export function normalizeCommentContent(content: string): string {
@@ -106,21 +105,15 @@ export async function canUserCommentOnProfile(
 		return friends;
 	}
 
-	if (!input.allowNonFriendProfileComments) {
-		return friends;
-	}
-
 	return true;
 }
 
 export async function getUserCommentSettings(userId: string): Promise<{
 	visibility: ProfileCommentVisibility;
-	allowNonFriendProfileComments: boolean;
 } | null> {
 	const rows = await db
 		.select({
 			visibility: users.profileCommentVisibility,
-			allowNonFriendProfileComments: users.allowNonFriendProfileComments,
 		})
 		.from(users)
 		.where(eq(users.id, userId))
@@ -139,6 +132,5 @@ export async function getUserCommentSettings(userId: string): Promise<{
 
 	return {
 		visibility,
-		allowNonFriendProfileComments: settings.allowNonFriendProfileComments,
 	};
 }

@@ -335,8 +335,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 										useDiscordAvatar: targetUser.useDiscordAvatar,
 										steamProfileUrl: targetUser.steamProfileUrl,
 										profileCommentVisibility,
-										allowNonFriendProfileComments:
-											targetUser.allowNonFriendProfileComments,
 										profilePictureId: targetUser.profilePictureId,
 										profileBannerId: targetUser.profileBannerId,
 										favoriteCosmeticId: targetUser.favoriteCosmeticId,

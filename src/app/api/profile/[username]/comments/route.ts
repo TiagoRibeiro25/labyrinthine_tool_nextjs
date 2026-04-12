@@ -41,7 +41,6 @@ export async function GET(
 				id: users.id,
 				username: users.username,
 				visibility: users.profileCommentVisibility,
-				allowNonFriendProfileComments: users.allowNonFriendProfileComments,
 			})
 			.from(users)
 			.where(eq(users.username, username))
@@ -143,14 +142,12 @@ export async function GET(
 					profileUserId: targetProfile.id,
 					authorUserId: currentUserId,
 					visibility: targetProfile.visibility,
-					allowNonFriendProfileComments:
-						targetProfile.allowNonFriendProfileComments,
 			  })
 			: false;
 
 		return NextResponse.json(
 			{
-				data: rows.map((row) => ({
+				comments: rows.map((row) => ({
 					id: row.id,
 					content: row.content,
 					isPinned: row.isPinned,
@@ -181,8 +178,6 @@ export async function GET(
 				})),
 				policy: {
 					visibility: targetProfile.visibility,
-					allowNonFriendProfileComments:
-						targetProfile.allowNonFriendProfileComments,
 					canCurrentUserComment,
 				},
 				pagination: {
@@ -281,7 +276,6 @@ export async function POST(
 				id: users.id,
 				username: users.username,
 				visibility: users.profileCommentVisibility,
-				allowNonFriendProfileComments: users.allowNonFriendProfileComments,
 			})
 			.from(users)
 			.where(eq(users.username, username))
@@ -325,7 +319,6 @@ export async function POST(
 			profileUserId: targetProfile.id,
 			authorUserId,
 			visibility: targetProfile.visibility,
-			allowNonFriendProfileComments: targetProfile.allowNonFriendProfileComments,
 		});
 
 		if (!allowed) {
