@@ -27,6 +27,7 @@ import {
 import { authOptions } from "../../../lib/auth";
 import { getUserAvatarUrl } from "../../../lib/avatar";
 import { allCosmetics, categories, getCosmeticById } from "../../../lib/cosmetics";
+import { normalizeProfileCommentVisibility } from "../../../lib/profile-comments";
 
 interface ProfilePageProps {
 	params: {
@@ -69,6 +70,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 		useDiscordAvatar: targetUser.useDiscordAvatar,
 	});
 	const profileBannerUrl = getBannerImageById(targetUser.profileBannerId);
+	const profileCommentVisibility = normalizeProfileCommentVisibility(
+		targetUser.profileCommentVisibility
+	);
 	const favoriteCosmetic = targetUser.favoriteCosmeticId
 		? getCosmeticById(targetUser.favoriteCosmeticId)
 		: null;
@@ -330,7 +334,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 										discordAvatarUrl: targetUser.discordAvatarUrl,
 										useDiscordAvatar: targetUser.useDiscordAvatar,
 										steamProfileUrl: targetUser.steamProfileUrl,
-										profileCommentVisibility: targetUser.profileCommentVisibility,
+										profileCommentVisibility,
 										allowNonFriendProfileComments:
 											targetUser.allowNonFriendProfileComments,
 										profilePictureId: targetUser.profilePictureId,

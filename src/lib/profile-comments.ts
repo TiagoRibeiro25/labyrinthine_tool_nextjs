@@ -15,6 +15,16 @@ const BANNED_PHRASES = [
 
 export type ProfileCommentVisibility = "everyone" | "friends_only" | "no_one";
 
+export function normalizeProfileCommentVisibility(
+	value: string | null | undefined
+): ProfileCommentVisibility {
+	if (value === "friends_only" || value === "no_one") {
+		return value;
+	}
+
+	return "everyone";
+}
+
 export interface ProfileCommentPermissionInput {
 	profileUserId: string;
 	authorUserId: string;
