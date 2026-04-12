@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { db } from "../../../../../../db";
 import { profileCommentReports, profileComments } from "../../../../../../db/schema";
 import { authOptions } from "../../../../../../lib/auth";
+import { createNotifications, getAdministratorUserIds } from "../../../../../../lib/social";
 import { rateLimit, toRateLimitHeaders } from "../../../../../../lib/rate-limit";
 import {
 	getFirstZodErrorMessage,
@@ -103,6 +104,20 @@ export async function POST(
 			reporterUserId: userId,
 			reason: parsed.data.reason,
 		});
+
+		const administratorIds = await getAdministratorUserIds();
+		if (administratorIds.length > 0) {
+			await createNotifications(
+				administratorIds.map((administratorId) => ({
+					userId: administratorId,
+					actorUserId: userId,
+					type: "profile_comment_report",
+					title: "Profile comment reported",
+					message: "A profile comment was reported and needs review.",
+					href: "/admin?reportedCommentsPage=1",
+				}))
+			);
+		}
 
 		return NextResponse.json(
 			{ message: "Comment reported." },

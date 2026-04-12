@@ -1,7 +1,7 @@
 import { and, eq, or } from "drizzle-orm";
 import { REALTIME_TOPICS } from "../constants/realtime";
 import { db } from "../db";
-import { activityEvents, friendRequests, notifications } from "../db/schema";
+import { activityEvents, friendRequests, notifications, users } from "../db/schema";
 import { emitRealtimeHint } from "./realtime";
 
 export async function getAcceptedFriendIds(userId: string): Promise<string[]> {
@@ -69,4 +69,13 @@ export async function createNotifications(items: NotificationInput[]) {
 		topic: REALTIME_TOPICS.NOTIFICATIONS,
 		userIds: Array.from(new Set(items.map((item) => item.userId))),
 	});
+}
+
+export async function getAdministratorUserIds(): Promise<string[]> {
+	const rows = await db
+		.select({ id: users.id })
+		.from(users)
+		.where(eq(users.isAdministrator, true));
+
+	return rows.map((row) => row.id);
 }

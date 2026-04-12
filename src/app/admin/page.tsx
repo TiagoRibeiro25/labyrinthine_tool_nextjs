@@ -4,6 +4,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FaArrowLeft, FaShield, FaUsers } from "react-icons/fa6";
 import AdminCleanupSection from "../../components/AdminCleanupSection";
+import AdminReportedCommentsSection from "../../components/AdminReportedCommentsSection";
 import { db } from "../../db";
 import {
 	activityEvents,
@@ -14,8 +15,15 @@ import {
 	users,
 } from "../../db/schema";
 import { authOptions } from "../../lib/auth";
+import { getReportedCommentsPage } from "../../lib/admin-reported-comments";
 
-export default async function AdminPage() {
+interface AdminPageProps {
+	searchParams?: {
+		reportedCommentsPage?: string;
+	};
+}
+
+export default async function AdminPage({ searchParams }: AdminPageProps) {
 	const session = await getServerSession(authOptions);
 	const sessionUser = session?.user as { id?: string } | undefined;
 
@@ -34,6 +42,16 @@ export default async function AdminPage() {
 	if (!currentUser?.isAdministrator) {
 		redirect("/dashboard");
 	}
+
+	const requestedReportedCommentsPage = Number(
+		searchParams?.reportedCommentsPage ?? "1"
+	);
+	const reportedCommentsPage = await getReportedCommentsPage(
+		Number.isFinite(requestedReportedCommentsPage)
+			? requestedReportedCommentsPage
+			: 1,
+		10
+	);
 
 	const [
 		totalUsersResult,
@@ -75,6 +93,10 @@ export default async function AdminPage() {
 			value: pendingFriendRequestsResult[0]?.count ?? 0,
 		},
 		{ label: "Puzzle Runs", value: totalPuzzleRunsResult[0]?.count ?? 0 },
+			{
+				label: "Reported Comments",
+				value: reportedCommentsPage.pagination.totalItems,
+			},
 	];
 
 	return (
@@ -116,6 +138,11 @@ export default async function AdminPage() {
 				</div>
 
 				<AdminCleanupSection />
+
+				<AdminReportedCommentsSection
+					items={reportedCommentsPage.data}
+					pagination={reportedCommentsPage.pagination}
+				/>
 
 				<div className="mt-8 p-5 bg-black/50 border border-neutral-800 rounded-sm">
 					<h3 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4 border-b border-neutral-800/50 pb-2 flex items-center gap-2">
