@@ -78,7 +78,7 @@ export default function FriendActions({
 			<button
 				onClick={() => handleAction("add")}
 				disabled={loading}
-				className="w-full mt-4 flex items-center justify-center gap-2 px-6 py-3 rounded-sm bg-neutral-900 text-neutral-200 font-bold text-sm uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] disabled:opacity-50 disabled:cursor-not-allowed"
+				className="w-full mt-4 flex items-center justify-center gap-2 px-6 py-3 rounded-sm bg-neutral-900 text-neutral-200 font-bold text-sm uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
 			>
 				<FaUserPlus className="w-4 h-4" />
 				{loading ? "Sending..." : "Add Friend"}
@@ -91,7 +91,7 @@ export default function FriendActions({
 			<button
 				onClick={() => handleAction("remove")} // "remove" action also cancels requests in our API
 				disabled={loading}
-				className="w-full mt-4 flex items-center justify-center gap-2 px-6 py-3 rounded-sm bg-neutral-900/50 text-neutral-400 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-red-950/50 hover:text-red-400 hover:border-red-900 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+				className="w-full mt-4 flex items-center justify-center gap-2 px-6 py-3 rounded-sm bg-neutral-900/50 text-neutral-400 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-red-950/50 hover:text-red-400 hover:border-red-900 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
 			>
 				{loading ? "Canceling..." : "Cancel Request"}
 			</button>
@@ -104,14 +104,14 @@ export default function FriendActions({
 				<button
 					onClick={() => handleAction("accept")}
 					disabled={loading}
-					className="flex-1 flex items-center justify-center px-4 py-3 rounded-sm bg-neutral-900 text-emerald-500 font-bold text-xs sm:text-sm uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-emerald-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+					className="flex-1 flex items-center justify-center px-4 py-3 rounded-sm bg-neutral-900 text-emerald-500 font-bold text-xs sm:text-sm uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-emerald-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
 				>
 					Accept
 				</button>
 				<button
 					onClick={() => handleAction("reject")}
 					disabled={loading}
-					className="flex-1 flex items-center justify-center px-4 py-3 rounded-sm bg-neutral-900/50 text-red-500 font-bold text-xs sm:text-sm uppercase tracking-widest border border-neutral-800 hover:bg-red-950/30 hover:border-red-900 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+					className="flex-1 flex items-center justify-center px-4 py-3 rounded-sm bg-neutral-900/50 text-red-500 font-bold text-xs sm:text-sm uppercase tracking-widest border border-neutral-800 hover:bg-red-950/30 hover:border-red-900 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
 				>
 					Reject
 				</button>

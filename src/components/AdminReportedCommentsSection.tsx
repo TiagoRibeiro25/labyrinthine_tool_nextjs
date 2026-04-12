@@ -112,7 +112,7 @@ export default function AdminReportedCommentsSection({
 										type="button"
 										disabled={loading}
 										onClick={() => void handleModerationAction(item.commentId, "hide", "Comment hidden.")}
-										className="px-4 py-2 rounded-sm bg-amber-950/40 text-amber-200 font-bold text-xs uppercase tracking-widest border border-amber-900 hover:bg-amber-900/50 hover:border-amber-600 transition-colors disabled:opacity-50"
+										className="px-4 py-2 rounded-sm bg-amber-950/40 text-amber-200 font-bold text-xs uppercase tracking-widest border border-amber-900 hover:bg-amber-900/50 hover:border-amber-600 transition-colors disabled:opacity-50 cursor-pointer"
 									>
 										Hide
 									</button>
@@ -120,7 +120,7 @@ export default function AdminReportedCommentsSection({
 										type="button"
 										disabled={loading}
 										onClick={() => void handleModerationAction(item.commentId, "delete", "Comment deleted.")}
-										className="px-4 py-2 rounded-sm bg-red-950/40 text-red-200 font-bold text-xs uppercase tracking-widest border border-red-900 hover:bg-red-900/50 hover:border-red-600 transition-colors disabled:opacity-50"
+										className="px-4 py-2 rounded-sm bg-red-950/40 text-red-200 font-bold text-xs uppercase tracking-widest border border-red-900 hover:bg-red-900/50 hover:border-red-600 transition-colors disabled:opacity-50 cursor-pointer"
 									>
 										Delete
 									</button>
@@ -128,7 +128,7 @@ export default function AdminReportedCommentsSection({
 										type="button"
 										disabled={loading}
 										onClick={() => void handleModerationAction(item.commentId, "dismiss", "Reports dismissed.")}
-										className="px-4 py-2 rounded-sm bg-neutral-900 text-neutral-200 font-bold text-xs uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-500 transition-colors disabled:opacity-50"
+										className="px-4 py-2 rounded-sm bg-neutral-900 text-neutral-200 font-bold text-xs uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-500 transition-colors disabled:opacity-50 cursor-pointer"
 									>
 										Dismiss
 									</button>

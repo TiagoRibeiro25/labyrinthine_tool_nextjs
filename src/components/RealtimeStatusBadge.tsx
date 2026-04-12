@@ -67,7 +67,7 @@ export default function RealtimeStatusBadge({
 			<button
 				type="button"
 				onClick={onReconnect}
-				className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest ${styles.textClassName} hover:text-neutral-100 transition-colors`}
+				className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest ${styles.textClassName} hover:text-neutral-100 transition-colors cursor-pointer`}
 				aria-label="Reconnect realtime updates"
 			>
 				{content}

@@ -117,7 +117,7 @@ export default function NotificationsCenter() {
 			<button
 				type="button"
 				onClick={() => setIsOpen((prev) => !prev)}
-				className="relative flex items-center justify-center w-11 h-11 rounded-sm bg-black/80 backdrop-blur-md border border-neutral-700 text-neutral-300 hover:text-white hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.5)]"
+				className="relative flex items-center justify-center w-11 h-11 rounded-sm bg-black/80 backdrop-blur-md border border-neutral-700 text-neutral-300 hover:text-white hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.5)] cursor-pointer"
 				aria-label="Open notifications"
 			>
 				<FaBell className="w-4 h-4" />
@@ -152,14 +152,14 @@ export default function NotificationsCenter() {
 							<button
 								type="button"
 								onClick={markAllRead}
-								className="px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-widest text-neutral-300 border border-neutral-700 bg-neutral-900 hover:bg-neutral-800 transition-colors rounded-sm"
+								className="px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-widest text-neutral-300 border border-neutral-700 bg-neutral-900 hover:bg-neutral-800 transition-colors rounded-sm cursor-pointer"
 							>
 								Mark all
 							</button>
 							<button
 								type="button"
 								onClick={() => setIsOpen(false)}
-								className="p-1.5 text-neutral-500 hover:text-neutral-300 transition-colors"
+								className="p-1.5 text-neutral-500 hover:text-neutral-300 transition-colors cursor-pointer"
 								aria-label="Close notifications"
 							>
 								<FaXmark className="w-4 h-4" />
@@ -209,7 +209,7 @@ export default function NotificationsCenter() {
 															event.stopPropagation();
 															markOneRead(notification.id).catch(() => {});
 														}}
-														className="shrink-0 p-1.5 border border-neutral-700 rounded-sm text-neutral-400 hover:text-emerald-400 hover:border-emerald-600 transition-colors"
+														className="shrink-0 p-1.5 border border-neutral-700 rounded-sm text-neutral-400 hover:text-emerald-400 hover:border-emerald-600 transition-colors cursor-pointer"
 														aria-label="Mark notification as read"
 													>
 														<FaCheck className="w-3 h-3" />

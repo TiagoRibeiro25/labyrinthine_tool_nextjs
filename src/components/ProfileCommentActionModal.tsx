@@ -120,7 +120,7 @@ export default function ProfileCommentActionModal({
 					<button
 						onClick={onClose}
 						disabled={state.submitting}
-						className="flex-1 px-4 py-2 rounded-sm bg-neutral-900/60 text-neutral-400 font-bold text-xs uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:text-neutral-200 disabled:opacity-50"
+						className="flex-1 px-4 py-2 rounded-sm bg-neutral-900/60 text-neutral-400 font-bold text-xs uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:text-neutral-200 disabled:opacity-50 cursor-pointer"
 					>
 						Cancel
 					</button>

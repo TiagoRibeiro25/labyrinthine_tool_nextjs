@@ -228,7 +228,7 @@ export default function CollectionComparison({
 									setActiveView(view);
 									setActiveCategory("All");
 								}}
-								className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-sm transition-all duration-300 border flex items-center gap-2 ${
+							className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-sm transition-all duration-300 border flex items-center gap-2 cursor-pointer ${
 									activeView === view
 										? VIEW_CONFIG[view].toneClasses
 										: "bg-neutral-900/50 border-neutral-800 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
@@ -251,7 +251,7 @@ export default function CollectionComparison({
 							<button
 								key={category}
 								onClick={() => setActiveCategory(category)}
-								className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-sm transition-all duration-300 border ${
+								className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-sm transition-all duration-300 border cursor-pointer ${
 									activeCategory === category
 										? activeTheme.toneClasses
 										: "bg-neutral-900/50 border-neutral-800 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
@@ -273,7 +273,7 @@ export default function CollectionComparison({
 							<button
 								key={type}
 								onClick={() => setActiveType(type)}
-								className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-sm transition-all duration-300 border ${
+								className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-sm transition-all duration-300 border cursor-pointer ${
 									activeType === type
 										? activeTheme.toneClasses
 										: "bg-neutral-900/50 border-neutral-800 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"

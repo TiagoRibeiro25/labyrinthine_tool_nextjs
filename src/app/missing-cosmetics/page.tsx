@@ -120,7 +120,7 @@ function MissingCosmeticsContent() {
 								<button
 									key={cosmetic.id}
 									onClick={() => handleSelectCosmetic(cosmetic)}
-									className="w-full text-left px-4 py-3 border-b border-neutral-800 hover:bg-neutral-800 transition-colors flex items-center gap-3"
+									className="w-full text-left px-4 py-3 border-b border-neutral-800 hover:bg-neutral-800 transition-colors flex items-center gap-3 cursor-pointer"
 								>
 									<div className="w-8 h-8 relative bg-black border border-neutral-700 rounded-sm overflow-hidden shrink-0 p-1">
 										<Image

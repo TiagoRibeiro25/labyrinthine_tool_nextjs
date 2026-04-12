@@ -454,7 +454,7 @@ export default function ProfileCommentsSection({
 							<button
 								type="submit"
 								disabled={createCommentLoading}
-								className="px-4 py-2 rounded-sm bg-neutral-800 text-neutral-100 text-xs font-bold uppercase tracking-widest border border-neutral-600 hover:bg-neutral-700 hover:border-neutral-400 disabled:opacity-50"
+								className="px-4 py-2 rounded-sm bg-neutral-800 text-neutral-100 text-xs font-bold uppercase tracking-widest border border-neutral-600 hover:bg-neutral-700 hover:border-neutral-400 disabled:opacity-50 cursor-pointer"
 							>
 								{createCommentLoading ? "Posting..." : "Post Comment"}
 							</button>
@@ -538,7 +538,7 @@ export default function ProfileCommentsSection({
 										<div className="flex items-center gap-2 shrink-0">
 											<button
 												onClick={() => void handleLikeToggle(comment)}
-												className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 border rounded-sm ${
+												className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 border rounded-sm cursor-pointer ${
 													comment.currentUserLiked
 														? "text-emerald-300 border-emerald-700"
 														: "text-neutral-400 border-neutral-700"
@@ -557,7 +557,7 @@ export default function ProfileCommentsSection({
 										{comment.permissions.canEdit && (
 											<button
 												onClick={() => openEditModal(comment)}
-												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-neutral-700 text-neutral-400 rounded-sm hover:text-neutral-200"
+												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-neutral-700 text-neutral-400 rounded-sm hover:text-neutral-200 cursor-pointer"
 											>
 												Edit
 											</button>
@@ -565,7 +565,7 @@ export default function ProfileCommentsSection({
 										{comment.permissions.canDelete && (
 											<button
 												onClick={() => openDeleteModal(comment.id)}
-												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-red-800 text-red-300 rounded-sm hover:text-red-200"
+												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-red-800 text-red-300 rounded-sm hover:text-red-200 cursor-pointer"
 											>
 												Delete
 											</button>
@@ -573,7 +573,7 @@ export default function ProfileCommentsSection({
 										{comment.permissions.canPin && (
 											<button
 												onClick={() => void handlePin(comment.id)}
-												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-amber-800 text-amber-300 rounded-sm hover:text-amber-200"
+												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-amber-800 text-amber-300 rounded-sm hover:text-amber-200 cursor-pointer"
 											>
 												{comment.isPinned ? "Unpin" : "Pin"}
 											</button>
@@ -581,7 +581,7 @@ export default function ProfileCommentsSection({
 										{comment.permissions.canHide && (
 											<button
 												onClick={() => void handleHideToggle(comment)}
-												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-neutral-700 text-neutral-300 rounded-sm hover:text-white"
+												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-neutral-700 text-neutral-300 rounded-sm hover:text-white cursor-pointer"
 											>
 												{comment.isHidden ? "Unhide" : "Hide"}
 											</button>
@@ -589,7 +589,7 @@ export default function ProfileCommentsSection({
 										{comment.permissions.canReport && (
 											<button
 												onClick={() => openReportModal(comment.id)}
-												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-neutral-700 text-neutral-400 rounded-sm hover:text-neutral-200"
+												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-neutral-700 text-neutral-400 rounded-sm hover:text-neutral-200 cursor-pointer"
 											>
 												Report
 											</button>

@@ -50,7 +50,7 @@ export default function SliderPuzzle() {
 
 			<button
 				onClick={handleShuffle}
-				className="mt-8 px-8 py-3 w-full rounded-lg bg-linear-to-b from-neutral-800 to-neutral-900 text-neutral-100 font-bold uppercase tracking-widest border border-neutral-700 hover:border-neutral-500 hover:from-neutral-700 hover:to-neutral-800 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] active:scale-95"
+				className="mt-8 px-8 py-3 w-full rounded-lg bg-linear-to-b from-neutral-800 to-neutral-900 text-neutral-100 font-bold uppercase tracking-widest border border-neutral-700 hover:border-neutral-500 hover:from-neutral-700 hover:to-neutral-800 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] active:scale-95 cursor-pointer"
 			>
 				{isPlaying ? "Restart Puzzle" : "Start Practice"}
 			</button>

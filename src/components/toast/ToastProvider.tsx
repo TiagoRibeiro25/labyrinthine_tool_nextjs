@@ -161,7 +161,7 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
 								<button
 									type="button"
 									onClick={() => removeToast(toast.id)}
-									className="rounded-sm border border-neutral-700 bg-neutral-900/50 p-1 text-neutral-400 transition-colors hover:text-white"
+									className="rounded-sm border border-neutral-700 bg-neutral-900/50 p-1 text-neutral-400 transition-colors hover:text-white cursor-pointer"
 									aria-label="Dismiss toast"
 								>
 									<FaXmark className="h-3.5 w-3.5" />

@@ -415,7 +415,7 @@ export default function CommandPalette() {
 										key={item.id}
 										type="button"
 										onClick={() => navigateTo(item.href)}
-										className={`w-full text-left px-4 py-3 border-b border-neutral-900 transition-colors ${
+										className={`w-full text-left px-4 py-3 border-b border-neutral-900 transition-colors cursor-pointer ${
 											isSelected ? "bg-neutral-800/80" : "hover:bg-neutral-900"
 										}`}
 									>

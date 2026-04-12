@@ -49,7 +49,7 @@ export default function LightsOut() {
 
 			<button
 				onClick={startNewGame}
-				className="group flex items-center justify-center gap-3 px-8 py-3 rounded-lg bg-neutral-900 text-neutral-100 font-bold text-sm uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] hover:-translate-y-1 active:translate-y-0 mb-6"
+				className="group flex items-center justify-center gap-3 px-8 py-3 rounded-lg bg-neutral-900 text-neutral-100 font-bold text-sm uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] hover:-translate-y-1 active:translate-y-0 mb-6 cursor-pointer"
 			>
 				<FaArrowRotateRight className="group-hover:rotate-180 transition-transform duration-500" />
 				{isWon ? "Play Again" : "Reset Puzzle"}

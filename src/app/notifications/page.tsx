@@ -129,7 +129,7 @@ export default function NotificationsPage() {
 					<button
 						type="button"
 						onClick={markAllRead}
-						className="px-4 py-2 rounded-sm bg-neutral-900 text-neutral-300 font-bold text-xs uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-500 transition-colors"
+						className="px-4 py-2 rounded-sm bg-neutral-900 text-neutral-300 font-bold text-xs uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-500 transition-colors cursor-pointer"
 					>
 						Mark All Read
 					</button>
