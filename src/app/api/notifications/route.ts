@@ -83,6 +83,8 @@ export async function GET(req: Request) {
 						id: users.id,
 						username: users.username,
 						profilePictureId: users.profilePictureId,
+						steamAvatarUrl: users.steamAvatarUrl,
+						useSteamAvatar: users.useSteamAvatar,
 						discordAvatarUrl: users.discordAvatarUrl,
 						useDiscordAvatar: users.useDiscordAvatar,
 					})
@@ -121,6 +123,8 @@ export async function GET(req: Request) {
 									id: displayUser.id,
 									username: displayUser.username,
 									profilePictureId: displayUser.profilePictureId,
+									steamAvatarUrl: displayUser.steamAvatarUrl,
+									useSteamAvatar: displayUser.useSteamAvatar,
 									discordAvatarUrl: displayUser.discordAvatarUrl,
 									useDiscordAvatar: displayUser.useDiscordAvatar,
 								}

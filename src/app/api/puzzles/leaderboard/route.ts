@@ -10,6 +10,8 @@ type LeaderboardRow = {
 	id: string;
 	username: string;
 	profilePictureId: string | null;
+	steamAvatarUrl: string | null;
+	useSteamAvatar: boolean;
 	discordAvatarUrl: string | null;
 	useDiscordAvatar: boolean;
 	moves: number;
@@ -67,6 +69,8 @@ export async function GET(req: Request) {
 				u.id,
 				u.username,
 				u.profile_picture_id as "profilePictureId",
+				u.steam_avatar_url as "steamAvatarUrl",
+				u.use_steam_avatar as "useSteamAvatar",
 				u.discord_avatar_url as "discordAvatarUrl",
 				u.use_discord_avatar as "useDiscordAvatar",
 				r.moves,
@@ -85,6 +89,8 @@ export async function GET(req: Request) {
 				id: row.id,
 				username: row.username,
 				profilePictureId: row.profilePictureId,
+				steamAvatarUrl: row.steamAvatarUrl,
+				useSteamAvatar: row.useSteamAvatar,
 				discordAvatarUrl: row.discordAvatarUrl,
 				useDiscordAvatar: row.useDiscordAvatar,
 				moves: Number(row.moves),

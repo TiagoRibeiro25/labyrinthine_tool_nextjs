@@ -21,6 +21,9 @@ interface EditProfileModalProps {
 		discordUsername: string | null;
 		discordAvatarUrl: string | null;
 		useDiscordAvatar: boolean;
+		steamUsername: string | null;
+		steamAvatarUrl: string | null;
+		useSteamAvatar: boolean;
 		steamProfileUrl: string | null;
 		profileCommentVisibility: "everyone" | "friends_only" | "no_one";
 		profilePictureId: string | null;
@@ -53,9 +56,6 @@ export default function EditProfileModal({
 	}, [isOpen]);
 
 	const [bio, setBio] = useState<string>(initialData.bio || "");
-	const [steamProfileUrl, setSteamProfileUrl] = useState<string>(
-		initialData.steamProfileUrl || ""
-	);
 	const [profilePictureId, setProfilePictureId] = useState<string>(
 		initialData.profilePictureId || "1"
 	);
@@ -64,6 +64,9 @@ export default function EditProfileModal({
 	>(initialData.profileCommentVisibility || "everyone");
 	const [useDiscordAvatar, setUseDiscordAvatar] = useState<boolean>(
 		initialData.useDiscordAvatar
+	);
+	const [useSteamAvatar, setUseSteamAvatar] = useState<boolean>(
+		initialData.useSteamAvatar
 	);
 	const [profileBannerId, setProfileBannerId] = useState<string>(
 		initialData.profileBannerId || "chap1"
@@ -84,26 +87,15 @@ export default function EditProfileModal({
 		setLocalError("");
 		setApiError(null);
 
-		if (steamProfileUrl) {
-			const steamRegex =
-				/^https?:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/;
-			if (!steamRegex.test(steamProfileUrl)) {
-				setLocalError(
-					"Invalid Steam Profile URL. Must be a valid steamcommunity.com link."
-				);
-				return;
-			}
-		}
-
 		try {
 			await execute("/api/profile", {
 				method: "PUT",
 				body: JSON.stringify({
 					bio,
-					steamProfileUrl,
 					profileCommentVisibility,
 					profilePictureId,
 					useDiscordAvatar,
+					useSteamAvatar,
 					profileBannerId,
 					favoriteCosmeticId: favoriteCosmeticId ? Number(favoriteCosmeticId) : null,
 				}),
@@ -125,6 +117,15 @@ export default function EditProfileModal({
 				? `${window.location.pathname}${window.location.search}`
 				: "/";
 		const authUrl = `/api/auth/discord/connect?returnTo=${encodeURIComponent(currentPath)}`;
+		window.location.href = authUrl;
+	};
+
+	const handleConnectSteam = () => {
+		const currentPath =
+			typeof window !== "undefined"
+				? `${window.location.pathname}${window.location.search}`
+				: "/";
+		const authUrl = `/api/auth/steam/connect?returnTo=${encodeURIComponent(currentPath)}`;
 		window.location.href = authUrl;
 	};
 
@@ -190,7 +191,13 @@ export default function EditProfileModal({
 								<input
 									type="checkbox"
 									checked={useDiscordAvatar}
-									onChange={(event) => setUseDiscordAvatar(event.target.checked)}
+									onChange={(event) => {
+										const checked = event.target.checked;
+										setUseDiscordAvatar(checked);
+										if (checked) {
+											setUseSteamAvatar(false);
+										}
+									}}
 									disabled={
 										loading || (!initialData.discordAvatarUrl && !useDiscordAvatar)
 									}
@@ -235,15 +242,60 @@ export default function EditProfileModal({
 
 					<div className="space-y-2">
 						<label className="block text-xs font-bold text-neutral-400 uppercase tracking-widest">
-							Steam Profile URL
+							Steam
 						</label>
-						<input
-							type="url"
-							placeholder="https://steamcommunity.com/id/..."
-							value={steamProfileUrl}
-							onChange={(e) => setSteamProfileUrl(e.target.value)}
-							className="w-full bg-neutral-900/50 border border-neutral-800 text-neutral-100 px-4 py-3 rounded-sm focus:outline-none focus:border-neutral-500 focus:bg-neutral-900 transition-all placeholder:text-neutral-700"
-						/>
+						<div className="w-full bg-neutral-900/50 border border-neutral-800 text-neutral-100 px-4 py-3 rounded-sm">
+							<p className="text-sm text-neutral-300">
+								{initialData.steamUsername
+									? `Linked as ${initialData.steamUsername}`
+									: "No Steam account linked yet."}
+							</p>
+							<p className="mt-1 text-xs text-neutral-500">
+								Connect with Steam to sync your profile name and avatar automatically.
+							</p>
+							{initialData.steamProfileUrl && (
+								<a
+									href={initialData.steamProfileUrl}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="mt-1 inline-block text-xs text-neutral-400 hover:text-neutral-200 underline underline-offset-2"
+								>
+									View linked Steam profile
+								</a>
+							)}
+							<p className="mt-1 text-[10px] text-neutral-600 uppercase tracking-widest">
+								Steam profile URL is synced automatically when you connect Steam.
+							</p>
+							<label className="mt-3 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-400">
+								<input
+									type="checkbox"
+									checked={useSteamAvatar}
+									onChange={(event) => {
+										const checked = event.target.checked;
+										setUseSteamAvatar(checked);
+										if (checked) {
+											setUseDiscordAvatar(false);
+										}
+									}}
+									disabled={loading || (!initialData.steamAvatarUrl && !useSteamAvatar)}
+									className="h-4 w-4 accent-neutral-200"
+								/>
+								Use Steam avatar
+							</label>
+							{!initialData.steamAvatarUrl && (
+								<p className="mt-1 text-[10px] text-neutral-600 uppercase tracking-widest">
+									Link Steam with an avatar to enable this option.
+								</p>
+							)}
+							<button
+								type="button"
+								onClick={handleConnectSteam}
+								disabled={loading}
+								className="mt-3 px-4 py-2 rounded-sm bg-neutral-800 text-neutral-100 font-bold text-xs uppercase tracking-widest border border-neutral-600 hover:bg-neutral-700 hover:border-neutral-400 transition-all duration-300 disabled:opacity-50 cursor-pointer"
+							>
+								{initialData.steamUsername ? "Reconnect Steam" : "Connect Steam"}
+							</button>
+						</div>
 					</div>
 
 					<div className="space-y-2">

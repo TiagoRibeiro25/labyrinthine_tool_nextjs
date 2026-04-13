@@ -25,6 +25,9 @@ export const users = pgTable(
 		discordUsername: text("discord_username"),
 		discordAvatarUrl: text("discord_avatar_url"),
 		useDiscordAvatar: boolean("use_discord_avatar").default(false).notNull(),
+		steamUsername: text("steam_username"),
+		steamAvatarUrl: text("steam_avatar_url"),
+		useSteamAvatar: boolean("use_steam_avatar").default(false).notNull(),
 		steamProfileUrl: text("steam_profile_url"),
 		profileCommentVisibility: text("profile_comment_visibility")
 			.default("everyone")

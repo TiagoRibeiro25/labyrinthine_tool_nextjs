@@ -123,6 +123,8 @@ export async function GET(
 				currentUserLiked: currentUserLikedSql,
 				authorUsername: users.username,
 				authorProfilePictureId: users.profilePictureId,
+				authorSteamAvatarUrl: users.steamAvatarUrl,
+				authorUseSteamAvatar: users.useSteamAvatar,
 				authorDiscordAvatarUrl: users.discordAvatarUrl,
 				authorUseDiscordAvatar: users.useDiscordAvatar,
 			})
@@ -161,6 +163,8 @@ export async function GET(
 						id: row.authorUserId,
 						username: row.authorUsername,
 						profilePictureId: row.authorProfilePictureId,
+						steamAvatarUrl: row.authorSteamAvatarUrl,
+						useSteamAvatar: row.authorUseSteamAvatar,
 						discordAvatarUrl: row.authorDiscordAvatarUrl,
 						useDiscordAvatar: row.authorUseDiscordAvatar,
 					},

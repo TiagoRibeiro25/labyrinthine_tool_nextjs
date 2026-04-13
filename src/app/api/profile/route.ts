@@ -34,9 +34,10 @@ export async function PUT(req: Request) {
 			);
 		}
 
-		const steamProfileUrl = parsed.data.steamProfileUrl?.trim() || null;
+		const steamProfileUrl = parsed.data.steamProfileUrl?.trim();
 		const profilePictureId = parsed.data.profilePictureId?.trim() || null;
 		const useDiscordAvatar = parsed.data.useDiscordAvatar;
+		const useSteamAvatar = parsed.data.useSteamAvatar;
 		const profileBannerId = parsed.data.profileBannerId?.trim() || null;
 		const bio = parsed.data.bio?.trim() || null;
 		const favoriteCosmeticId = parsed.data.favoriteCosmeticId ?? null;
@@ -47,9 +48,12 @@ export async function PUT(req: Request) {
 			.update(users)
 			.set({
 				bio,
-				steamProfileUrl: steamProfileUrl || null,
+				...(typeof steamProfileUrl === "string"
+					? { steamProfileUrl: steamProfileUrl || null }
+					: {}),
 				profilePictureId: profilePictureId || null,
 				...(typeof useDiscordAvatar === "boolean" ? { useDiscordAvatar } : {}),
+				...(typeof useSteamAvatar === "boolean" ? { useSteamAvatar } : {}),
 				...(profileCommentVisibility ? { profileCommentVisibility } : {}),
 				profileBannerId,
 				favoriteCosmeticId,

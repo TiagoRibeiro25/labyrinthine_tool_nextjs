@@ -84,6 +84,7 @@ describe("profile route", () => {
 					steamProfileUrl: "https://steamcommunity.com/id/test-user/",
 					profilePictureId: "1",
 					useDiscordAvatar: true,
+					useSteamAvatar: false,
 					profileBannerId: "chap1",
 					favoriteCosmeticId: 12,
 				}),
@@ -100,6 +101,7 @@ describe("profile route", () => {
 				steamProfileUrl: "https://steamcommunity.com/id/test-user/",
 				profilePictureId: "1",
 				useDiscordAvatar: true,
+				useSteamAvatar: false,
 				profileBannerId: "chap1",
 				favoriteCosmeticId: 12,
 			})
@@ -125,5 +127,32 @@ describe("profile route", () => {
 		);
 
 		expect(response.status).toBe(500);
+	});
+
+	it("does not overwrite steam profile url when omitted", async () => {
+		mockedGetServerSession.mockResolvedValue({ user: { id: "u1" } } as never);
+		const chain = {
+			set: vi.fn(),
+			where: vi.fn(),
+		};
+		chain.set.mockReturnValue(chain);
+		chain.where.mockResolvedValue(undefined);
+		mockedDb.update.mockReturnValue(chain);
+
+		const response = await PUT(
+			new Request("http://localhost/api/profile", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					bio: "bio only",
+					profilePictureId: "1",
+					useSteamAvatar: true,
+				}),
+			})
+		);
+
+		expect(response.status).toBe(200);
+		const setArg = chain.set.mock.calls[0]?.[0] as Record<string, unknown>;
+		expect("steamProfileUrl" in setArg).toBe(false);
 	});
 });

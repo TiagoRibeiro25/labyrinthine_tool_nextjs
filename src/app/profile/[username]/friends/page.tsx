@@ -17,6 +17,8 @@ type FriendUser = {
 	id: string;
 	username: string;
 	profilePictureId: string | null;
+	steamAvatarUrl: string | null;
+	useSteamAvatar: boolean;
 	discordAvatarUrl: string | null;
 	useDiscordAvatar: boolean;
 	isAdministrator: boolean;
@@ -54,6 +56,8 @@ export default async function ProfileFriendsPage({ params }: ProfileFriendsPageP
 					id: true,
 					username: true,
 					profilePictureId: true,
+					steamAvatarUrl: true,
+					useSteamAvatar: true,
 					discordAvatarUrl: true,
 					useDiscordAvatar: true,
 					isAdministrator: true,
@@ -64,6 +68,8 @@ export default async function ProfileFriendsPage({ params }: ProfileFriendsPageP
 					id: true,
 					username: true,
 					profilePictureId: true,
+					steamAvatarUrl: true,
+					useSteamAvatar: true,
 					discordAvatarUrl: true,
 					useDiscordAvatar: true,
 					isAdministrator: true,

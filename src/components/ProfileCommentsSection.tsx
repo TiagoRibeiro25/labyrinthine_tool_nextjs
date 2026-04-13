@@ -24,6 +24,8 @@ type WallComment = {
 		id: string;
 		username: string;
 		profilePictureId: string | null;
+		steamAvatarUrl: string | null;
+		useSteamAvatar: boolean;
 		discordAvatarUrl: string | null;
 		useDiscordAvatar: boolean;
 	};
@@ -485,6 +487,8 @@ export default function ProfileCommentsSection({
 						comments.map((comment) => {
 							const avatarUrl = getUserAvatarUrl({
 								profilePictureId: comment.author.profilePictureId,
+								steamAvatarUrl: comment.author.steamAvatarUrl,
+								useSteamAvatar: comment.author.useSteamAvatar,
 								discordAvatarUrl: comment.author.discordAvatarUrl,
 								useDiscordAvatar: comment.author.useDiscordAvatar,
 							});

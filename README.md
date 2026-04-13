@@ -42,6 +42,9 @@ NODE_ENV=development
 NEXTAUTH_SECRET=secret
 DISCORD_CLIENT_ID=
 DISCORD_CLIENT_SECRET=
+STEAM_API_KEY=
+# Optional alias for STEAM_API_KEY for compatibility
+STEAM_SECRET=
 
 DATABASE_URL=postgresql://labyrinthine_user:labyrinthine_password@localhost:5432/labyrinthine_db
 ```

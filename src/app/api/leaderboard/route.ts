@@ -43,6 +43,8 @@ export async function GET(req: Request) {
 				id: users.id,
 				username: users.username,
 				profilePictureId: users.profilePictureId,
+				steamAvatarUrl: users.steamAvatarUrl,
+				useSteamAvatar: users.useSteamAvatar,
 				discordAvatarUrl: users.discordAvatarUrl,
 				useDiscordAvatar: users.useDiscordAvatar,
 				cosmeticsCount: cosmeticsCountExpr.mapWith(Number),

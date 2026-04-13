@@ -22,6 +22,8 @@ interface NotificationItem {
 		id: string;
 		username: string;
 		profilePictureId: string | null;
+		steamAvatarUrl: string | null;
+		useSteamAvatar: boolean;
 		discordAvatarUrl: string | null;
 		useDiscordAvatar: boolean;
 	} | null;

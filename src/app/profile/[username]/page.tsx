@@ -67,6 +67,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 	// Default profile picture logic
 	const profilePictureUrl = getUserAvatarUrl({
 		profilePictureId: targetUser.profilePictureId,
+		steamAvatarUrl: targetUser.steamAvatarUrl,
+		useSteamAvatar: targetUser.useSteamAvatar,
 		discordAvatarUrl: targetUser.discordAvatarUrl,
 		useDiscordAvatar: targetUser.useDiscordAvatar,
 	});
@@ -258,6 +260,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 										discordUsername: targetUser.discordUsername,
 										discordAvatarUrl: targetUser.discordAvatarUrl,
 										useDiscordAvatar: targetUser.useDiscordAvatar,
+										steamUsername: targetUser.steamUsername,
+										steamAvatarUrl: targetUser.steamAvatarUrl,
+										useSteamAvatar: targetUser.useSteamAvatar,
 										steamProfileUrl: targetUser.steamProfileUrl,
 										profileCommentVisibility,
 										profilePictureId: targetUser.profilePictureId,
@@ -341,7 +346,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 									>
 										<FaSteam className="text-xl text-neutral-500 group-hover:text-blue-400 transition-colors" />
 										<span className="text-sm font-medium tracking-wide truncate">
-											Steam Profile
+											{targetUser.steamUsername || "Steam Profile"}
 										</span>
 									</a>
 								) : (
