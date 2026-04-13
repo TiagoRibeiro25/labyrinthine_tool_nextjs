@@ -391,20 +391,13 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 									{targetUser.bio || "No survivor bio yet. Edit profile to add one."}
 								</p>
 							</div>
-							{isOwnProfile ? (
-								<Link
-									href="/friends"
-									className="flex items-center gap-2 text-sm text-neutral-400 font-bold tracking-widest uppercase bg-neutral-900/50 px-3 py-1 rounded-sm border border-neutral-800 hover:bg-neutral-800/60 hover:border-neutral-500 transition-all duration-300"
-								>
-									<FaUserGroup className="text-neutral-500" />
-									{friendsCount} {friendsCount === 1 ? "Friend" : "Friends"}
-								</Link>
-							) : (
-								<div className="flex items-center gap-2 text-sm text-neutral-400 font-bold tracking-widest uppercase bg-neutral-900/50 px-3 py-1 rounded-sm border border-neutral-800">
-									<FaUserGroup className="text-neutral-500" />
-									{friendsCount} {friendsCount === 1 ? "Friend" : "Friends"}
-								</div>
-							)}
+							<Link
+								href={`/profile/${targetUser.username}/friends`}
+								className="flex items-center gap-2 text-sm text-neutral-400 font-bold tracking-widest uppercase bg-neutral-900/50 px-3 py-1 rounded-sm border border-neutral-800 hover:bg-neutral-800/60 hover:border-neutral-500 transition-all duration-300"
+							>
+								<FaUserGroup className="text-neutral-500" />
+								{friendsCount} {friendsCount === 1 ? "Friend" : "Friends"}
+							</Link>
 						</div>
 
 						{/* Social Links Panel */}

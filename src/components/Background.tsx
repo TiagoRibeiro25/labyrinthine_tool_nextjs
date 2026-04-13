@@ -24,6 +24,7 @@ const Background: FC<PropsWithChildren> = ({ children }) => {
 		case "/search":
 		case pathname.match(/^\/profile\/[^\/]+$/)?.input: // Matches /profile/:username
 		case "/friends":
+		case pathname.match(/^\/profile\/[^\/]+\/friends$/)?.input: // Matches /profile/:username/friends
 		case "/missing-cosmetics":
 		case "/leaderboard":
 		case "/activity":
