@@ -37,12 +37,13 @@ npm install
 Create a `.env.local` file in the root directory of the project and add the necessary environment variables. You can use the following as a template:
 
 ```env
-# Database Configuration
-DATABASE_URL="postgresql://labyrinthine_user:labyrinthine_password@localhost:5432/labyrinthine_db"
+NODE_ENV=development
 
-# NextAuth Configuration
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-super-secret-key-here" # Generate one using: openssl rand -base64 32
+NEXTAUTH_SECRET=secret
+DISCORD_CLIENT_ID=
+DISCORD_CLIENT_SECRET=
+
+DATABASE_URL=postgresql://labyrinthine_user:labyrinthine_password@localhost:5432/labyrinthine_db
 ```
 
 ### 3. Start the Database
@@ -76,6 +77,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## 📁 Project Structure
 
 - `/src/app` - Next.js App Router pages and layouts
+- `/src/app/api` - API route handlers
 - `/src/components` - Reusable React components
 - `/src/db` - Database configuration, schema, and Drizzle setup
 - `/src/lib` - Utility functions and shared logic
