@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
 		return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
 	}
 
-	const steamApiKey = process.env.STEAM_API_KEY ?? process.env.STEAM_SECRET;
+	const steamApiKey = process.env.STEAM_API_KEY;
 	if (!steamApiKey) {
 		return NextResponse.json(
 			{ message: "Steam OAuth is not configured." },

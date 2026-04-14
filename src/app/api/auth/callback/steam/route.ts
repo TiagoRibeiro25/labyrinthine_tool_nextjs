@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
 	const returnTo = sanitizeReturnTo(req.cookies.get(STEAM_RETURN_TO_COOKIE)?.value);
 	const expectedState = req.cookies.get(STEAM_STATE_COOKIE)?.value;
 	const state = req.nextUrl.searchParams.get("state");
-	const steamApiKey = process.env.STEAM_API_KEY ?? process.env.STEAM_SECRET;
+	const steamApiKey = process.env.STEAM_API_KEY;
 
 	const session = await getServerSession(authOptions);
 	const sessionUser = session?.user as { id?: string } | undefined;
