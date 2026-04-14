@@ -1,6 +1,32 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import {
+	type PointerEvent as ReactPointerEvent,
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useRef,
+} from "react";
+
+type Easing = "ease-in" | "ease-out" | "ease-in-out" | "linear";
+
+type Spark = {
+	x: number;
+	y: number;
+	angle: number;
+	startTime: number;
+};
+
+type ClickSparkProps = {
+	sparkColor?: string;
+	sparkSize?: number;
+	sparkRadius?: number;
+	sparkCount?: number;
+	duration?: number;
+	easing?: Easing;
+	extraScale?: number;
+	children: ReactNode;
+};
 
 const ClickSpark = ({
 	sparkColor = "#f00",
@@ -11,9 +37,9 @@ const ClickSpark = ({
 	easing = "ease-out",
 	extraScale = 1,
 	children,
-}) => {
-	const canvasRef = useRef(null);
-	const sparksRef = useRef([]);
+}: ClickSparkProps) => {
+	const canvasRef = useRef<HTMLCanvasElement | null>(null);
+	const sparksRef = useRef<Spark[]>([]);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -26,7 +52,8 @@ const ClickSpark = ({
 			return;
 		}
 
-		let resizeTimeout;
+		let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+		let ro: ResizeObserver | null = null;
 
 		const resizeCanvas = () => {
 			const { width, height } = parent.getBoundingClientRect();
@@ -37,22 +64,34 @@ const ClickSpark = ({
 		};
 
 		const handleResize = () => {
-			clearTimeout(resizeTimeout);
+			if (resizeTimeout) {
+				clearTimeout(resizeTimeout);
+			}
 			resizeTimeout = setTimeout(resizeCanvas, 100);
 		};
 
-		const ro = new ResizeObserver(handleResize);
-		ro.observe(parent);
+		if (typeof ResizeObserver !== "undefined") {
+			ro = new ResizeObserver(handleResize);
+			ro.observe(parent);
+		} else {
+			window.addEventListener("resize", handleResize);
+		}
+
 		resizeCanvas();
 
 		return () => {
-			ro.disconnect();
-			clearTimeout(resizeTimeout);
+			if (ro) {
+				ro.disconnect();
+			}
+			window.removeEventListener("resize", handleResize);
+			if (resizeTimeout) {
+				clearTimeout(resizeTimeout);
+			}
 		};
 	}, []);
 
 	const easeFunc = useCallback(
-		(t) => {
+		(t: number) => {
 			switch (easing) {
 				case "linear":
 					return t;
@@ -78,9 +117,9 @@ const ClickSpark = ({
 			return;
 		}
 
-		let animationId;
+		let animationId = 0;
 
-		const draw = (timestamp) => {
+		const draw = (timestamp: number) => {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 			sparksRef.current = sparksRef.current.filter((spark) => {
@@ -120,7 +159,7 @@ const ClickSpark = ({
 		};
 	}, [duration, easeFunc, extraScale, sparkColor, sparkRadius, sparkSize]);
 
-	const handleClick = (event) => {
+	const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
 		const canvas = canvasRef.current;
 		if (!canvas) {
 			return;
@@ -131,7 +170,7 @@ const ClickSpark = ({
 		const y = event.clientY - rect.top;
 		const now = performance.now();
 
-		const newSparks = Array.from({ length: sparkCount }, (_, index) => ({
+		const newSparks: Spark[] = Array.from({ length: sparkCount }, (_, index) => ({
 			x,
 			y,
 			angle: (2 * Math.PI * index) / sparkCount,
@@ -142,10 +181,11 @@ const ClickSpark = ({
 	};
 
 	return (
-		<div className="relative h-full w-full" onClick={handleClick}>
+		<div className="relative h-full w-full" onPointerDown={handlePointerDown}>
 			<canvas
 				ref={canvasRef}
-				className="pointer-events-none absolute inset-0 block h-full w-full select-none z-99"
+				className="pointer-events-none absolute inset-0 block h-full w-full select-none"
+				style={{ zIndex: 99 }}
 			/>
 			{children}
 		</div>
