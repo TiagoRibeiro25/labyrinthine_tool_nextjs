@@ -8,6 +8,7 @@ import Footer from "../components/Footer";
 import NotificationsCenter from "../components/NotificationsCenter";
 import AppProviders from "../components/providers/AppProviders";
 import { authOptions } from "../lib/auth";
+import ClickSpark from "../components/ClickSpark";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -36,10 +37,20 @@ export default async function RootLayout({
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<AppProviders>
 					<Background>
-						<main>{children}</main>
-						{isLoggedIn ? <NotificationsCenter /> : null}
-						<CommandPalette />
-						<Footer />
+						<ClickSpark
+							sparkColor="#f5f5f5"
+							sparkSize={14}
+							sparkRadius={18}
+							sparkCount={10}
+							duration={500}
+							easing="ease-out"
+							extraScale={1}
+						>
+							<main>{children}</main>
+							{isLoggedIn ? <NotificationsCenter /> : null}
+							<CommandPalette />
+							<Footer />
+						</ClickSpark>
 					</Background>
 				</AppProviders>
 			</body>
