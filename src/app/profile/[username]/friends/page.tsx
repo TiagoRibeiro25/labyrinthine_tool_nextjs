@@ -90,39 +90,41 @@ export default async function ProfileFriendsPage({ params }: ProfileFriendsPageP
 		.sort((a, b) => a.user.username.localeCompare(b.user.username));
 
 	return (
-		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
-			<div className="w-full max-w-6xl flex flex-col items-center text-center mb-10">
-				<h1 className="text-3xl sm:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-100 to-neutral-500 uppercase mb-4 flex items-center justify-center gap-3">
-					<FaUserGroup className="text-neutral-600" />
-					Connections
-				</h1>
-				<p className="text-sm sm:text-base text-neutral-400 font-medium tracking-wide mb-8 max-w-2xl">
-					<span className="text-neutral-200 font-bold">{targetUser.username}</span> has {" "}
-					{friends.length} {friends.length === 1 ? "friend" : "friends"} in the fog.
-				</p>
-				<Link
-					href={`/profile/${targetUser.username}`}
-					className="group inline-flex items-center justify-center gap-3 px-6 py-3 rounded-sm bg-neutral-900/50 text-neutral-400 font-bold text-xs uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:text-neutral-200 hover:border-neutral-500 transition-all duration-300"
-				>
-					<FaArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-					Back to Profile
-				</Link>
+		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-8 sm:py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
+			<div className="w-full max-w-6xl mb-8 sm:mb-10">
+				<div className="rounded-3xl border border-neutral-800/80 bg-[linear-gradient(150deg,rgba(9,12,14,0.95),rgba(18,28,31,0.9))] p-4 sm:p-6 lg:p-8 shadow-[0_24px_80px_rgba(0,0,0,0.45)] text-center">
+					<h1 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-100 uppercase mb-4 flex items-center justify-center gap-3">
+						<FaUserGroup className="text-cyan-300" />
+						Connections
+					</h1>
+					<p className="text-sm sm:text-base text-neutral-400 font-medium tracking-wide mb-6 max-w-2xl mx-auto">
+						<span className="text-neutral-200 font-bold">{targetUser.username}</span> has {" "}
+						{friends.length} {friends.length === 1 ? "friend" : "friends"} in the fog.
+					</p>
+					<Link
+						href={`/profile/${targetUser.username}`}
+						className="group inline-flex items-center justify-center gap-2 rounded-full border border-neutral-700 bg-black/35 px-4 py-2 text-[11px] uppercase tracking-[0.16em] font-semibold text-neutral-300 hover:border-neutral-500 hover:text-neutral-100 transition-colors"
+					>
+						<FaArrowLeft className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
+						Back to Profile
+					</Link>
+				</div>
 			</div>
 
-			<section className="w-full max-w-6xl">
+			<section className="w-full max-w-6xl rounded-3xl border border-neutral-800/70 bg-neutral-950/45 p-4 sm:p-6 lg:p-8 shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
 				{friends.length === 0 ? (
-					<div className="w-full text-center py-10 border border-dashed border-neutral-800 rounded-sm bg-neutral-950/30">
+					<div className="w-full text-center py-10 border border-dashed border-neutral-800 rounded-2xl bg-neutral-950/30">
 						<p className="text-neutral-500 font-medium italic">
 							No active friends found for this survivor.
 						</p>
 					</div>
 				) : (
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
 						{friends.map(({ id, user }) => (
 							<Link
 								key={id}
 								href={`/profile/${user.username}`}
-								className="flex items-center gap-3 p-3 sm:p-4 bg-neutral-900/40 border border-neutral-800 rounded-sm hover:bg-neutral-800/80 transition-colors group"
+								className="flex items-center gap-3 p-3 sm:p-4 bg-neutral-900/40 border border-neutral-800 rounded-2xl hover:bg-neutral-800/80 hover:border-neutral-600 transition-colors group"
 							>
 								<div className="relative w-10 h-10 sm:w-12 sm:h-12 shrink-0 border border-black shadow-md overflow-hidden bg-neutral-950">
 									<Image

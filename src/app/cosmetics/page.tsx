@@ -50,8 +50,8 @@ export default async function CosmeticsPage() {
 								A cleaner way to manage every cosmetic
 							</h1>
 							<p className="text-sm sm:text-base text-neutral-400 mt-3 max-w-3xl">
-								Tap any item to lock or unlock it, then use filters to focus on exactly what you
-								want to complete next.
+								Tap any item to lock or unlock it, then use filters to focus on exactly
+								what you want to complete next.
 							</p>
 						</div>
 					</div>

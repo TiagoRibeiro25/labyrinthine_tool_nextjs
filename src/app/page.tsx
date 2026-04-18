@@ -12,7 +12,7 @@ export default async function Home() {
 	const isAuthenticated = Boolean(session);
 
 	return (
-		<main className="min-h-screen text-neutral-200 selection:bg-neutral-800/50 selection:text-neutral-200 flex flex-col items-center pb-12 relative z-10">
+		<main className="min-h-screen text-neutral-200 selection:bg-neutral-800/50 selection:text-neutral-200 flex flex-col items-center pb-16 sm:pb-20 relative z-10">
 			<HeroSection isAuthenticated={isAuthenticated} />
 			<TrailerSection />
 			<FeatureHighlightsSection />

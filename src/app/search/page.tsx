@@ -39,19 +39,19 @@ export default function SearchPage() {
 	}, [debouncedQuery, execute, setResults]);
 
 	return (
-		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
-			<div className="w-full max-w-3xl bg-black/80 backdrop-blur-md border border-neutral-800 border-t-4 border-t-neutral-600 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative p-6 sm:p-10 flex flex-col">
+		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-8 sm:py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
+			<div className="w-full max-w-4xl rounded-3xl bg-[linear-gradient(145deg,rgba(8,11,13,0.95),rgba(18,24,29,0.9))] backdrop-blur-md border border-neutral-800/80 shadow-[0_24px_80px_rgba(0,0,0,0.45)] relative p-4 sm:p-6 lg:p-8 flex flex-col">
 				<div className="mb-6">
 					<Link
 						href="/dashboard"
-						className="text-xs text-neutral-500 font-bold uppercase tracking-widest hover:text-neutral-300 transition-colors flex items-center justify-center sm:justify-start gap-2"
+						className="inline-flex items-center gap-2 rounded-full border border-neutral-700 bg-black/35 px-4 py-2 text-[11px] uppercase tracking-[0.16em] font-semibold text-neutral-300 hover:border-neutral-500 hover:text-neutral-100 transition-colors"
 					>
-						&larr; Return to Safehouse
+						Return to Safehouse
 					</Link>
 				</div>
 
 				<div className="mb-8 text-center sm:text-left border-b border-neutral-800/80 pb-6">
-					<h1 className="text-3xl sm:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-100 to-neutral-500 uppercase mb-2">
+					<h1 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-100 uppercase mb-2">
 						Find Survivors
 					</h1>
 					<p className="text-sm text-neutral-400 font-medium tracking-wide">
@@ -93,7 +93,7 @@ export default function SearchPage() {
 					)}
 
 					{!loading && !error && results.length === 0 && debouncedQuery && (
-						<div className="w-full text-center py-12 border border-dashed border-neutral-800 rounded-sm">
+						<div className="w-full text-center py-12 border border-dashed border-neutral-800 rounded-2xl">
 							<p className="text-neutral-500 font-medium italic">
 								No survivors found matching &quot;
 								{debouncedQuery}&quot;.
@@ -107,7 +107,7 @@ export default function SearchPage() {
 								<Link
 									key={user.id}
 									href={`/profile/${user.username}`}
-									className="group flex items-center gap-4 p-4 bg-neutral-900/40 border border-neutral-800 rounded-sm hover:bg-neutral-800 hover:border-neutral-500 transition-all duration-300"
+									className="group flex items-center gap-4 p-4 bg-neutral-900/40 border border-neutral-800 rounded-2xl hover:bg-neutral-800 hover:border-neutral-500 transition-all duration-300"
 								>
 									<div className="relative w-12 h-12 shrink-0 border border-black shadow-md overflow-hidden bg-neutral-950">
 										<Image

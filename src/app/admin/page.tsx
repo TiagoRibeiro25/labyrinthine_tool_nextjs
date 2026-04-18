@@ -100,20 +100,20 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 	];
 
 	return (
-		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
-			<div className="w-full max-w-5xl bg-black/80 backdrop-blur-md border border-neutral-800 border-t-4 border-t-neutral-600 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative p-6 sm:p-10 flex flex-col">
+		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-8 sm:py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
+			<div className="w-full max-w-6xl rounded-3xl bg-[linear-gradient(145deg,rgba(12,10,8,0.95),rgba(29,22,14,0.9))] backdrop-blur-md border border-neutral-800/80 shadow-[0_24px_80px_rgba(0,0,0,0.45)] relative p-4 sm:p-6 lg:p-8 flex flex-col">
 				<div className="mb-6">
 					<Link
 						href="/dashboard"
-						className="text-xs text-neutral-500 font-bold uppercase tracking-widest hover:text-neutral-300 transition-colors flex items-center justify-center sm:justify-start gap-2 w-fit"
+						className="inline-flex items-center gap-2 rounded-full border border-neutral-700 bg-black/35 px-4 py-2 text-[11px] uppercase tracking-[0.16em] font-semibold text-neutral-300 hover:border-neutral-500 hover:text-neutral-100 transition-colors w-fit"
 					>
 						<FaArrowLeft /> Return to Safehouse
 					</Link>
 				</div>
 
 				<div className="mb-8 border-b border-neutral-800/80 pb-6 text-center sm:text-left">
-					<h1 className="text-3xl sm:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-100 to-neutral-500 uppercase mb-2 flex items-center justify-center sm:justify-start gap-3">
-						<FaShield className="text-amber-500" />
+					<h1 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-100 uppercase mb-2 flex items-center justify-center sm:justify-start gap-3">
+						<FaShield className="text-amber-300" />
 						Admin Panel
 					</h1>
 					<p className="text-sm text-neutral-400 font-medium tracking-wide">
@@ -121,11 +121,11 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 					</p>
 				</div>
 
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
 					{metrics.map((metric) => (
 						<div
 							key={metric.label}
-							className="p-4 bg-neutral-900/50 border border-neutral-800 rounded-sm"
+							className="p-4 bg-neutral-900/50 border border-neutral-800 rounded-2xl"
 						>
 							<p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
 								{metric.label}
@@ -144,7 +144,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 					pagination={reportedCommentsPage.pagination}
 				/>
 
-				<div className="mt-8 p-5 bg-black/50 border border-neutral-800 rounded-sm">
+				<div className="mt-8 p-5 bg-black/50 border border-neutral-800 rounded-2xl">
 					<h3 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4 border-b border-neutral-800/50 pb-2 flex items-center gap-2">
 						<FaUsers /> Recent Signups
 					</h3>
@@ -153,7 +153,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 							<Link
 								key={user.id}
 								href={`/profile/${user.username}`}
-								className="flex items-center justify-between gap-3 p-3 bg-neutral-900/40 border border-neutral-800 rounded-sm hover:bg-neutral-800/60 hover:border-neutral-500 transition-colors"
+								className="flex items-center justify-between gap-3 p-3 bg-neutral-900/40 border border-neutral-800 rounded-xl hover:bg-neutral-800/60 hover:border-neutral-500 transition-colors"
 							>
 								<div className="min-w-0">
 									<p className="text-sm font-bold uppercase tracking-widest text-neutral-200 truncate">
