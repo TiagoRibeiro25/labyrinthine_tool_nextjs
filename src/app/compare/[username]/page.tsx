@@ -114,27 +114,36 @@ export default async function ComparePage({ params }: ComparePageProps) {
 	const bothMissingByCategory = groupByCategory(bothMissing);
 
 	return (
-		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
-			<div className="w-full max-w-6xl mb-8 flex justify-start">
-				<Link
-					href={`/profile/${targetUser.username}`}
-					className="group inline-flex items-center gap-2 px-4 py-2 rounded-sm bg-neutral-900 text-neutral-400 font-bold text-xs uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:text-neutral-100 hover:border-neutral-500 transition-all duration-300"
-				>
-					<FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
-					Back to Profile
-				</Link>
-			</div>
-
-			<div className="w-full max-w-6xl mb-8 text-center">
-				<h1 className="text-3xl sm:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-100 to-neutral-500 uppercase mb-3">
-					Collection Comparison
-				</h1>
-				<p className="text-sm sm:text-base text-neutral-400 font-medium tracking-wide max-w-3xl mx-auto">
-					Compare your wardrobe with{" "}
-					<span className="text-neutral-200 font-bold">{targetUser.username}</span>. Find
-					cosmetics that only one of you has and discover which items you&apos;re both
-					still missing.
-				</p>
+		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-8 sm:py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
+			<div className="w-full max-w-6xl mb-8 sm:mb-10">
+				<div className="rounded-3xl border border-neutral-800/80 bg-[linear-gradient(150deg,rgba(7,11,15,0.95),rgba(14,31,34,0.9))] p-4 sm:p-6 lg:p-8 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+					<div className="flex flex-col gap-4 sm:gap-6">
+						<div>
+							<Link
+								href={`/profile/${targetUser.username}`}
+								className="group inline-flex items-center gap-2 rounded-full border border-neutral-700 bg-black/35 px-4 py-2 text-[11px] uppercase tracking-[0.16em] font-semibold text-neutral-300 hover:border-neutral-500 hover:text-neutral-100 transition-colors"
+							>
+								<FaArrowLeft className="group-hover:-translate-x-0.5 transition-transform" />
+								Back to Profile
+							</Link>
+						</div>
+						<div>
+							<p className="text-[11px] uppercase tracking-[0.2em] text-cyan-200/80 font-semibold mb-3">
+								Collection Comparison
+							</p>
+							<h1 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-100 leading-tight">
+								See gaps and overlaps instantly
+							</h1>
+							<p className="text-sm sm:text-base text-neutral-400 mt-3 max-w-3xl">
+								Compare your wardrobe with{" "}
+								<span className="text-neutral-200 font-semibold">
+									{targetUser.username}
+								</span>{" "}
+								to find what only one of you owns and what both of you can chase next.
+							</p>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<CollectionComparison

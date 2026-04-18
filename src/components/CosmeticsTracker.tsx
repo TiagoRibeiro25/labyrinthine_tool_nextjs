@@ -1,11 +1,17 @@
 "use client";
 
-import { useState, useDeferredValue, useMemo } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaLock, FaUnlockKeyhole, FaFilter, FaMagnifyingGlass } from "react-icons/fa6";
-import { categories, allTypes } from "../lib/cosmetics";
-
+import {
+	FaCheck,
+	FaFilter,
+	FaLock,
+	FaMagnifyingGlass,
+	FaSliders,
+	FaUnlockKeyhole,
+} from "react-icons/fa6";
+import { allTypes, categories } from "../lib/cosmetics";
 import { useApi } from "../hooks/useApi";
 import { useToast } from "../hooks/useToast";
 
@@ -13,12 +19,13 @@ interface CosmeticsTrackerProps {
 	initialUnlockedIds: number[];
 }
 
+type VisibilityFilter = "all" | "unlocked" | "locked";
+
 export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTrackerProps) {
-	const [unlockedIds, setUnlockedIds] = useState<Set<number>>(
-		new Set(initialUnlockedIds)
-	);
+	const [unlockedIds, setUnlockedIds] = useState<Set<number>>(new Set(initialUnlockedIds));
 	const [activeFilter, setActiveFilter] = useState<string>("All");
 	const [activeTypeFilter, setActiveTypeFilter] = useState<string>("All");
+	const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>("all");
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const deferredSearchQuery = useDeferredValue(searchQuery);
 	const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
@@ -28,7 +35,6 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 	const toggleCosmetic = async (id: number) => {
 		if (loadingIds.has(id)) return;
 
-		// Optimistic UI Update
 		const newUnlockedIds = new Set(unlockedIds);
 		const isUnlocking = !newUnlockedIds.has(id);
 
@@ -48,7 +54,6 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 			});
 		} catch (error) {
 			console.error(error);
-			// Revert State
 			const revertedIds = new Set(unlockedIds);
 			if (isUnlocking) revertedIds.delete(id);
 			else revertedIds.add(id);
@@ -105,10 +110,6 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 		}
 	};
 
-	// Prepare filter options
-	const filterOptions = ["All", ...Object.keys(categories)];
-	const typeFilterOptions = ["All", ...allTypes];
-
 	const categoryAnalytics = useMemo(() => {
 		return Object.entries(categories)
 			.map(([categoryName, items]) => {
@@ -134,226 +135,298 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 	}, [unlockedIds]);
 
 	const totalCosmetics = useMemo(() => Object.values(categories).flat().length, []);
-
+	const totalMissing = totalCosmetics - unlockedIds.size;
 	const overallCompletion = totalCosmetics
 		? Math.round((unlockedIds.size / totalCosmetics) * 100)
 		: 0;
-
-	const completedCategories = categoryAnalytics.filter(
-		(category) => category.missing === 0
-	).length;
-
+	const completedCategories = categoryAnalytics.filter((category) => category.missing === 0).length;
 	const nearCompleteCategories = categoryAnalytics
 		.filter((category) => category.missing > 0 && category.percentage >= 80)
 		.slice(0, 3);
-
 	const topProgressCategories = categoryAnalytics.slice(0, 4);
 
+	const filterOptions = ["All", ...Object.keys(categories)];
+	const typeFilterOptions = ["All", ...allTypes];
+	const normalizedSearchQuery = deferredSearchQuery.trim().toLowerCase();
+
+	const renderableCategories = useMemo(() => {
+		return Object.entries(categories)
+			.map(([categoryName, items]) => {
+				if (activeFilter !== "All" && activeFilter !== categoryName) {
+					return null;
+				}
+
+				const filteredItems = items.filter((item) => {
+					const matchesType = activeTypeFilter === "All" || item.type === activeTypeFilter;
+					const matchesSearch =
+						normalizedSearchQuery.length === 0 ||
+						item.name.toLowerCase().includes(normalizedSearchQuery);
+					const isUnlocked = unlockedIds.has(item.id);
+					const matchesVisibility =
+						visibilityFilter === "all" ||
+						(visibilityFilter === "unlocked" ? isUnlocked : !isUnlocked);
+
+					return matchesType && matchesSearch && matchesVisibility;
+				});
+
+				if (filteredItems.length === 0) {
+					return null;
+				}
+
+				const categoryUnlockedCount = filteredItems.filter((item) =>
+					unlockedIds.has(item.id)
+				).length;
+
+				return {
+					categoryName,
+					filteredItems,
+					categoryUnlockedCount,
+				};
+			})
+			.filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+	}, [activeFilter, activeTypeFilter, normalizedSearchQuery, unlockedIds, visibilityFilter]);
+
+	const visibleItemCount = useMemo(
+		() => renderableCategories.reduce((total, category) => total + category.filteredItems.length, 0),
+		[renderableCategories]
+	);
+
 	return (
-		<div className="w-full flex flex-col items-center">
-			{/* Filter Bar */}
-			<div className="w-full max-w-6xl mb-8 flex flex-col gap-4 bg-black/60 border border-neutral-800 p-4 rounded-sm shadow-xl">
-				<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-					<div className="flex items-center gap-3 text-neutral-400 font-bold uppercase tracking-widest text-xs">
-						<FaFilter className="text-neutral-500" />
-						<span>Category</span>
+		<div className="w-full flex flex-col items-center gap-8">
+			<div className="w-full max-w-6xl rounded-3xl border border-neutral-800/80 bg-[linear-gradient(125deg,rgba(7,10,12,0.95),rgba(18,28,33,0.9))] shadow-[0_24px_80px_rgba(0,0,0,0.45)] p-4 sm:p-6 lg:p-8">
+				<div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-6 lg:gap-8">
+					<div>
+						<p className="text-[11px] tracking-[0.2em] uppercase text-teal-300/75 font-bold mb-3">
+							Wardrobe Overview
+						</p>
+						<h2 className="text-2xl sm:text-4xl font-black tracking-tight text-neutral-100 leading-tight">
+							Track fast. Filter smarter. Keep your collection clean.
+						</h2>
+						<p className="text-sm sm:text-base text-neutral-400 mt-3 max-w-2xl">
+							Use focused filters and one-tap toggles to maintain your wardrobe without losing your place.
+						</p>
 					</div>
-					<div className="flex flex-wrap items-center justify-center sm:justify-end gap-2">
-						{filterOptions.map((filter) => (
-							<button
-								key={filter}
-								onClick={() => setActiveFilter(filter)}
-								className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-sm transition-all duration-300 border ${
-									activeFilter === filter
-										? "bg-emerald-900/30 border-emerald-500 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.1)]"
-										: "bg-neutral-900/50 border-neutral-800 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
-								}`}
-							>
-								{filter}
-							</button>
-						))}
-					</div>
-				</div>
-				<div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-neutral-800/80 pt-4">
-					<div className="flex items-center gap-3 text-neutral-400 font-bold uppercase tracking-widest text-xs">
-						<FaFilter className="text-neutral-500" />
-						<span>Type</span>
-					</div>
-					<div className="flex flex-wrap items-center justify-center sm:justify-end gap-2">
-						{typeFilterOptions.map((filter) => (
-							<button
-								key={filter}
-								onClick={() => setActiveTypeFilter(filter)}
-								className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-sm transition-all duration-300 border ${
-									activeTypeFilter === filter
-										? "bg-emerald-900/30 border-emerald-500 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.1)]"
-										: "bg-neutral-900/50 border-neutral-800 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
-								}`}
-							>
-								{filter}
-							</button>
-						))}
-					</div>
-				</div>
-				<div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-neutral-800/80 pt-4">
-					<div className="flex items-center gap-3 text-neutral-400 font-bold uppercase tracking-widest text-xs">
-						<FaMagnifyingGlass className="text-neutral-500" />
-						<span>Search</span>
-					</div>
-					<div className="w-full sm:w-auto flex-1 max-w-sm flex justify-center sm:justify-end ml-auto">
-						<input
-							type="text"
-							placeholder="Search cosmetics by name..."
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-							className="w-full bg-neutral-900/50 border border-neutral-800 text-neutral-200 text-sm px-4 py-2 rounded-sm focus:outline-none focus:border-emerald-500 transition-colors placeholder:text-neutral-600"
-						/>
+					<div className="grid grid-cols-2 gap-3 sm:gap-4">
+						<div className="rounded-2xl border border-teal-500/20 bg-teal-500/10 p-4">
+							<p className="text-[10px] tracking-[0.2em] uppercase text-teal-200/70 font-bold">
+								Completion
+							</p>
+							<p className="text-3xl font-black text-teal-300 mt-1">{overallCompletion}%</p>
+							<div className="mt-3 h-2 w-full rounded-full bg-black/35 overflow-hidden">
+								<div
+									className="h-full bg-linear-to-r from-teal-300 to-cyan-400 transition-all duration-300"
+									style={{ width: `${overallCompletion}%` }}
+								/>
+							</div>
+						</div>
+						<div className="rounded-2xl border border-sky-500/20 bg-sky-500/10 p-4">
+							<p className="text-[10px] tracking-[0.2em] uppercase text-sky-200/70 font-bold">
+								Unlocked
+							</p>
+							<p className="text-3xl font-black text-sky-300 mt-1">{unlockedIds.size}</p>
+							<p className="text-xs text-sky-100/60 mt-1">of {totalCosmetics}</p>
+						</div>
+						<div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4">
+							<p className="text-[10px] tracking-[0.2em] uppercase text-amber-200/70 font-bold">
+								Missing
+							</p>
+							<p className="text-3xl font-black text-amber-300 mt-1">{totalMissing}</p>
+							<p className="text-xs text-amber-100/60 mt-1">still to discover</p>
+						</div>
+						<div className="rounded-2xl border border-violet-500/20 bg-violet-500/10 p-4">
+							<p className="text-[10px] tracking-[0.2em] uppercase text-violet-200/70 font-bold">
+								Categories Done
+							</p>
+							<p className="text-3xl font-black text-violet-300 mt-1">{completedCategories}</p>
+							<p className="text-xs text-violet-100/60 mt-1">out of {categoryAnalytics.length}</p>
+						</div>
 					</div>
 				</div>
 			</div>
 
-			{/* Progress Analytics */}
-			<div className="w-full max-w-6xl mb-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-				<div className="p-4 bg-neutral-900/70 border border-neutral-800 rounded-sm">
-					<p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
-						Total Progress
-					</p>
-					<p className="text-2xl font-black text-emerald-400 mt-2">
-						{overallCompletion}%
-					</p>
-					<p className="text-xs text-neutral-500 mt-1">
-						{unlockedIds.size} / {totalCosmetics} unlocked
-					</p>
-					<div className="mt-3 h-2 w-full bg-neutral-800 rounded-sm overflow-hidden">
-						<div
-							className="h-full bg-emerald-500 transition-all duration-300"
-							style={{ width: `${overallCompletion}%` }}
-						/>
+			<div className="w-full max-w-6xl rounded-3xl border border-neutral-800/80 bg-black/55 backdrop-blur-xl p-4 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] space-y-5">
+				<div className="flex items-center gap-3 text-neutral-300">
+					<FaSliders className="w-4 h-4 text-teal-300" />
+					<p className="text-xs sm:text-sm uppercase tracking-[0.22em] font-semibold">Wardrobe Controls</p>
+				</div>
+
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+					<label className="flex flex-col gap-2 lg:col-span-2">
+						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">Search</span>
+						<div className="relative">
+							<FaMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 w-4 h-4" />
+							<input
+								type="text"
+								placeholder="Type a cosmetic name"
+								value={searchQuery}
+								onChange={(event) => setSearchQuery(event.target.value)}
+								className="w-full rounded-xl border border-neutral-700 bg-neutral-950/80 py-2.5 pl-10 pr-4 text-sm text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:border-teal-400"
+							/>
+						</div>
+					</label>
+
+					<label className="flex flex-col gap-2">
+						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">Category</span>
+						<select
+							value={activeFilter}
+							onChange={(event) => setActiveFilter(event.target.value)}
+							className="w-full rounded-xl border border-neutral-700 bg-neutral-950/80 px-3 py-2.5 text-sm text-neutral-100 focus:outline-none focus:border-teal-400"
+						>
+							{filterOptions.map((option) => (
+								<option key={option} value={option}>
+									{option}
+								</option>
+							))}
+						</select>
+					</label>
+
+					<label className="flex flex-col gap-2">
+						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">Type</span>
+						<select
+							value={activeTypeFilter}
+							onChange={(event) => setActiveTypeFilter(event.target.value)}
+							className="w-full rounded-xl border border-neutral-700 bg-neutral-950/80 px-3 py-2.5 text-sm text-neutral-100 focus:outline-none focus:border-teal-400"
+						>
+							{typeFilterOptions.map((option) => (
+								<option key={option} value={option}>
+									{option}
+								</option>
+							))}
+						</select>
+					</label>
+				</div>
+
+				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-neutral-800 pt-4">
+					<div className="flex items-center gap-2 text-neutral-400 text-xs uppercase tracking-[0.16em] font-semibold">
+						<FaFilter className="text-neutral-500" />
+						<span>Status</span>
+					</div>
+					<div className="flex flex-wrap gap-2">
+						{(
+							[
+								{ key: "all", label: "All" },
+								{ key: "unlocked", label: "Unlocked" },
+								{ key: "locked", label: "Locked" },
+							] as Array<{ key: VisibilityFilter; label: string }>
+						).map((option) => (
+							<button
+								key={option.key}
+								onClick={() => setVisibilityFilter(option.key)}
+								className={`rounded-full border px-4 py-2 text-[11px] uppercase tracking-[0.16em] font-semibold transition-colors ${
+									visibilityFilter === option.key
+										? "border-teal-400 bg-teal-500/15 text-teal-200"
+										: "border-neutral-700 bg-neutral-900/60 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+								}`}
+							>
+								{option.label}
+							</button>
+						))}
 					</div>
 				</div>
 
-				<div className="p-4 bg-neutral-900/70 border border-neutral-800 rounded-sm">
-					<p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
-						Categories Completed
-					</p>
-					<p className="text-2xl font-black text-blue-400 mt-2">{completedCategories}</p>
-					<p className="text-xs text-neutral-500 mt-1">
-						out of {categoryAnalytics.length} categories
-					</p>
+				<div className="flex flex-wrap items-center justify-between gap-3 border-t border-neutral-800 pt-4">
+					<div className="text-xs text-neutral-400 uppercase tracking-[0.18em] font-semibold">
+						Showing {visibleItemCount} item{visibleItemCount === 1 ? "" : "s"}
+					</div>
+					<button
+						onClick={() => {
+							setSearchQuery("");
+							setActiveFilter("All");
+							setActiveTypeFilter("All");
+							setVisibilityFilter("all");
+						}}
+						className="rounded-full border border-neutral-700 bg-neutral-900/70 px-4 py-2 text-[11px] uppercase tracking-[0.16em] font-semibold text-neutral-300 hover:border-neutral-500 hover:text-neutral-100 transition-colors"
+					>
+						Reset Filters
+					</button>
 				</div>
+			</div>
 
-				<div className="p-4 bg-neutral-900/70 border border-neutral-800 rounded-sm md:col-span-2 xl:col-span-2">
-					<p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-3">
+			<div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-4">
+				<div className="rounded-2xl border border-neutral-800/80 bg-neutral-950/55 p-4 sm:p-5">
+					<p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-semibold mb-3">
 						Top Category Progress
 					</p>
 					<div className="space-y-3">
 						{topProgressCategories.map((category) => (
 							<div key={category.categoryName}>
-								<div className="flex items-center justify-between text-xs mb-1">
-									<span className="font-bold uppercase tracking-widest text-neutral-300">
+								<div className="flex items-center justify-between text-xs mb-1.5">
+									<span className="uppercase tracking-[0.14em] font-semibold text-neutral-300">
 										{category.categoryName}
 									</span>
-									<span className="text-neutral-500 font-bold">
+									<span className="text-neutral-500">
 										{category.unlocked}/{category.total} ({category.percentage}%)
 									</span>
 								</div>
-								<div className="h-2 w-full bg-neutral-800 rounded-sm overflow-hidden">
+								<div className="h-2 rounded-full bg-neutral-800/80 overflow-hidden">
 									<div
-										className="h-full bg-emerald-500/90 transition-all duration-300"
-										style={{
-											width: `${category.percentage}%`,
-										}}
+										className="h-full bg-linear-to-r from-teal-400 to-cyan-400"
+										style={{ width: `${category.percentage}%` }}
 									/>
 								</div>
 							</div>
 						))}
 					</div>
 				</div>
-			</div>
 
-			{nearCompleteCategories.length > 0 && (
-				<div className="w-full max-w-6xl mb-8 p-4 bg-amber-950/20 border border-amber-900/50 rounded-sm">
-					<p className="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-3">
-						Almost There
+				<div className="rounded-2xl border border-neutral-800/80 bg-neutral-950/55 p-4 sm:p-5">
+					<p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-semibold mb-3">
+						Near Completion
 					</p>
-					<div className="flex flex-wrap gap-2">
-						{nearCompleteCategories.map((category) => (
-							<span
-								key={category.categoryName}
-								className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-sm border border-amber-800/60 text-amber-300 bg-amber-950/30"
-							>
-								{category.categoryName}: {category.missing} left
-							</span>
-						))}
-					</div>
-				</div>
-			)}
-
-			{/* Statistics */}
-			<div className="w-full max-w-6xl mb-8 flex justify-end">
-				<div className="px-4 py-2 bg-neutral-900/80 border border-neutral-700 rounded-sm inline-flex items-center gap-3 shadow-md">
-					<span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">
-						Total Unlocked
-					</span>
-					<span className="text-lg font-black text-emerald-400">{unlockedIds.size}</span>
+					{nearCompleteCategories.length > 0 ? (
+						<div className="flex flex-wrap gap-2">
+							{nearCompleteCategories.map((category) => (
+								<span
+									key={category.categoryName}
+									className="rounded-full border border-amber-400/35 bg-amber-300/10 px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-semibold text-amber-200"
+								>
+									{category.categoryName}: {category.missing} left
+								</span>
+							))}
+						</div>
+					) : (
+						<p className="text-sm text-neutral-500">
+							No categories are close right now. Keep unlocking and this list will update automatically.
+						</p>
+					)}
 				</div>
 			</div>
 
-			{/* Render Categories */}
-			<div className="w-full max-w-6xl space-y-16">
-				{Object.entries(categories).map(([categoryName, items]) => {
-					if (activeFilter !== "All" && activeFilter !== categoryName) {
-						return null;
-					}
-
-					const filteredItems = items.filter((i) => {
-						const matchesType = activeTypeFilter === "All" || i.type === activeTypeFilter;
-						const matchesSearch = i.name
-							.toLowerCase()
-							.includes(deferredSearchQuery.toLowerCase());
-						return matchesType && matchesSearch;
-					});
-
-					if (filteredItems.length === 0) {
-						return null;
-					}
-
-					// Sort items by unlocked status (unlocked first) just for visual organization if desired
-					// But keeping them static is usually better for memory muscle when finding items.
-					// We will keep static order.
-
-					const categoryUnlockedCount = filteredItems.filter((i) =>
-						unlockedIds.has(i.id)
-					).length;
-
-					return (
-						<section key={categoryName} className="w-full">
-							<div className="flex flex-col sm:flex-row items-start sm:items-end justify-between border-b border-neutral-800/80 pb-3 mb-6 gap-4 sm:gap-0">
-								<h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-200 to-neutral-600 uppercase">
-									{categoryName}
-								</h2>
-								<div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-									<div className="flex items-center gap-2">
-										<button
-											onClick={() => toggleCategory(filteredItems, "unlock")}
-											className="text-[10px] sm:text-xs px-3 py-1.5 bg-emerald-950/30 text-emerald-500 border border-emerald-900 rounded-sm hover:bg-emerald-900 hover:text-emerald-400 transition-colors uppercase font-bold tracking-widest shadow-[0_0_10px_rgba(16,185,129,0.05)] cursor-pointer"
-										>
-											Unlock All
-										</button>
-										<button
-											onClick={() => toggleCategory(filteredItems, "lock")}
-											className="text-[10px] sm:text-xs px-3 py-1.5 bg-red-950/30 text-red-500 border border-red-900 rounded-sm hover:bg-red-900 hover:text-red-400 transition-colors uppercase font-bold tracking-widest shadow-[0_0_10px_rgba(220,38,38,0.05)] cursor-pointer"
-										>
-											Lock All
-										</button>
-									</div>
-									<span className="text-sm font-bold text-neutral-500 tracking-widest shrink-0">
-										{categoryUnlockedCount} / {filteredItems.length}
-									</span>
+			{visibleItemCount === 0 ? (
+				<div className="w-full max-w-6xl rounded-3xl border border-dashed border-neutral-700 bg-neutral-950/40 px-6 py-16 text-center">
+					<p className="text-sm uppercase tracking-[0.18em] text-neutral-400 font-semibold">No matches</p>
+					<p className="text-neutral-500 mt-2">Try changing filters or search with a broader term.</p>
+				</div>
+			) : (
+				<div className="w-full max-w-6xl space-y-10 sm:space-y-12">
+					{renderableCategories.map(({ categoryName, filteredItems, categoryUnlockedCount }) => (
+						<section key={categoryName} className="rounded-3xl border border-neutral-800/70 bg-neutral-950/45 p-4 sm:p-6 lg:p-8 shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+							<div className="flex flex-col gap-4 border-b border-neutral-800/70 pb-4 mb-5 sm:flex-row sm:items-end sm:justify-between">
+								<div>
+									<h3 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-[0.08em] text-neutral-100">
+										{categoryName}
+									</h3>
+									<p className="text-xs sm:text-sm text-neutral-500 mt-1 uppercase tracking-[0.14em]">
+										{categoryUnlockedCount}/{filteredItems.length} unlocked in view
+									</p>
+								</div>
+								<div className="flex items-center gap-2 sm:gap-3">
+									<button
+										onClick={() => toggleCategory(filteredItems, "unlock")}
+										className="rounded-xl border border-teal-500/40 bg-teal-500/12 px-3 py-2 text-[11px] sm:text-xs uppercase tracking-[0.16em] font-semibold text-teal-200 hover:bg-teal-500/20 transition-colors"
+									>
+										Unlock All
+									</button>
+									<button
+										onClick={() => toggleCategory(filteredItems, "lock")}
+										className="rounded-xl border border-rose-500/40 bg-rose-500/12 px-3 py-2 text-[11px] sm:text-xs uppercase tracking-[0.16em] font-semibold text-rose-200 hover:bg-rose-500/20 transition-colors"
+									>
+										Lock All
+									</button>
 								</div>
 							</div>
 
-							<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
+							<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
 								{filteredItems.map((item) => {
 									const isUnlocked = unlockedIds.has(item.id);
 									const isLoading = loadingIds.has(item.id);
@@ -366,41 +439,36 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 													toggleCosmetic(item.id);
 												}
 											}}
-											className={`group relative flex flex-col items-center bg-black border rounded-sm overflow-hidden transition-all duration-300 cursor-pointer ${
+											className={`group relative cursor-pointer overflow-hidden rounded-2xl border transition-all duration-300 ${
 												isUnlocked
-													? "border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.1)] hover:border-emerald-400 hover:shadow-[0_0_25px_rgba(16,185,129,0.2)] hover:-translate-y-1"
-													: "border-neutral-800 opacity-60 hover:opacity-100 hover:border-neutral-500 hover:-translate-y-1"
-											} ${isLoading ? "pointer-events-none" : ""}`}
+													? "border-teal-400/45 bg-teal-500/8 hover:border-teal-300 hover:-translate-y-1"
+													: "border-neutral-700 bg-neutral-900/80 hover:border-neutral-500 hover:-translate-y-1"
+											} ${isLoading ? "pointer-events-none opacity-70" : ""}`}
 										>
-											{/* Top Status Banner */}
 											<div
-												className={`absolute top-0 inset-x-0 h-1 z-20 transition-colors ${
-													isUnlocked
-														? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]"
-														: "bg-red-900/50"
+												className={`absolute inset-x-0 top-0 h-1 ${
+													isUnlocked ? "bg-teal-300" : "bg-neutral-700"
 												}`}
 											/>
 
-											{/* Search Friends Link */}
 											<Link
 												href={`/missing-cosmetics?cosmeticId=${item.id}`}
-												onClick={(e) => e.stopPropagation()}
+												onClick={(event) => event.stopPropagation()}
 												title="Find friends missing this"
-												className="absolute top-2 left-2 z-20 p-1.5 rounded-sm backdrop-blur-md border bg-black/60 border-neutral-800 text-neutral-500 hover:text-emerald-400 hover:border-emerald-500 transition-all opacity-0 group-hover:opacity-100"
+												className="absolute left-2 top-2 z-20 rounded-lg border border-neutral-700 bg-black/65 p-1.5 text-neutral-300 transition-colors md:opacity-0 md:group-hover:opacity-100 hover:border-teal-300 hover:text-teal-200"
 											>
 												<FaMagnifyingGlass className="w-3 h-3" />
 											</Link>
 
-											{/* Icon Indicator */}
 											<div
-												className={`absolute top-2 right-2 z-20 p-1.5 rounded-sm backdrop-blur-md border transition-all ${
+												className={`absolute right-2 top-2 z-20 rounded-lg border p-1.5 ${
 													isUnlocked
-														? "bg-emerald-900/40 border-emerald-500/50 text-emerald-400"
-														: "bg-black/60 border-neutral-800 text-neutral-500"
+														? "border-teal-400/60 bg-teal-500/25 text-teal-100"
+														: "border-neutral-700 bg-black/65 text-neutral-300"
 												}`}
 											>
 												{isLoading ? (
-													<span className="block w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+													<span className="block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
 												) : isUnlocked ? (
 													<FaUnlockKeyhole className="w-3 h-3" />
 												) : (
@@ -408,13 +476,12 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 												)}
 											</div>
 
-											{/* Image Container */}
-											<div className="relative w-full aspect-square bg-neutral-950/50 flex items-center justify-center p-4">
+											<div className="relative aspect-square w-full bg-neutral-950/70 p-4">
 												<div
-													className={`relative w-full h-full transition-all duration-500 ${
+													className={`relative h-full w-full transition-all duration-500 ${
 														isUnlocked
-															? "drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] group-hover:scale-110"
-															: "grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100"
+															? "drop-shadow-[0_0_14px_rgba(186,230,253,0.45)] group-hover:scale-110"
+															: "grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100"
 													}`}
 												>
 													<Image
@@ -422,32 +489,31 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 														alt={item.name}
 														fill
 														className="object-contain"
-														sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+														sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
 														loading="lazy"
 													/>
 												</div>
 											</div>
 
-											{/* Title Footer */}
-											<div className="w-full p-3 bg-neutral-900/80 border-t border-neutral-800/80 mt-auto">
-												<p
-													className={`text-center text-[10px] sm:text-xs font-bold uppercase tracking-widest leading-tight ${
-														isUnlocked
-															? "text-emerald-100"
-															: "text-neutral-500 group-hover:text-neutral-300"
-													}`}
-												>
+											<div className="border-t border-neutral-800/70 bg-neutral-900/80 px-3 py-3">
+												<p className="line-clamp-2 text-center text-[11px] sm:text-xs uppercase tracking-[0.13em] font-semibold text-neutral-200">
 													{item.name}
 												</p>
+												{isUnlocked && (
+													<p className="mt-1 flex items-center justify-center gap-1 text-[10px] uppercase tracking-[0.14em] text-teal-300/90">
+														<FaCheck className="w-2.5 h-2.5" />
+														Unlocked
+													</p>
+												)}
 											</div>
 										</div>
 									);
 								})}
 							</div>
 						</section>
-					);
-				})}
-			</div>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }
