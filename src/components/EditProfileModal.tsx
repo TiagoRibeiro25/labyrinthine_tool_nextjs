@@ -223,25 +223,6 @@ export default function EditProfileModal({
 
 					<div className="space-y-2">
 						<label className="block text-xs font-bold text-neutral-400 uppercase tracking-widest">
-							Wall Comment Permissions
-						</label>
-						<select
-							value={profileCommentVisibility}
-							onChange={(event) =>
-								setProfileCommentVisibility(
-									event.target.value as "everyone" | "friends_only" | "no_one"
-								)
-							}
-							className="w-full bg-neutral-900/50 border border-neutral-800 text-neutral-100 px-4 py-3 rounded-sm focus:outline-none focus:border-neutral-500 focus:bg-neutral-900 transition-all"
-						>
-							<option value="everyone">Everyone</option>
-							<option value="friends_only">Friends only</option>
-							<option value="no_one">No one</option>
-						</select>
-					</div>
-
-					<div className="space-y-2">
-						<label className="block text-xs font-bold text-neutral-400 uppercase tracking-widest">
 							Steam
 						</label>
 						<div className="w-full bg-neutral-900/50 border border-neutral-800 text-neutral-100 px-4 py-3 rounded-sm">
@@ -296,6 +277,25 @@ export default function EditProfileModal({
 								{initialData.steamUsername ? "Reconnect Steam" : "Connect Steam"}
 							</button>
 						</div>
+					</div>
+
+					<div className="space-y-2">
+						<label className="block text-xs font-bold text-neutral-400 uppercase tracking-widest">
+							Wall Comment Permissions
+						</label>
+						<select
+							value={profileCommentVisibility}
+							onChange={(event) =>
+								setProfileCommentVisibility(
+									event.target.value as "everyone" | "friends_only" | "no_one"
+								)
+							}
+							className="w-full bg-neutral-900/50 border border-neutral-800 text-neutral-100 px-4 py-3 rounded-sm focus:outline-none focus:border-neutral-500 focus:bg-neutral-900 transition-all"
+						>
+							<option value="everyone">Everyone</option>
+							<option value="friends_only">Friends only</option>
+							<option value="no_one">No one</option>
+						</select>
 					</div>
 
 					<div className="space-y-2">
