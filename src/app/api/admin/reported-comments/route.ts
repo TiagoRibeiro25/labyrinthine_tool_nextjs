@@ -67,10 +67,7 @@ export async function PATCH(req: Request) {
 		}
 
 		if (!["hide", "delete", "dismiss"].includes(action)) {
-			return NextResponse.json(
-				{ message: "Invalid action." },
-				{ status: 400 }
-			);
+			return NextResponse.json({ message: "Invalid action." }, { status: 400 });
 		}
 
 		const result = await moderateReportedComment({
@@ -82,7 +79,10 @@ export async function PATCH(req: Request) {
 	} catch (error) {
 		console.error("Error moderating reported comment:", error);
 		return NextResponse.json(
-			{ message: error instanceof Error ? error.message : "An internal server error occurred." },
+			{
+				message:
+					error instanceof Error ? error.message : "An internal server error occurred.",
+			},
 			{ status: 500 }
 		);
 	}

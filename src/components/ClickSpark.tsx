@@ -103,7 +103,7 @@ const ClickSpark = ({
 					return t * (2 - t);
 			}
 		},
-		[easing],
+		[easing]
 	);
 
 	useEffect(() => {

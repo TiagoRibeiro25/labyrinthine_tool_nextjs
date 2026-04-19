@@ -60,10 +60,7 @@ export default function ProfileAchievementsPanel({
 						<div className="flex items-center justify-between gap-2">
 							<div className="flex items-center gap-2 min-w-0">
 								<span className="text-sm shrink-0">
-									{renderAchievementIcon(
-										achievement.icon,
-										achievement.iconClassName
-									)}
+									{renderAchievementIcon(achievement.icon, achievement.iconClassName)}
 								</span>
 								<p className="text-[11px] font-bold uppercase tracking-widest text-neutral-200 truncate">
 									{achievement.title}

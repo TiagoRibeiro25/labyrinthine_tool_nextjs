@@ -88,16 +88,13 @@ export async function GET(req: NextRequest) {
 		const validationParams = new URLSearchParams(req.nextUrl.searchParams);
 		validationParams.set("openid.mode", "check_authentication");
 
-		const validationResponse = await fetch(
-			"https://steamcommunity.com/openid/login",
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-				},
-				body: validationParams,
-			}
-		);
+		const validationResponse = await fetch("https://steamcommunity.com/openid/login", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded",
+			},
+			body: validationParams,
+		});
 
 		if (!validationResponse.ok) {
 			throw new Error(`Steam OpenID verification failed (${validationResponse.status}).`);
@@ -122,9 +119,7 @@ export async function GET(req: NextRequest) {
 		);
 
 		if (!profileResponse.ok) {
-			throw new Error(
-				`Steam profile fetch failed (${profileResponse.status}).`
-			);
+			throw new Error(`Steam profile fetch failed (${profileResponse.status}).`);
 		}
 
 		const profileData = (await profileResponse.json()) as SteamPlayerSummaryResponse;

@@ -1,10 +1,6 @@
 import { aliasedTable, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "../db";
-import {
-	profileCommentReports,
-	profileComments,
-	users,
-} from "../db/schema";
+import { profileCommentReports, profileComments, users } from "../db/schema";
 
 export interface ReportedCommentRow {
 	commentId: string;
@@ -53,7 +49,9 @@ export async function getReportedCommentsPage(
 	const safeLimit = Math.min(Math.max(1, limit), 50);
 	const totalItemsResult = await db
 		.select({
-			count: sql<number>`count(distinct ${profileCommentReports.commentId})`.mapWith(Number),
+			count: sql<number>`count(distinct ${profileCommentReports.commentId})`.mapWith(
+				Number
+			),
 		})
 		.from(profileCommentReports);
 

@@ -2,11 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { PUZZLE_TIMER_TICK_MS, PUZZLE_TYPES } from "../constants/puzzles";
 import { currentTimeMs } from "../lib/puzzles";
 import {
-    ANIMATION_DURATION_MS,
-    checkSolved,
-    getSolvedState,
-    isAdjacent,
-    shufflePuzzle,
+	ANIMATION_DURATION_MS,
+	checkSolved,
+	getSolvedState,
+	isAdjacent,
+	shufflePuzzle,
 } from "../lib/sliderPuzzle";
 import { usePuzzleScore } from "./usePuzzleScore";
 

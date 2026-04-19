@@ -22,7 +22,9 @@ interface CosmeticsTrackerProps {
 type VisibilityFilter = "all" | "unlocked" | "locked";
 
 export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTrackerProps) {
-	const [unlockedIds, setUnlockedIds] = useState<Set<number>>(new Set(initialUnlockedIds));
+	const [unlockedIds, setUnlockedIds] = useState<Set<number>>(
+		new Set(initialUnlockedIds)
+	);
 	const [activeFilter, setActiveFilter] = useState<string>("All");
 	const [activeTypeFilter, setActiveTypeFilter] = useState<string>("All");
 	const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>("all");
@@ -139,7 +141,9 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 	const overallCompletion = totalCosmetics
 		? Math.round((unlockedIds.size / totalCosmetics) * 100)
 		: 0;
-	const completedCategories = categoryAnalytics.filter((category) => category.missing === 0).length;
+	const completedCategories = categoryAnalytics.filter(
+		(category) => category.missing === 0
+	).length;
 	const nearCompleteCategories = categoryAnalytics
 		.filter((category) => category.missing > 0 && category.percentage >= 80)
 		.slice(0, 3);
@@ -157,7 +161,8 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 				}
 
 				const filteredItems = items.filter((item) => {
-					const matchesType = activeTypeFilter === "All" || item.type === activeTypeFilter;
+					const matchesType =
+						activeTypeFilter === "All" || item.type === activeTypeFilter;
 					const matchesSearch =
 						normalizedSearchQuery.length === 0 ||
 						item.name.toLowerCase().includes(normalizedSearchQuery);
@@ -184,10 +189,20 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 				};
 			})
 			.filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
-	}, [activeFilter, activeTypeFilter, normalizedSearchQuery, unlockedIds, visibilityFilter]);
+	}, [
+		activeFilter,
+		activeTypeFilter,
+		normalizedSearchQuery,
+		unlockedIds,
+		visibilityFilter,
+	]);
 
 	const visibleItemCount = useMemo(
-		() => renderableCategories.reduce((total, category) => total + category.filteredItems.length, 0),
+		() =>
+			renderableCategories.reduce(
+				(total, category) => total + category.filteredItems.length,
+				0
+			),
 		[renderableCategories]
 	);
 
@@ -203,7 +218,8 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 							Track fast. Filter smarter. Keep your collection clean.
 						</h2>
 						<p className="text-sm sm:text-base text-neutral-400 mt-3 max-w-2xl">
-							Use focused filters and one-tap toggles to maintain your wardrobe without losing your place.
+							Use focused filters and one-tap toggles to maintain your wardrobe without
+							losing your place.
 						</p>
 					</div>
 					<div className="grid grid-cols-2 gap-3 sm:gap-4">
@@ -211,7 +227,9 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 							<p className="text-[10px] tracking-[0.2em] uppercase text-teal-200/70 font-bold">
 								Completion
 							</p>
-							<p className="text-3xl font-black text-teal-300 mt-1">{overallCompletion}%</p>
+							<p className="text-3xl font-black text-teal-300 mt-1">
+								{overallCompletion}%
+							</p>
 							<div className="mt-3 h-2 w-full rounded-full bg-black/35 overflow-hidden">
 								<div
 									className="h-full bg-linear-to-r from-teal-300 to-cyan-400 transition-all duration-300"
@@ -237,8 +255,12 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 							<p className="text-[10px] tracking-[0.2em] uppercase text-violet-200/70 font-bold">
 								Categories Done
 							</p>
-							<p className="text-3xl font-black text-violet-300 mt-1">{completedCategories}</p>
-							<p className="text-xs text-violet-100/60 mt-1">out of {categoryAnalytics.length}</p>
+							<p className="text-3xl font-black text-violet-300 mt-1">
+								{completedCategories}
+							</p>
+							<p className="text-xs text-violet-100/60 mt-1">
+								out of {categoryAnalytics.length}
+							</p>
 						</div>
 					</div>
 				</div>
@@ -247,12 +269,16 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 			<div className="w-full max-w-6xl rounded-3xl border border-neutral-800/80 bg-black/55 backdrop-blur-xl p-4 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] space-y-5">
 				<div className="flex items-center gap-3 text-neutral-300">
 					<FaSliders className="w-4 h-4 text-teal-300" />
-					<p className="text-xs sm:text-sm uppercase tracking-[0.22em] font-semibold">Wardrobe Controls</p>
+					<p className="text-xs sm:text-sm uppercase tracking-[0.22em] font-semibold">
+						Wardrobe Controls
+					</p>
 				</div>
 
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
 					<label className="flex flex-col gap-2 lg:col-span-2">
-						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">Search</span>
+						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">
+							Search
+						</span>
 						<div className="relative">
 							<FaMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 w-4 h-4" />
 							<input
@@ -266,7 +292,9 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 					</label>
 
 					<label className="flex flex-col gap-2">
-						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">Category</span>
+						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">
+							Category
+						</span>
 						<select
 							value={activeFilter}
 							onChange={(event) => setActiveFilter(event.target.value)}
@@ -281,7 +309,9 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 					</label>
 
 					<label className="flex flex-col gap-2">
-						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">Type</span>
+						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">
+							Type
+						</span>
 						<select
 							value={activeTypeFilter}
 							onChange={(event) => setActiveTypeFilter(event.target.value)}
@@ -386,7 +416,8 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 						</div>
 					) : (
 						<p className="text-sm text-neutral-500">
-							No categories are close right now. Keep unlocking and this list will update automatically.
+							No categories are close right now. Keep unlocking and this list will update
+							automatically.
 						</p>
 					)}
 				</div>
@@ -394,124 +425,133 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 
 			{visibleItemCount === 0 ? (
 				<div className="w-full max-w-6xl rounded-3xl border border-dashed border-neutral-700 bg-neutral-950/40 px-6 py-16 text-center">
-					<p className="text-sm uppercase tracking-[0.18em] text-neutral-400 font-semibold">No matches</p>
-					<p className="text-neutral-500 mt-2">Try changing filters or search with a broader term.</p>
+					<p className="text-sm uppercase tracking-[0.18em] text-neutral-400 font-semibold">
+						No matches
+					</p>
+					<p className="text-neutral-500 mt-2">
+						Try changing filters or search with a broader term.
+					</p>
 				</div>
 			) : (
 				<div className="w-full max-w-6xl space-y-10 sm:space-y-12">
-					{renderableCategories.map(({ categoryName, filteredItems, categoryUnlockedCount }) => (
-						<section key={categoryName} className="rounded-3xl border border-neutral-800/70 bg-neutral-950/45 p-4 sm:p-6 lg:p-8 shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
-							<div className="flex flex-col gap-4 border-b border-neutral-800/70 pb-4 mb-5 sm:flex-row sm:items-end sm:justify-between">
-								<div>
-									<h3 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-[0.08em] text-neutral-100">
-										{categoryName}
-									</h3>
-									<p className="text-xs sm:text-sm text-neutral-500 mt-1 uppercase tracking-[0.14em]">
-										{categoryUnlockedCount}/{filteredItems.length} unlocked in view
-									</p>
-								</div>
-								<div className="flex items-center gap-2 sm:gap-3">
-									<button
-										onClick={() => toggleCategory(filteredItems, "unlock")}
-										className="rounded-xl border border-teal-500/40 bg-teal-500/12 px-3 py-2 text-[11px] sm:text-xs uppercase tracking-[0.16em] font-semibold text-teal-200 hover:bg-teal-500/20 transition-colors"
-									>
-										Unlock All
-									</button>
-									<button
-										onClick={() => toggleCategory(filteredItems, "lock")}
-										className="rounded-xl border border-rose-500/40 bg-rose-500/12 px-3 py-2 text-[11px] sm:text-xs uppercase tracking-[0.16em] font-semibold text-rose-200 hover:bg-rose-500/20 transition-colors"
-									>
-										Lock All
-									</button>
-								</div>
-							</div>
-
-							<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
-								{filteredItems.map((item) => {
-									const isUnlocked = unlockedIds.has(item.id);
-									const isLoading = loadingIds.has(item.id);
-
-									return (
-										<div
-											key={item.id}
-											onClick={() => {
-												if (!isLoading) {
-													toggleCosmetic(item.id);
-												}
-											}}
-											className={`group relative cursor-pointer overflow-hidden rounded-2xl border transition-all duration-300 ${
-												isUnlocked
-													? "border-teal-400/45 bg-teal-500/8 hover:border-teal-300 hover:-translate-y-1"
-													: "border-neutral-700 bg-neutral-900/80 hover:border-neutral-500 hover:-translate-y-1"
-											} ${isLoading ? "pointer-events-none opacity-70" : ""}`}
+					{renderableCategories.map(
+						({ categoryName, filteredItems, categoryUnlockedCount }) => (
+							<section
+								key={categoryName}
+								className="rounded-3xl border border-neutral-800/70 bg-neutral-950/45 p-4 sm:p-6 lg:p-8 shadow-[0_18px_45px_rgba(0,0,0,0.35)]"
+							>
+								<div className="flex flex-col gap-4 border-b border-neutral-800/70 pb-4 mb-5 sm:flex-row sm:items-end sm:justify-between">
+									<div>
+										<h3 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-[0.08em] text-neutral-100">
+											{categoryName}
+										</h3>
+										<p className="text-xs sm:text-sm text-neutral-500 mt-1 uppercase tracking-[0.14em]">
+											{categoryUnlockedCount}/{filteredItems.length} unlocked in view
+										</p>
+									</div>
+									<div className="flex items-center gap-2 sm:gap-3">
+										<button
+											onClick={() => toggleCategory(filteredItems, "unlock")}
+											className="rounded-xl border border-teal-500/40 bg-teal-500/12 px-3 py-2 text-[11px] sm:text-xs uppercase tracking-[0.16em] font-semibold text-teal-200 hover:bg-teal-500/20 transition-colors"
 										>
-											<div
-												className={`absolute inset-x-0 top-0 h-1 ${
-													isUnlocked ? "bg-teal-300" : "bg-neutral-700"
-												}`}
-											/>
+											Unlock All
+										</button>
+										<button
+											onClick={() => toggleCategory(filteredItems, "lock")}
+											className="rounded-xl border border-rose-500/40 bg-rose-500/12 px-3 py-2 text-[11px] sm:text-xs uppercase tracking-[0.16em] font-semibold text-rose-200 hover:bg-rose-500/20 transition-colors"
+										>
+											Lock All
+										</button>
+									</div>
+								</div>
 
-											<Link
-												href={`/missing-cosmetics?cosmeticId=${item.id}`}
-												onClick={(event) => event.stopPropagation()}
-												title="Find friends missing this"
-												className="absolute left-2 top-2 z-20 rounded-lg border border-neutral-700 bg-black/65 p-1.5 text-neutral-300 transition-colors md:opacity-0 md:group-hover:opacity-100 hover:border-teal-300 hover:text-teal-200"
-											>
-												<FaMagnifyingGlass className="w-3 h-3" />
-											</Link>
+								<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
+									{filteredItems.map((item) => {
+										const isUnlocked = unlockedIds.has(item.id);
+										const isLoading = loadingIds.has(item.id);
 
+										return (
 											<div
-												className={`absolute right-2 top-2 z-20 rounded-lg border p-1.5 ${
+												key={item.id}
+												onClick={() => {
+													if (!isLoading) {
+														toggleCosmetic(item.id);
+													}
+												}}
+												className={`group relative cursor-pointer overflow-hidden rounded-2xl border transition-all duration-300 ${
 													isUnlocked
-														? "border-teal-400/60 bg-teal-500/25 text-teal-100"
-														: "border-neutral-700 bg-black/65 text-neutral-300"
-												}`}
+														? "border-teal-400/45 bg-teal-500/8 hover:border-teal-300 hover:-translate-y-1"
+														: "border-neutral-700 bg-neutral-900/80 hover:border-neutral-500 hover:-translate-y-1"
+												} ${isLoading ? "pointer-events-none opacity-70" : ""}`}
 											>
-												{isLoading ? (
-													<span className="block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
-												) : isUnlocked ? (
-													<FaUnlockKeyhole className="w-3 h-3" />
-												) : (
-													<FaLock className="w-3 h-3" />
-												)}
-											</div>
-
-											<div className="relative aspect-square w-full bg-neutral-950/70 p-4">
 												<div
-													className={`relative h-full w-full transition-all duration-500 ${
+													className={`absolute inset-x-0 top-0 h-1 ${
+														isUnlocked ? "bg-teal-300" : "bg-neutral-700"
+													}`}
+												/>
+
+												<Link
+													href={`/missing-cosmetics?cosmeticId=${item.id}`}
+													onClick={(event) => event.stopPropagation()}
+													title="Find friends missing this"
+													className="absolute left-2 top-2 z-20 rounded-lg border border-neutral-700 bg-black/65 p-1.5 text-neutral-300 transition-colors md:opacity-0 md:group-hover:opacity-100 hover:border-teal-300 hover:text-teal-200"
+												>
+													<FaMagnifyingGlass className="w-3 h-3" />
+												</Link>
+
+												<div
+													className={`absolute right-2 top-2 z-20 rounded-lg border p-1.5 ${
 														isUnlocked
-															? "drop-shadow-[0_0_14px_rgba(186,230,253,0.45)] group-hover:scale-110"
-															: "grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100"
+															? "border-teal-400/60 bg-teal-500/25 text-teal-100"
+															: "border-neutral-700 bg-black/65 text-neutral-300"
 													}`}
 												>
-													<Image
-														src={`/images/cosmetics/${item.id}.png`}
-														alt={item.name}
-														fill
-														className="object-contain"
-														sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
-														loading="lazy"
-													/>
+													{isLoading ? (
+														<span className="block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
+													) : isUnlocked ? (
+														<FaUnlockKeyhole className="w-3 h-3" />
+													) : (
+														<FaLock className="w-3 h-3" />
+													)}
+												</div>
+
+												<div className="relative aspect-square w-full bg-neutral-950/70 p-4">
+													<div
+														className={`relative h-full w-full transition-all duration-500 ${
+															isUnlocked
+																? "drop-shadow-[0_0_14px_rgba(186,230,253,0.45)] group-hover:scale-110"
+																: "grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100"
+														}`}
+													>
+														<Image
+															src={`/images/cosmetics/${item.id}.png`}
+															alt={item.name}
+															fill
+															className="object-contain"
+															sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
+															loading="lazy"
+														/>
+													</div>
+												</div>
+
+												<div className="border-t border-neutral-800/70 bg-neutral-900/80 px-3 py-3">
+													<p className="line-clamp-2 text-center text-[11px] sm:text-xs uppercase tracking-[0.13em] font-semibold text-neutral-200">
+														{item.name}
+													</p>
+													{isUnlocked && (
+														<p className="mt-1 flex items-center justify-center gap-1 text-[10px] uppercase tracking-[0.14em] text-teal-300/90">
+															<FaCheck className="w-2.5 h-2.5" />
+															Unlocked
+														</p>
+													)}
 												</div>
 											</div>
-
-											<div className="border-t border-neutral-800/70 bg-neutral-900/80 px-3 py-3">
-												<p className="line-clamp-2 text-center text-[11px] sm:text-xs uppercase tracking-[0.13em] font-semibold text-neutral-200">
-													{item.name}
-												</p>
-												{isUnlocked && (
-													<p className="mt-1 flex items-center justify-center gap-1 text-[10px] uppercase tracking-[0.14em] text-teal-300/90">
-														<FaCheck className="w-2.5 h-2.5" />
-														Unlocked
-													</p>
-												)}
-											</div>
-										</div>
-									);
-								})}
-							</div>
-						</section>
-					))}
+										);
+									})}
+								</div>
+							</section>
+						)
+					)}
 				</div>
 			)}
 		</div>

@@ -3,11 +3,11 @@
 import { useCallback, useState } from "react";
 import { PUZZLE_SCORE_API_PATH, type PuzzleType } from "../constants/puzzles";
 import {
-    formatDuration,
-    getPuzzleLabel,
-    type PuzzleSaveState,
-    type PuzzleScore,
-    type PuzzleScoresResponse,
+	formatDuration,
+	getPuzzleLabel,
+	type PuzzleSaveState,
+	type PuzzleScore,
+	type PuzzleScoresResponse,
 } from "../lib/puzzles";
 import { ApiError, useApi } from "./useApi";
 import { useToast } from "./useToast";

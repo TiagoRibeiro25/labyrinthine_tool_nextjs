@@ -34,14 +34,18 @@ function MissingCosmeticsContent() {
 	const initialCosmetic = useMemo(
 		() =>
 			initialCosmeticId
-				? allCosmetics.find((cosmetic) => cosmetic.id === parseInt(initialCosmeticId, 10)) || null
+				? allCosmetics.find(
+						(cosmetic) => cosmetic.id === parseInt(initialCosmeticId, 10)
+					) || null
 				: null,
 		[initialCosmeticId]
 	);
 
 	const [searchQuery, setSearchQuery] = useState<string>(initialCosmetic?.name || "");
 	const [debouncedQuery] = useDebounce(searchQuery, 250);
-	const [selectedCosmetic, setSelectedCosmetic] = useState<CosmeticItem | null>(initialCosmetic);
+	const [selectedCosmetic, setSelectedCosmetic] = useState<CosmeticItem | null>(
+		initialCosmetic
+	);
 	const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -139,7 +143,9 @@ function MissingCosmeticsContent() {
 											<p className="text-sm uppercase tracking-[0.14em] text-cyan-100 font-semibold">
 												{selectedCosmetic.name}
 											</p>
-											<p className="text-xs text-cyan-100/65">Tracking friend ownership now</p>
+											<p className="text-xs text-cyan-100/65">
+												Tracking friend ownership now
+											</p>
 										</div>
 									</div>
 								) : (
@@ -205,13 +211,17 @@ function MissingCosmeticsContent() {
 								<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-300 opacity-70" />
 								<span className="relative inline-flex h-5 w-5 rounded-full bg-cyan-200" />
 							</span>
-							<p className="text-xs uppercase tracking-[0.2em] text-neutral-400 font-semibold">Checking wardrobes...</p>
+							<p className="text-xs uppercase tracking-[0.2em] text-neutral-400 font-semibold">
+								Checking wardrobes...
+							</p>
 						</div>
 					)}
 
 					{error && !loading && (
 						<div className="flex h-full min-h-64 items-center justify-center rounded-2xl border border-rose-500/30 bg-rose-500/10 px-6 text-center">
-							<p className="text-sm uppercase tracking-[0.15em] text-rose-200 font-semibold">{error}</p>
+							<p className="text-sm uppercase tracking-[0.15em] text-rose-200 font-semibold">
+								{error}
+							</p>
 						</div>
 					)}
 
@@ -220,8 +230,12 @@ function MissingCosmeticsContent() {
 							<div className="mb-4 rounded-full border border-neutral-700 bg-neutral-900/70 p-4">
 								<FaWandMagicSparkles className="w-6 h-6 text-neutral-300" />
 							</div>
-							<p className="text-sm uppercase tracking-[0.18em] text-neutral-300 font-semibold">Select a cosmetic</p>
-							<p className="mt-2 text-neutral-500">Search above and pick one item to see who is still missing it.</p>
+							<p className="text-sm uppercase tracking-[0.18em] text-neutral-300 font-semibold">
+								Select a cosmetic
+							</p>
+							<p className="mt-2 text-neutral-500">
+								Search above and pick one item to see who is still missing it.
+							</p>
 						</div>
 					)}
 
@@ -230,8 +244,12 @@ function MissingCosmeticsContent() {
 							<div className="mb-4 rounded-full border border-emerald-400/40 bg-emerald-500/20 p-4">
 								<FaShirt className="w-7 h-7 text-emerald-200" />
 							</div>
-							<p className="text-sm uppercase tracking-[0.18em] text-emerald-200 font-semibold">Everyone has it</p>
-							<p className="mt-2 text-emerald-100/80">All of your friends already own {selectedCosmetic.name}.</p>
+							<p className="text-sm uppercase tracking-[0.18em] text-emerald-200 font-semibold">
+								Everyone has it
+							</p>
+							<p className="mt-2 text-emerald-100/80">
+								All of your friends already own {selectedCosmetic.name}.
+							</p>
 						</div>
 					)}
 
@@ -239,7 +257,9 @@ function MissingCosmeticsContent() {
 						<div className="space-y-5">
 							<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-neutral-800/70 pb-4">
 								<div>
-									<p className="text-xs uppercase tracking-[0.18em] text-neutral-400 font-semibold">Missing Friends</p>
+									<p className="text-xs uppercase tracking-[0.18em] text-neutral-400 font-semibold">
+										Missing Friends
+									</p>
 									<h3 className="mt-1 text-lg sm:text-xl font-black uppercase tracking-[0.08em] text-neutral-100">
 										{selectedCosmetic.name}
 									</h3>
@@ -291,7 +311,9 @@ export default function MissingCosmeticsPage() {
 			fallback={
 				<main className="min-h-screen text-neutral-200 flex flex-col items-center py-12 px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
 					<div className="w-full h-full flex flex-col items-center justify-center space-y-4 py-12">
-						<span className="text-xs text-neutral-500 font-bold uppercase tracking-widest">Loading...</span>
+						<span className="text-xs text-neutral-500 font-bold uppercase tracking-widest">
+							Loading...
+						</span>
 					</div>
 				</main>
 			}

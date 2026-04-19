@@ -6,7 +6,10 @@ import { useMemo } from "react";
 import { FaTriangleExclamation } from "react-icons/fa6";
 import { useApi } from "../hooks/useApi";
 import { useToast } from "../hooks/useToast";
-import type { ReportedCommentRow, ReportedCommentsPagination } from "../lib/admin-reported-comments";
+import type {
+	ReportedCommentRow,
+	ReportedCommentsPagination,
+} from "../lib/admin-reported-comments";
 
 interface AdminReportedCommentsSectionProps {
 	items: ReportedCommentRow[];
@@ -93,7 +96,20 @@ export default function AdminReportedCommentsSection({
 									</div>
 
 									<p className="text-xs text-neutral-500 uppercase tracking-widest font-bold">
-										Reported comment by <Link href={`/profile/${item.comment.author.username}`} className="text-neutral-300 hover:text-white">{item.comment.author.username}</Link> on <Link href={`/profile/${item.comment.profile.username}`} className="text-neutral-300 hover:text-white">{item.comment.profile.username}</Link>
+										Reported comment by{" "}
+										<Link
+											href={`/profile/${item.comment.author.username}`}
+											className="text-neutral-300 hover:text-white"
+										>
+											{item.comment.author.username}
+										</Link>{" "}
+										on{" "}
+										<Link
+											href={`/profile/${item.comment.profile.username}`}
+											className="text-neutral-300 hover:text-white"
+										>
+											{item.comment.profile.username}
+										</Link>
 									</p>
 
 									<p className="text-sm text-neutral-200 leading-relaxed whitespace-pre-wrap bg-black/30 border border-neutral-800 rounded-sm p-3">
@@ -111,7 +127,13 @@ export default function AdminReportedCommentsSection({
 									<button
 										type="button"
 										disabled={loading}
-										onClick={() => void handleModerationAction(item.commentId, "hide", "Comment hidden.")}
+										onClick={() =>
+											void handleModerationAction(
+												item.commentId,
+												"hide",
+												"Comment hidden."
+											)
+										}
 										className="px-4 py-2 rounded-sm bg-amber-950/40 text-amber-200 font-bold text-xs uppercase tracking-widest border border-amber-900 hover:bg-amber-900/50 hover:border-amber-600 transition-colors disabled:opacity-50 cursor-pointer"
 									>
 										Hide
@@ -119,7 +141,13 @@ export default function AdminReportedCommentsSection({
 									<button
 										type="button"
 										disabled={loading}
-										onClick={() => void handleModerationAction(item.commentId, "delete", "Comment deleted.")}
+										onClick={() =>
+											void handleModerationAction(
+												item.commentId,
+												"delete",
+												"Comment deleted."
+											)
+										}
 										className="px-4 py-2 rounded-sm bg-red-950/40 text-red-200 font-bold text-xs uppercase tracking-widest border border-red-900 hover:bg-red-900/50 hover:border-red-600 transition-colors disabled:opacity-50 cursor-pointer"
 									>
 										Delete
@@ -127,7 +155,13 @@ export default function AdminReportedCommentsSection({
 									<button
 										type="button"
 										disabled={loading}
-										onClick={() => void handleModerationAction(item.commentId, "dismiss", "Reports dismissed.")}
+										onClick={() =>
+											void handleModerationAction(
+												item.commentId,
+												"dismiss",
+												"Reports dismissed."
+											)
+										}
 										className="px-4 py-2 rounded-sm bg-neutral-900 text-neutral-200 font-bold text-xs uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-500 transition-colors disabled:opacity-50 cursor-pointer"
 									>
 										Dismiss

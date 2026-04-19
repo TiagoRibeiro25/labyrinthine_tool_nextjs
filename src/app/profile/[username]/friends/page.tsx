@@ -98,7 +98,7 @@ export default async function ProfileFriendsPage({ params }: ProfileFriendsPageP
 						Connections
 					</h1>
 					<p className="text-sm sm:text-base text-neutral-400 font-medium tracking-wide mb-6 max-w-2xl mx-auto">
-						<span className="text-neutral-200 font-bold">{targetUser.username}</span> has {" "}
+						<span className="text-neutral-200 font-bold">{targetUser.username}</span> has{" "}
 						{friends.length} {friends.length === 1 ? "friend" : "friends"} in the fog.
 					</p>
 					<Link

@@ -212,7 +212,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 				.from(users)
 				.where(inArray(users.id, historyProfileIds))
 		: [];
-	const historyProfileMap = new Map(historyProfiles.map((item) => [item.id, item.username]));
+	const historyProfileMap = new Map(
+		historyProfiles.map((item) => [item.id, item.username])
+	);
 
 	const commentHistory = rawCommentHistory.map((item) => ({
 		id: item.id,

@@ -41,8 +41,7 @@ export async function PUT(req: Request) {
 		const profileBannerId = parsed.data.profileBannerId?.trim() || null;
 		const bio = parsed.data.bio?.trim() || null;
 		const favoriteCosmeticId = parsed.data.favoriteCosmeticId ?? null;
-		const profileCommentVisibility =
-			parsed.data.profileCommentVisibility ?? undefined;
+		const profileCommentVisibility = parsed.data.profileCommentVisibility ?? undefined;
 
 		await db
 			.update(users)

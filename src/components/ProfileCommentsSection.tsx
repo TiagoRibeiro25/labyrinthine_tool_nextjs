@@ -91,14 +91,12 @@ export default function ProfileCommentsSection({
 	historyItems,
 }: ProfileCommentsSectionProps) {
 	const toast = useToast();
-	const {
-		loading: commentsLoading,
-		execute: executeComments,
-	} = useApi<CommentsApiResponse>();
-	const {
-		loading: createCommentLoading,
-		execute: executeCreateComment,
-	} = useApi<{ message: string; id: string | null }>();
+	const { loading: commentsLoading, execute: executeComments } =
+		useApi<CommentsApiResponse>();
+	const { loading: createCommentLoading, execute: executeCreateComment } = useApi<{
+		message: string;
+		id: string | null;
+	}>();
 	const { execute: executeMutateComment } = useApi<{ message: string }>();
 	const { execute: executeReportComment } = useApi<{ message: string }>();
 
@@ -174,7 +172,7 @@ export default function ProfileCommentsSection({
 						? { action, content: actionContent }
 						: {
 								action,
-						  }
+							}
 				),
 			});
 		},
@@ -275,7 +273,7 @@ export default function ProfileCommentsSection({
 						...current,
 						error: "",
 						submitting: true,
-				  }
+					}
 				: current
 		);
 
@@ -290,7 +288,7 @@ export default function ProfileCommentsSection({
 									...current,
 									error: "Comment cannot be empty.",
 									submitting: false,
-							  }
+								}
 							: current
 					);
 					return;
@@ -303,7 +301,7 @@ export default function ProfileCommentsSection({
 									...current,
 									error: "No changes detected.",
 									submitting: false,
-							  }
+								}
 							: current
 					);
 					return;
@@ -332,7 +330,7 @@ export default function ProfileCommentsSection({
 								...current,
 								error: `Report reason must be at least ${REPORT_REASON_MIN_LENGTH} characters.`,
 								submitting: false,
-						  }
+							}
 						: current
 				);
 				return;
@@ -356,7 +354,7 @@ export default function ProfileCommentsSection({
 							...current,
 							error: message,
 							submitting: false,
-					  }
+						}
 					: current
 			);
 
@@ -392,7 +390,10 @@ export default function ProfileCommentsSection({
 
 	const handleLikeToggle = async (comment: WallComment) => {
 		try {
-			await performCommentAction(comment.id, comment.currentUserLiked ? "unlike" : "like");
+			await performCommentAction(
+				comment.id,
+				comment.currentUserLiked ? "unlike" : "like"
+			);
 			setComments((previous) =>
 				previous.map((item) => {
 					if (item.id !== comment.id) {

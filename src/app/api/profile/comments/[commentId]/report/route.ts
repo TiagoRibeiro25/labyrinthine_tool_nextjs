@@ -4,7 +4,10 @@ import { NextResponse } from "next/server";
 import { db } from "../../../../../../db";
 import { profileCommentReports, profileComments } from "../../../../../../db/schema";
 import { authOptions } from "../../../../../../lib/auth";
-import { createNotifications, getAdministratorUserIds } from "../../../../../../lib/social";
+import {
+	createNotifications,
+	getAdministratorUserIds,
+} from "../../../../../../lib/social";
 import { rateLimit, toRateLimitHeaders } from "../../../../../../lib/rate-limit";
 import {
 	getFirstZodErrorMessage,

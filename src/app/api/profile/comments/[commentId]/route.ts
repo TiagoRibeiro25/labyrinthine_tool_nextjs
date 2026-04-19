@@ -95,8 +95,7 @@ export async function PATCH(
 			if (containsDisallowedCommentText(normalizedContent)) {
 				return NextResponse.json(
 					{
-						message:
-							"Comment contains blocked terms. Please rephrase and try again.",
+						message: "Comment contains blocked terms. Please rephrase and try again.",
 					},
 					{ status: 400, headers: toRateLimitHeaders(userRateLimit) }
 				);
@@ -109,7 +108,9 @@ export async function PATCH(
 					isEdited: true,
 					updatedAt: new Date(),
 				})
-				.where(and(eq(profileComments.id, commentId), eq(profileComments.authorUserId, userId)));
+				.where(
+					and(eq(profileComments.id, commentId), eq(profileComments.authorUserId, userId))
+				);
 
 			return NextResponse.json(
 				{ message: "Comment updated." },
@@ -179,8 +180,7 @@ export async function PATCH(
 
 			return NextResponse.json(
 				{
-					message:
-						action === "hide" ? "Comment hidden." : "Comment is visible again.",
+					message: action === "hide" ? "Comment hidden." : "Comment is visible again.",
 				},
 				{ status: 200, headers: toRateLimitHeaders(userRateLimit) }
 			);

@@ -105,7 +105,10 @@ export default function CollectionComparison({
 	const activeData = datasets[activeView];
 	const activeTheme = VIEW_CONFIG[activeView];
 
-	const categoryOptions = useMemo(() => ["All", ...Object.keys(activeData)], [activeData]);
+	const categoryOptions = useMemo(
+		() => ["All", ...Object.keys(activeData)],
+		[activeData]
+	);
 
 	const normalizedQuery = searchQuery.trim().toLowerCase();
 
@@ -120,7 +123,8 @@ export default function CollectionComparison({
 			const filteredItems = items.filter((item) => {
 				const matchesType = activeType === "All" || item.type === activeType;
 				const matchesSearch =
-					normalizedQuery.length === 0 || item.name.toLowerCase().includes(normalizedQuery);
+					normalizedQuery.length === 0 ||
+					item.name.toLowerCase().includes(normalizedQuery);
 
 				return matchesType && matchesSearch;
 			});
@@ -149,7 +153,8 @@ export default function CollectionComparison({
 						{currentUsername} vs {targetUsername}
 					</h2>
 					<p className="text-sm sm:text-base text-neutral-400 max-w-3xl">
-						Switch comparison modes, narrow by category or type, and spot exact items worth chasing next.
+						Switch comparison modes, narrow by category or type, and spot exact items
+						worth chasing next.
 					</p>
 				</div>
 
@@ -177,7 +182,9 @@ export default function CollectionComparison({
 										{config.icon}
 										{config.label}
 									</div>
-									<span className={`text-3xl font-black ${selected ? config.countToneClasses : "text-neutral-200"}`}>
+									<span
+										className={`text-3xl font-black ${selected ? config.countToneClasses : "text-neutral-200"}`}
+									>
 										{count}
 									</span>
 								</div>
@@ -191,12 +198,16 @@ export default function CollectionComparison({
 			<div className="w-full max-w-6xl rounded-3xl border border-neutral-800/80 bg-black/55 backdrop-blur-xl p-4 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] space-y-5">
 				<div className="flex items-center gap-3 text-neutral-300">
 					<FaWandMagicSparkles className="w-4 h-4 text-cyan-300" />
-					<p className="text-xs sm:text-sm uppercase tracking-[0.22em] font-semibold">Comparison Controls</p>
+					<p className="text-xs sm:text-sm uppercase tracking-[0.22em] font-semibold">
+						Comparison Controls
+					</p>
 				</div>
 
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
 					<label className="flex flex-col gap-2 lg:col-span-2">
-						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">Search</span>
+						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">
+							Search
+						</span>
 						<div className="relative">
 							<FaMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 w-4 h-4" />
 							<input
@@ -210,7 +221,9 @@ export default function CollectionComparison({
 					</label>
 
 					<label className="flex flex-col gap-2">
-						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">Category</span>
+						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">
+							Category
+						</span>
 						<select
 							value={activeCategory}
 							onChange={(event) => setActiveCategory(event.target.value)}
@@ -225,7 +238,9 @@ export default function CollectionComparison({
 					</label>
 
 					<label className="flex flex-col gap-2">
-						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">Type</span>
+						<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">
+							Type
+						</span>
 						<select
 							value={activeType}
 							onChange={(event) => setActiveType(event.target.value)}
@@ -287,13 +302,20 @@ export default function CollectionComparison({
 
 			{filteredTotal === 0 ? (
 				<div className="w-full max-w-6xl rounded-3xl border border-dashed border-neutral-700 bg-neutral-950/45 px-6 py-16 text-center">
-					<p className="text-sm uppercase tracking-[0.18em] text-neutral-400 font-semibold">No cosmetics found</p>
-					<p className="mt-2 text-neutral-500">Try another view, category, type, or search term.</p>
+					<p className="text-sm uppercase tracking-[0.18em] text-neutral-400 font-semibold">
+						No cosmetics found
+					</p>
+					<p className="mt-2 text-neutral-500">
+						Try another view, category, type, or search term.
+					</p>
 				</div>
 			) : (
 				<div className="w-full max-w-6xl space-y-10 sm:space-y-12">
 					{Object.entries(filteredByCategory).map(([categoryName, items]) => (
-						<section key={categoryName} className="rounded-3xl border border-neutral-800/70 bg-neutral-950/45 p-4 sm:p-6 lg:p-8 shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+						<section
+							key={categoryName}
+							className="rounded-3xl border border-neutral-800/70 bg-neutral-950/45 p-4 sm:p-6 lg:p-8 shadow-[0_18px_45px_rgba(0,0,0,0.35)]"
+						>
 							<div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 border-b border-neutral-800/70 pb-4 mb-5">
 								<div>
 									<h3 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-[0.08em] text-neutral-100">
@@ -303,7 +325,9 @@ export default function CollectionComparison({
 										{activeTheme.label}
 									</p>
 								</div>
-								<span className={`rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-[0.16em] font-semibold ${activeTheme.pillClasses}`}>
+								<span
+									className={`rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-[0.16em] font-semibold ${activeTheme.pillClasses}`}
+								>
 									{items.length} result{items.length === 1 ? "" : "s"}
 								</span>
 							</div>
@@ -314,7 +338,9 @@ export default function CollectionComparison({
 										key={`${activeView}-${item.id}`}
 										className={`group relative overflow-hidden rounded-2xl border transition-all duration-300 ${activeTheme.cardClasses}`}
 									>
-										<div className={`absolute inset-x-0 top-0 h-1 ${activeTheme.bannerClasses}`} />
+										<div
+											className={`absolute inset-x-0 top-0 h-1 ${activeTheme.bannerClasses}`}
+										/>
 
 										<Link
 											href={`/missing-cosmetics?cosmeticId=${item.id}`}

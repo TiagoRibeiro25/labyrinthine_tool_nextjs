@@ -43,13 +43,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 		redirect("/dashboard");
 	}
 
-	const requestedReportedCommentsPage = Number(
-		searchParams?.reportedCommentsPage ?? "1"
-	);
+	const requestedReportedCommentsPage = Number(searchParams?.reportedCommentsPage ?? "1");
 	const reportedCommentsPage = await getReportedCommentsPage(
-		Number.isFinite(requestedReportedCommentsPage)
-			? requestedReportedCommentsPage
-			: 1,
+		Number.isFinite(requestedReportedCommentsPage) ? requestedReportedCommentsPage : 1,
 		10
 	);
 
@@ -93,10 +89,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 			value: pendingFriendRequestsResult[0]?.count ?? 0,
 		},
 		{ label: "Puzzle Runs", value: totalPuzzleRunsResult[0]?.count ?? 0 },
-			{
-				label: "Reported Comments",
-				value: reportedCommentsPage.pagination.totalItems,
-			},
+		{
+			label: "Reported Comments",
+			value: reportedCommentsPage.pagination.totalItems,
+		},
 	];
 
 	return (

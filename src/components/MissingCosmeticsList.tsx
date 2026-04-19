@@ -34,7 +34,8 @@ export default function MissingCosmeticsList({
 			const filteredItems = items.filter((item) => {
 				const matchesType = activeTypeFilter === "All" || item.type === activeTypeFilter;
 				const matchesSearch =
-					normalizedSearch.length === 0 || item.name.toLowerCase().includes(normalizedSearch);
+					normalizedSearch.length === 0 ||
+					item.name.toLowerCase().includes(normalizedSearch);
 				return matchesType && matchesSearch;
 			});
 
@@ -63,22 +64,31 @@ export default function MissingCosmeticsList({
 							Still hidden in the fog
 						</h2>
 						<p className="text-sm sm:text-base text-neutral-400 mt-3 max-w-2xl">
-							Inspect what is missing by category, type, and keyword to decide what to prioritize next.
+							Inspect what is missing by category, type, and keyword to decide what to
+							prioritize next.
 						</p>
 					</div>
 					<div className="grid grid-cols-2 gap-3 sm:gap-4">
 						<div className="rounded-2xl border border-rose-500/25 bg-rose-500/10 p-4">
-							<p className="text-[10px] tracking-[0.2em] uppercase text-rose-200/70 font-bold">Missing</p>
+							<p className="text-[10px] tracking-[0.2em] uppercase text-rose-200/70 font-bold">
+								Missing
+							</p>
 							<p className="text-3xl font-black text-rose-300 mt-1">{totalMissing}</p>
 							<p className="text-xs text-rose-100/60 mt-1">from full collection</p>
 						</div>
 						<div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4">
-							<p className="text-[10px] tracking-[0.2em] uppercase text-amber-200/70 font-bold">Categories</p>
-							<p className="text-3xl font-black text-amber-300 mt-1">{Object.keys(missingByCategory).length}</p>
+							<p className="text-[10px] tracking-[0.2em] uppercase text-amber-200/70 font-bold">
+								Categories
+							</p>
+							<p className="text-3xl font-black text-amber-300 mt-1">
+								{Object.keys(missingByCategory).length}
+							</p>
 							<p className="text-xs text-amber-100/60 mt-1">have at least one missing</p>
 						</div>
 						<div className="rounded-2xl border border-sky-500/25 bg-sky-500/10 p-4 col-span-2">
-							<p className="text-[10px] tracking-[0.2em] uppercase text-sky-200/70 font-bold">Filtered Result</p>
+							<p className="text-[10px] tracking-[0.2em] uppercase text-sky-200/70 font-bold">
+								Filtered Result
+							</p>
 							<p className="text-3xl font-black text-sky-300 mt-1">{filteredTotal}</p>
 							<p className="text-xs text-sky-100/60 mt-1">currently visible</p>
 						</div>
@@ -90,12 +100,16 @@ export default function MissingCosmeticsList({
 				<div className="w-full max-w-6xl rounded-3xl border border-neutral-800/80 bg-black/55 backdrop-blur-xl p-4 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] space-y-5">
 					<div className="flex items-center gap-3 text-neutral-300">
 						<FaFilter className="w-4 h-4 text-rose-300" />
-						<p className="text-xs sm:text-sm uppercase tracking-[0.22em] font-semibold">Filter Missing Cosmetics</p>
+						<p className="text-xs sm:text-sm uppercase tracking-[0.22em] font-semibold">
+							Filter Missing Cosmetics
+						</p>
 					</div>
 
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
 						<label className="flex flex-col gap-2 lg:col-span-2">
-							<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">Search</span>
+							<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">
+								Search
+							</span>
 							<div className="relative">
 								<FaMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 w-4 h-4" />
 								<input
@@ -109,7 +123,9 @@ export default function MissingCosmeticsList({
 						</label>
 
 						<label className="flex flex-col gap-2">
-							<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">Category</span>
+							<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">
+								Category
+							</span>
 							<select
 								value={activeFilter}
 								onChange={(event) => setActiveFilter(event.target.value)}
@@ -124,7 +140,9 @@ export default function MissingCosmeticsList({
 						</label>
 
 						<label className="flex flex-col gap-2">
-							<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">Type</span>
+							<span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-semibold">
+								Type
+							</span>
 							<select
 								value={activeTypeFilter}
 								onChange={(event) => setActiveTypeFilter(event.target.value)}
@@ -159,18 +177,29 @@ export default function MissingCosmeticsList({
 
 			{totalMissing === 0 ? (
 				<div className="w-full max-w-6xl rounded-3xl border border-emerald-500/25 bg-emerald-500/10 px-6 py-16 text-center">
-					<p className="text-sm uppercase tracking-[0.18em] text-emerald-200 font-semibold">Collection complete</p>
-					<p className="mt-2 text-emerald-100/75">This survivor has every cosmetic unlocked.</p>
+					<p className="text-sm uppercase tracking-[0.18em] text-emerald-200 font-semibold">
+						Collection complete
+					</p>
+					<p className="mt-2 text-emerald-100/75">
+						This survivor has every cosmetic unlocked.
+					</p>
 				</div>
 			) : filteredTotal === 0 ? (
 				<div className="w-full max-w-6xl rounded-3xl border border-dashed border-neutral-700 bg-neutral-950/45 px-6 py-16 text-center">
-					<p className="text-sm uppercase tracking-[0.18em] text-neutral-400 font-semibold">No matches</p>
-					<p className="mt-2 text-neutral-500">Try another category, type, or a broader search term.</p>
+					<p className="text-sm uppercase tracking-[0.18em] text-neutral-400 font-semibold">
+						No matches
+					</p>
+					<p className="mt-2 text-neutral-500">
+						Try another category, type, or a broader search term.
+					</p>
 				</div>
 			) : (
 				<div className="w-full max-w-6xl space-y-10 sm:space-y-12">
 					{Object.entries(filteredByCategory).map(([categoryName, items]) => (
-						<section key={categoryName} className="rounded-3xl border border-neutral-800/70 bg-neutral-950/45 p-4 sm:p-6 lg:p-8 shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+						<section
+							key={categoryName}
+							className="rounded-3xl border border-neutral-800/70 bg-neutral-950/45 p-4 sm:p-6 lg:p-8 shadow-[0_18px_45px_rgba(0,0,0,0.35)]"
+						>
 							<div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 border-b border-neutral-800/70 pb-4 mb-5">
 								<div>
 									<h3 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-[0.08em] text-neutral-100">

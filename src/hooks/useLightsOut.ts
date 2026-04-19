@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { PUZZLE_TIMER_TICK_MS, PUZZLE_TYPES } from "../constants/puzzles";
 import {
-    generateBoard,
-    isSolved,
-    LIGHTS_OUT_ANIMATION_DURATION_MS,
-    toggleCells,
+	generateBoard,
+	isSolved,
+	LIGHTS_OUT_ANIMATION_DURATION_MS,
+	toggleCells,
 } from "../lib/lightsOut";
 import { currentTimeMs } from "../lib/puzzles";
 import { usePuzzleScore } from "./usePuzzleScore";

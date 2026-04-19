@@ -75,8 +75,8 @@ export default async function MissingCosmeticsPage({
 								Everything {targetUser.username} still needs
 							</h1>
 							<p className="text-sm sm:text-base text-neutral-400 mt-3 max-w-3xl">
-								Review the remaining collection with focused filters and a clearer visual map of
-								what is left to unlock.
+								Review the remaining collection with focused filters and a clearer visual
+								map of what is left to unlock.
 							</p>
 						</div>
 					</div>

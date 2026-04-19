@@ -95,9 +95,7 @@ export const profileUpdateSchema = z.object({
 		.enum(["entrance", "candle", "chap1", "house", "puzzles"])
 		.optional()
 		.or(z.literal("")),
-	profileCommentVisibility: z
-		.enum(["everyone", "friends_only", "no_one"])
-		.optional(),
+	profileCommentVisibility: z.enum(["everyone", "friends_only", "no_one"]).optional(),
 	favoriteCosmeticId: z.preprocess((value) => {
 		if (value === "" || value === null || value === undefined) {
 			return undefined;

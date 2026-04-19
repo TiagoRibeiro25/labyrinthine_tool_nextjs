@@ -40,7 +40,10 @@ export function containsDisallowedCommentText(content: string): boolean {
 	return BANNED_PHRASES.some((phrase) => normalized.includes(phrase));
 }
 
-export async function areUsersFriends(aUserId: string, bUserId: string): Promise<boolean> {
+export async function areUsersFriends(
+	aUserId: string,
+	bUserId: string
+): Promise<boolean> {
 	if (aUserId === bUserId) {
 		return true;
 	}
@@ -52,8 +55,14 @@ export async function areUsersFriends(aUserId: string, bUserId: string): Promise
 			and(
 				eq(friendRequests.status, "accepted"),
 				or(
-					and(eq(friendRequests.senderId, aUserId), eq(friendRequests.receiverId, bUserId)),
-					and(eq(friendRequests.senderId, bUserId), eq(friendRequests.receiverId, aUserId))
+					and(
+						eq(friendRequests.senderId, aUserId),
+						eq(friendRequests.receiverId, bUserId)
+					),
+					and(
+						eq(friendRequests.senderId, bUserId),
+						eq(friendRequests.receiverId, aUserId)
+					)
 				)
 			)
 		)
@@ -62,7 +71,10 @@ export async function areUsersFriends(aUserId: string, bUserId: string): Promise
 	return rows.length > 0;
 }
 
-export async function areUsersBlocked(aUserId: string, bUserId: string): Promise<boolean> {
+export async function areUsersBlocked(
+	aUserId: string,
+	bUserId: string
+): Promise<boolean> {
 	if (aUserId === bUserId) {
 		return false;
 	}
@@ -124,9 +136,7 @@ export async function getUserCommentSettings(userId: string): Promise<{
 		return null;
 	}
 
-	const visibility = ["everyone", "friends_only", "no_one"].includes(
-		settings.visibility
-	)
+	const visibility = ["everyone", "friends_only", "no_one"].includes(settings.visibility)
 		? (settings.visibility as ProfileCommentVisibility)
 		: "everyone";
 

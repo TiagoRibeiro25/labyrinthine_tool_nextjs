@@ -72,16 +72,16 @@ export async function GET(
 			? eq(profileComments.profileUserId, targetProfile.id)
 			: currentUserId
 				? and(
-					eq(profileComments.profileUserId, targetProfile.id),
-					or(
-						eq(profileComments.isHidden, false),
-						eq(profileComments.authorUserId, currentUserId)
+						eq(profileComments.profileUserId, targetProfile.id),
+						or(
+							eq(profileComments.isHidden, false),
+							eq(profileComments.authorUserId, currentUserId)
+						)
 					)
-				)
 				: and(
-					eq(profileComments.profileUserId, targetProfile.id),
-					eq(profileComments.isHidden, false)
-				);
+						eq(profileComments.profileUserId, targetProfile.id),
+						eq(profileComments.isHidden, false)
+					);
 
 		const totalItemsResult = await db
 			.select({ count: sql<number>`count(*)`.mapWith(Number) })
@@ -144,7 +144,7 @@ export async function GET(
 					profileUserId: targetProfile.id,
 					authorUserId: currentUserId,
 					visibility: targetProfile.visibility,
-			  })
+				})
 			: false;
 
 		return NextResponse.json(
@@ -268,8 +268,7 @@ export async function POST(
 		if (containsDisallowedCommentText(normalizedContent)) {
 			return NextResponse.json(
 				{
-					message:
-						"Comment contains blocked terms. Please rephrase and try again.",
+					message: "Comment contains blocked terms. Please rephrase and try again.",
 				},
 				{ status: 400, headers: toRateLimitHeaders(userRateLimit) }
 			);
@@ -356,16 +355,13 @@ export async function POST(
 		if (recentCommentRows.length > 0) {
 			return NextResponse.json(
 				{
-					message:
-						"You are posting too fast. Please wait before commenting again.",
+					message: "You are posting too fast. Please wait before commenting again.",
 				},
 				{ status: 429, headers: toRateLimitHeaders(userRateLimit) }
 			);
 		}
 
-		const duplicateSinceIso = new Date(
-			Date.now() - DUPLICATE_WINDOW_MS
-		).toISOString();
+		const duplicateSinceIso = new Date(Date.now() - DUPLICATE_WINDOW_MS).toISOString();
 		const duplicateRows = await db
 			.select({ id: profileComments.id })
 			.from(profileComments)
@@ -382,8 +378,7 @@ export async function POST(
 		if (duplicateRows.length > 0) {
 			return NextResponse.json(
 				{
-					message:
-						"Duplicate comment detected. Please avoid repeating the same message.",
+					message: "Duplicate comment detected. Please avoid repeating the same message.",
 				},
 				{ status: 400, headers: toRateLimitHeaders(userRateLimit) }
 			);
@@ -423,4 +418,3 @@ export async function POST(
 		);
 	}
 }
-
