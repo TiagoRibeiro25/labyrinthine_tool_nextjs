@@ -226,6 +226,15 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 	return (
 		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-8 sm:py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
 			<div className="w-full max-w-5xl rounded-3xl bg-[linear-gradient(145deg,rgba(9,11,13,0.95),rgba(18,23,29,0.9))] backdrop-blur-md border border-neutral-800/80 shadow-[0_24px_80px_rgba(0,0,0,0.45)] relative overflow-hidden flex flex-col">
+				<div className="px-6 sm:px-10 pt-6 sm:pt-8">
+					<Link
+						href="/dashboard"
+						className="inline-flex items-center gap-2 rounded-full border border-neutral-700 bg-black/35 px-4 py-2 text-[11px] uppercase tracking-[0.16em] font-semibold text-neutral-300 hover:border-neutral-500 hover:text-neutral-100 transition-colors"
+					>
+						&larr; Back to Dashboard
+					</Link>
+				</div>
+
 				{/* --- HEADER BANNER --- */}
 				<div className="h-36 sm:h-56 border-b border-neutral-800 relative overflow-hidden bg-neutral-950">
 					<Image
@@ -467,13 +476,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 					</div>
 				</div>
 			</div>
-
-			<Link
-				href="/dashboard"
-				className="mt-8 inline-flex items-center gap-2 rounded-full border border-neutral-700 bg-black/35 px-4 py-2 text-[11px] uppercase tracking-[0.16em] font-semibold text-neutral-300 hover:border-neutral-500 hover:text-neutral-100 transition-colors"
-			>
-				&larr; Back to Dashboard
-			</Link>
 		</main>
 	);
 }
