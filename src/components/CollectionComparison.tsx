@@ -336,7 +336,7 @@ export default function CollectionComparison({
 								{items.map((item) => (
 									<div
 										key={`${activeView}-${item.id}`}
-										className={`group relative overflow-hidden rounded-2xl border transition-all duration-300 ${activeTheme.cardClasses}`}
+										className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border transition-all duration-300 ${activeTheme.cardClasses}`}
 									>
 										<div
 											className={`absolute inset-x-0 top-0 h-1 ${activeTheme.bannerClasses}`}
@@ -354,7 +354,7 @@ export default function CollectionComparison({
 											{activeTheme.icon}
 										</div>
 
-										<div className="relative aspect-square w-full bg-neutral-950/70 p-4">
+										<div className="relative aspect-square w-full shrink-0 bg-neutral-950/70 p-4">
 											<div
 												className={`relative h-full w-full transition-all duration-500 ${
 													activeView === "bothMissing"
@@ -373,8 +373,8 @@ export default function CollectionComparison({
 											</div>
 										</div>
 
-										<div className="border-t border-neutral-800/70 bg-neutral-900/80 px-3 py-3">
-											<p className="line-clamp-2 text-center text-[11px] sm:text-xs uppercase tracking-[0.13em] font-semibold text-neutral-200">
+										<div className="mt-auto flex min-h-21 items-center justify-center border-t border-neutral-800/70 bg-neutral-900/80 px-3 py-3">
+											<p className="line-clamp-2 min-h-9 text-center text-[11px] sm:text-xs uppercase tracking-[0.13em] font-semibold leading-relaxed text-neutral-200">
 												{item.name}
 											</p>
 										</div>

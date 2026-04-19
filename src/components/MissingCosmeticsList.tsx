@@ -218,7 +218,7 @@ export default function MissingCosmeticsList({
 								{items.map((item) => (
 									<div
 										key={item.id}
-										className="group relative overflow-hidden rounded-2xl border border-rose-400/30 bg-rose-500/6 transition-all duration-300 hover:border-rose-300 hover:-translate-y-1"
+										className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-rose-400/30 bg-rose-500/6 transition-all duration-300 hover:border-rose-300 hover:-translate-y-1"
 									>
 										<div className="absolute inset-x-0 top-0 h-1 bg-rose-300" />
 										<Link
@@ -231,7 +231,7 @@ export default function MissingCosmeticsList({
 										<div className="absolute right-2 top-2 z-20 rounded-lg border border-neutral-700 bg-black/65 p-1.5 text-neutral-300">
 											<FaLock className="w-3 h-3" />
 										</div>
-										<div className="relative aspect-square w-full bg-neutral-950/70 p-4">
+										<div className="relative aspect-square w-full shrink-0 bg-neutral-950/70 p-4">
 											<div className="relative h-full w-full transition-all duration-500 grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100">
 												<Image
 													src={`/images/cosmetics/${item.id}.png`}
@@ -243,8 +243,8 @@ export default function MissingCosmeticsList({
 												/>
 											</div>
 										</div>
-										<div className="border-t border-neutral-800/70 bg-neutral-900/80 px-3 py-3">
-											<p className="line-clamp-2 text-center text-[11px] sm:text-xs uppercase tracking-[0.13em] font-semibold text-neutral-200">
+										<div className="flex min-h-[3.25rem] items-center justify-center border-t border-neutral-800/70 bg-neutral-900/80 px-3 py-3">
+											<p className="line-clamp-2 min-h-[2.25rem] text-center text-[11px] sm:text-xs uppercase tracking-[0.13em] font-semibold leading-relaxed text-neutral-200">
 												{item.name}
 											</p>
 										</div>

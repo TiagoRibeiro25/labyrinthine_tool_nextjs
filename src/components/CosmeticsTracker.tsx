@@ -478,7 +478,7 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 														toggleCosmetic(item.id);
 													}
 												}}
-												className={`group relative cursor-pointer overflow-hidden rounded-2xl border transition-all duration-300 ${
+												className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border transition-all duration-300 ${
 													isUnlocked
 														? "border-teal-400/45 bg-teal-500/8 hover:border-teal-300 hover:-translate-y-1"
 														: "border-neutral-700 bg-neutral-900/80 hover:border-neutral-500 hover:-translate-y-1"
@@ -515,7 +515,7 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 													)}
 												</div>
 
-												<div className="relative aspect-square w-full bg-neutral-950/70 p-4">
+												<div className="relative aspect-square w-full shrink-0 bg-neutral-950/70 p-4">
 													<div
 														className={`relative h-full w-full transition-all duration-500 ${
 															isUnlocked
@@ -534,16 +534,18 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 													</div>
 												</div>
 
-												<div className="border-t border-neutral-800/70 bg-neutral-900/80 px-3 py-3">
-													<p className="line-clamp-2 text-center text-[11px] sm:text-xs uppercase tracking-[0.13em] font-semibold text-neutral-200">
+												<div className="mt-auto flex min-h-21 flex-col justify-center border-t border-neutral-800/70 bg-neutral-900/80 px-3 py-3">
+													<p className="line-clamp-2 min-h-9 text-center text-[11px] sm:text-xs uppercase tracking-[0.13em] font-semibold text-neutral-200">
 														{item.name}
 													</p>
-													{isUnlocked && (
-														<p className="mt-1 flex items-center justify-center gap-1 text-[10px] uppercase tracking-[0.14em] text-teal-300/90">
-															<FaCheck className="w-2.5 h-2.5" />
-															Unlocked
-														</p>
-													)}
+													<p
+														className={`mt-1 flex items-center justify-center gap-1 text-[10px] uppercase tracking-[0.14em] ${
+															isUnlocked ? "text-teal-300/90" : "invisible"
+														}`}
+													>
+														<FaCheck className="w-2.5 h-2.5" />
+														Unlocked
+													</p>
 												</div>
 											</div>
 										);
