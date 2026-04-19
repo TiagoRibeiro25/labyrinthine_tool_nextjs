@@ -10,6 +10,7 @@ import AppProviders from "../components/providers/AppProviders";
 import { authOptions } from "../lib/auth";
 import ClickSpark from "../components/ClickSpark";
 import "./globals.css";
+import Snowflakes from "@/components/Snowflakes";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -48,6 +49,7 @@ export default async function RootLayout({
 						>
 							<main>{children}</main>
 							{isLoggedIn ? <NotificationsCenter /> : null}
+							<Snowflakes />
 							<CommandPalette />
 							<Footer />
 						</ClickSpark>
