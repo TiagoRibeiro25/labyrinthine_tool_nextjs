@@ -107,7 +107,7 @@ export default function HeroSection({ isAuthenticated }: HeroSectionProps) {
 							href="/leaderboard"
 							className="group rounded-2xl border border-neutral-700/80 bg-neutral-900/45 p-4 sm:p-5 transition-all duration-300 hover:border-neutral-400 hover:bg-neutral-900"
 						>
-							<div className="mt-2 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-neutral-100">
+							<div className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-neutral-100">
 								View Leaderboard
 								<FaArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
 							</div>
