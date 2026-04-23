@@ -36,6 +36,13 @@
 			"when": 1776038400000,
 			"tag": "0004_steam_profile_fields",
 			"breakpoints": true
+		},
+		{
+			"idx": 5,
+			"version": "7",
+			"when": 1776124800000,
+			"tag": "0005_discord_id_field",
+			"breakpoints": true
 		}
 	]
 }

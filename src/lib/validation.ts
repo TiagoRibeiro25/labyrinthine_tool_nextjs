@@ -5,20 +5,27 @@ import { DEFAULT_PUZZLE_TYPE, PUZZLE_TYPE_VALUES } from "../constants/puzzles";
 const steamProfileRegex =
 	/^https?:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/;
 
+export const usernameSchema = z
+	.string()
+	.trim()
+	.min(3, "Username must be at least 3 characters long.")
+	.max(32, "Username must be at most 32 characters long.")
+	.regex(
+		/^[a-zA-Z0-9_-]+$/,
+		"Username can only contain letters, numbers, underscores, and hyphens."
+	);
+
 export const registerBodySchema = z.object({
-	username: z
-		.string()
-		.trim()
-		.min(3, "Username must be at least 3 characters long.")
-		.max(32, "Username must be at most 32 characters long.")
-		.regex(
-			/^[a-zA-Z0-9_-]+$/,
-			"Username can only contain letters, numbers, underscores, and hyphens."
-		),
+	username: usernameSchema,
 	password: z
 		.string()
 		.min(6, "Password must be at least 6 characters long.")
 		.max(128, "Password must be at most 128 characters long."),
+});
+
+export const discordOnboardingBodySchema = z.object({
+	token: z.string().trim().min(1, "Discord onboarding token is required."),
+	username: usernameSchema.optional(),
 });
 
 export const friendsActionSchema = z
@@ -26,16 +33,7 @@ export const friendsActionSchema = z
 		action: z.enum(["add", "accept", "reject", "remove"]),
 		receiverUsername: z.preprocess(
 			(value) => (value === null ? undefined : value),
-			z
-				.string()
-				.trim()
-				.min(3, "Receiver username must be at least 3 characters long.")
-				.max(32, "Receiver username must be at most 32 characters long.")
-				.regex(
-					/^[a-zA-Z0-9_-]+$/,
-					"Receiver username can only contain letters, numbers, underscores, and hyphens."
-				)
-				.optional()
+			usernameSchema.optional()
 		),
 		requestId: z.preprocess(
 			(value) => (value === null ? undefined : value),

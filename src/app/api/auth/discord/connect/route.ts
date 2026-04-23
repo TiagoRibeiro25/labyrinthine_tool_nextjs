@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
 
 	const state = crypto.randomUUID();
 	const returnTo = sanitizeReturnTo(req.nextUrl.searchParams.get("returnTo"));
-	const redirectUri = `${req.nextUrl.origin}/api/auth/callback/discord`;
+	const redirectUri = `${req.nextUrl.origin}/api/auth/discord/callback`;
 
 	const authorizeUrl = new URL("https://discord.com/oauth2/authorize");
 	authorizeUrl.searchParams.set("client_id", clientId);

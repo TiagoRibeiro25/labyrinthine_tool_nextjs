@@ -1,8 +1,10 @@
 "use client";
 
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { FaDiscord } from "react-icons/fa";
 import { useApi } from "../../hooks/useApi";
 import { useToast } from "../../hooks/useToast";
 
@@ -12,6 +14,7 @@ export default function SignUpPage() {
 	const [password, setPassword] = useState<string>("");
 	const [confirmPassword, setConfirmPassword] = useState<string>("");
 	const [localError, setLocalError] = useState<string>("");
+	const [discordLoading, setDiscordLoading] = useState<boolean>(false);
 	const { loading, error: apiError, execute, setError: setApiError } = useApi();
 	const toast = useToast();
 
@@ -41,6 +44,19 @@ export default function SignUpPage() {
 					? err.message
 					: "Could not create account. Please try again.";
 			toast.error("Signup failed", message);
+		}
+	};
+
+	const handleDiscordLogin = async () => {
+		setLocalError("");
+		setApiError(null);
+		setDiscordLoading(true);
+
+		try {
+			await signIn("discord", { callbackUrl: "/dashboard" });
+		} catch {
+			setLocalError("Could not start Discord login.");
+			setDiscordLoading(false);
 		}
 	};
 
@@ -109,12 +125,36 @@ export default function SignUpPage() {
 
 					<button
 						type="submit"
-						disabled={loading}
+						disabled={loading || discordLoading}
 						className="w-full mt-6 group flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-neutral-900 text-neutral-100 font-bold text-sm sm:text-base uppercase tracking-[0.14em] border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 cursor-pointer"
 					>
 						{loading ? "Forging Path..." : "Create Account"}
 					</button>
 				</form>
+
+				<div className="my-6 flex items-center gap-3">
+					<div className="h-px flex-1 bg-neutral-800" />
+					<span className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-bold">
+						Or
+					</span>
+					<div className="h-px flex-1 bg-neutral-800" />
+				</div>
+
+				<button
+					type="button"
+					onClick={handleDiscordLogin}
+					disabled={loading || discordLoading}
+					className="w-full group flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-neutral-900 text-neutral-100 font-bold text-sm sm:text-base uppercase tracking-[0.14em] border border-[#5865F2]/80 hover:bg-neutral-800 hover:border-[#7b86ff] transition-all duration-300 shadow-[0_0_15px_rgba(88,101,242,0.2)] hover:shadow-[0_0_28px_rgba(88,101,242,0.35)] hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 cursor-pointer"
+				>
+					{discordLoading ? (
+						"Redirecting..."
+					) : (
+						<>
+							<FaDiscord className="w-4 h-4 text-[#7b86ff]" />
+							Login with Discord
+						</>
+					)}
+				</button>
 
 				<div className="mt-8 text-center border-t border-neutral-800/80 pt-6">
 					<p className="text-sm text-neutral-500">

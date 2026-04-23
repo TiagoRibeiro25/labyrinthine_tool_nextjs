@@ -22,6 +22,7 @@ export const users = pgTable(
 		profileBannerId: text("profile_banner_id"),
 		bio: text("bio"),
 		favoriteCosmeticId: integer("favorite_cosmetic_id"),
+		discordId: text("discord_id"),
 		discordUsername: text("discord_username"),
 		discordAvatarUrl: text("discord_avatar_url"),
 		useDiscordAvatar: boolean("use_discord_avatar").default(false).notNull(),
@@ -43,6 +44,7 @@ export const users = pgTable(
 		index("users_id_idx").on(table.id),
 		index("users_username_idx").on(table.username),
 		uniqueIndex("users_username_lower_unique_idx").on(sql`lower(${table.username})`),
+		uniqueIndex("users_discord_id_unique_idx").on(table.discordId),
 	]
 );
 

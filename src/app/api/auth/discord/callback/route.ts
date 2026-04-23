@@ -4,6 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../../db";
 import { users } from "../../../../../db/schema";
 import { authOptions } from "../../../../../lib/auth";
+import {
+	formatDiscordDisplayName,
+	getDiscordAvatarUrl,
+} from "../../../../../lib/discord-auth";
 
 const DISCORD_STATE_COOKIE = "discord_oauth_state";
 const DISCORD_RETURN_TO_COOKIE = "discord_oauth_return_to";
@@ -31,22 +35,7 @@ function sanitizeReturnTo(returnTo: string | null | undefined): string {
 	return returnTo;
 }
 
-function formatDiscordUsername(user: DiscordUserResponse): string {
-	if (user.discriminator && user.discriminator !== "0") {
-		return `${user.username}#${user.discriminator}`;
-	}
 
-	return user.username;
-}
-
-function getDiscordAvatarUrl(user: DiscordUserResponse): string | null {
-	if (!user.avatar) {
-		return null;
-	}
-
-	const extension = user.avatar.startsWith("a_") ? "gif" : "png";
-	return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${extension}`;
-}
 
 function redirectWithCleanup(req: NextRequest, returnTo: string) {
 	const response = NextResponse.redirect(new URL(returnTo, req.nextUrl.origin));
@@ -92,7 +81,7 @@ export async function GET(req: NextRequest) {
 		);
 	}
 
-	const redirectUri = `${req.nextUrl.origin}/api/auth/callback/discord`;
+	const redirectUri = `${req.nextUrl.origin}/api/auth/discord/callback`;
 
 	try {
 		const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
@@ -129,12 +118,17 @@ export async function GET(req: NextRequest) {
 		}
 
 		const discordUser = (await userResponse.json()) as DiscordUserResponse;
-		const discordUsername = formatDiscordUsername(discordUser);
-		const discordAvatarUrl = getDiscordAvatarUrl(discordUser);
+		const discordUsername = formatDiscordDisplayName(discordUser);
+		const discordAvatarUrl = getDiscordAvatarUrl(discordUser.id, discordUser.avatar);
 
 		await db
 			.update(users)
-			.set({ discordUsername, discordAvatarUrl, updatedAt: new Date() })
+			.set({
+				discordId: discordUser.id,
+				discordUsername,
+				discordAvatarUrl,
+				updatedAt: new Date(),
+			})
 			.where(eq(users.id, sessionUser.id));
 	} catch (error) {
 		console.error("Discord OAuth callback failed:", error);
