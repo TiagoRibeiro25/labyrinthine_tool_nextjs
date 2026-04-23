@@ -7,16 +7,18 @@ vi.mock("next-auth", () => ({
 vi.mock("../../../db", () => ({
 	db: {
 		update: vi.fn(),
+		delete: vi.fn(),
 	},
 }));
 
 import { getServerSession } from "next-auth";
 import { db } from "../../../db";
-import { PUT } from "./route";
+import { DELETE, PUT } from "./route";
 
 const mockedGetServerSession = vi.mocked(getServerSession);
 const mockedDb = db as unknown as {
 	update: ReturnType<typeof vi.fn>;
+	delete: ReturnType<typeof vi.fn>;
 };
 
 describe("profile route", () => {
@@ -154,5 +156,89 @@ describe("profile route", () => {
 		expect(response.status).toBe(200);
 		const setArg = chain.set.mock.calls[0]?.[0] as Record<string, unknown>;
 		expect("steamProfileUrl" in setArg).toBe(false);
+	});
+
+	it("delete returns unauthorized when user is not authenticated", async () => {
+		mockedGetServerSession.mockResolvedValue(null);
+
+		const response = await DELETE(
+			new Request("http://localhost/api/profile", {
+				method: "DELETE",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ confirmationPhrase: "DELETE MY ACCOUNT" }),
+			})
+		);
+
+		expect(response.status).toBe(401);
+	});
+
+	it("delete returns bad request for invalid json", async () => {
+		mockedGetServerSession.mockResolvedValue({ user: { id: "u1" } } as never);
+
+		const response = await DELETE(
+			new Request("http://localhost/api/profile", {
+				method: "DELETE",
+				headers: { "Content-Type": "application/json" },
+				body: "{bad-json",
+			})
+		);
+
+		expect(response.status).toBe(400);
+	});
+
+	it("delete returns validation error for wrong confirmation phrase", async () => {
+		mockedGetServerSession.mockResolvedValue({ user: { id: "u1" } } as never);
+
+		const response = await DELETE(
+			new Request("http://localhost/api/profile", {
+				method: "DELETE",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ confirmationPhrase: "WRONG PHRASE" }),
+			})
+		);
+
+		expect(response.status).toBe(400);
+	});
+
+	it("deletes account and returns success", async () => {
+		mockedGetServerSession.mockResolvedValue({ user: { id: "u1" } } as never);
+		const chain = {
+			where: vi.fn(),
+		};
+		chain.where.mockResolvedValue(undefined);
+		mockedDb.delete.mockReturnValue(chain);
+
+		const response = await DELETE(
+			new Request("http://localhost/api/profile", {
+				method: "DELETE",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ confirmationPhrase: "DELETE MY ACCOUNT" }),
+			})
+		);
+		const payload = (await response.json()) as { message: string };
+
+		expect(response.status).toBe(200);
+		expect(payload.message).toContain("deleted");
+		expect(mockedDb.delete).toHaveBeenCalledTimes(1);
+		expect(chain.where).toHaveBeenCalledTimes(1);
+	});
+
+	it("delete returns 500 on db failure", async () => {
+		mockedGetServerSession.mockResolvedValue({ user: { id: "u1" } } as never);
+		const chain = {
+			where: vi.fn(),
+		};
+		chain.where.mockRejectedValue(new Error("db fail"));
+		mockedDb.delete.mockReturnValue(chain);
+
+		const response = await DELETE(
+			new Request("http://localhost/api/profile", {
+				method: "DELETE",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ confirmationPhrase: "DELETE MY ACCOUNT" }),
+			})
+		);
+
+		expect(response.status).toBe(500);
 	});
 });

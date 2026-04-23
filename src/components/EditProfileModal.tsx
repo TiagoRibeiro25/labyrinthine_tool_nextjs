@@ -1,5 +1,6 @@
 "use client";
 
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -10,6 +11,7 @@ import { useApi } from "../hooks/useApi";
 import { useOnClickOutside } from "../hooks/useOnClickOutside";
 import { useToast } from "../hooks/useToast";
 import { allCosmetics } from "../lib/cosmetics";
+import { DELETE_ACCOUNT_CONFIRMATION_PHRASE } from "../lib/validation";
 
 const availableAvatars = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
@@ -74,6 +76,9 @@ export default function EditProfileModal({
 	const [favoriteCosmeticId, setFavoriteCosmeticId] = useState<string>(
 		initialData.favoriteCosmeticId ? String(initialData.favoriteCosmeticId) : ""
 	);
+	const [deleteConfirmationPhrase, setDeleteConfirmationPhrase] =
+		useState<string>("");
+	const [deletingAccount, setDeletingAccount] = useState<boolean>(false);
 	const [localError, setLocalError] = useState<string>("");
 	const { loading, error: apiError, execute, setError: setApiError } = useApi();
 	const toast = useToast();
@@ -127,6 +132,38 @@ export default function EditProfileModal({
 				: "/";
 		const authUrl = `/api/auth/steam/connect?returnTo=${encodeURIComponent(currentPath)}`;
 		window.location.href = authUrl;
+	};
+
+	const handleDeleteAccount = async () => {
+		if (deleteConfirmationPhrase.trim() !== DELETE_ACCOUNT_CONFIRMATION_PHRASE) {
+			setLocalError(
+				`Type "${DELETE_ACCOUNT_CONFIRMATION_PHRASE}" exactly to enable deletion.`
+			);
+			return;
+		}
+
+		setLocalError("");
+		setApiError(null);
+		setDeletingAccount(true);
+
+		try {
+			await execute("/api/profile", {
+				method: "DELETE",
+				body: JSON.stringify({
+					confirmationPhrase: deleteConfirmationPhrase.trim(),
+				}),
+			});
+
+			toast.success("Account deleted", "Your account and related data were removed.");
+			await signOut({ callbackUrl: "/" });
+		} catch (err) {
+			const message =
+				err instanceof Error ? err.message : "Failed to delete account.";
+			setLocalError(message);
+			toast.error("Could not delete account", message);
+		} finally {
+			setDeletingAccount(false);
+		}
 	};
 
 	const modalContent = (
@@ -376,18 +413,58 @@ export default function EditProfileModal({
 						</div>
 					</div>
 
+					<div className="pt-2 border-t border-red-950/60 mt-2">
+						<div className="space-y-3 rounded-sm border border-red-900/60 bg-red-950/20 p-4">
+							<p className="text-xs font-bold text-red-300 uppercase tracking-widest">
+								Danger Zone
+							</p>
+							<p className="text-xs text-red-200/90">
+								This will permanently delete your account and all related data.
+								This action cannot be undone.
+							</p>
+							<p className="text-[11px] text-red-300/90 font-semibold">
+								Type{" "}
+								<span className="font-black tracking-wide">
+									{DELETE_ACCOUNT_CONFIRMATION_PHRASE}
+								</span>{" "}
+								to enable account deletion.
+							</p>
+							<input
+								type="text"
+								value={deleteConfirmationPhrase}
+								onChange={(event) => setDeleteConfirmationPhrase(event.target.value)}
+								placeholder={DELETE_ACCOUNT_CONFIRMATION_PHRASE}
+								disabled={loading || deletingAccount}
+								className="w-full bg-black/30 border border-red-900/70 text-red-100 px-4 py-3 rounded-sm focus:outline-none focus:border-red-500 transition-all placeholder:text-red-300/40"
+							/>
+							<button
+								type="button"
+								onClick={handleDeleteAccount}
+								disabled={
+									loading ||
+									deletingAccount ||
+									deleteConfirmationPhrase.trim() !==
+										DELETE_ACCOUNT_CONFIRMATION_PHRASE
+								}
+								className="w-full px-6 py-3 rounded-sm bg-red-950/60 text-red-100 font-bold text-sm uppercase tracking-widest border border-red-700 hover:bg-red-900/70 hover:border-red-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+							>
+								{deletingAccount ? "Deleting Account..." : "Delete Account"}
+							</button>
+						</div>
+					</div>
+
 					<div className="pt-4 flex gap-4">
 						<button
 							type="button"
 							onClick={onClose}
-							disabled={loading}
+							disabled={loading || deletingAccount}
 							className="flex-1 px-6 py-3 rounded-sm bg-neutral-900/50 text-neutral-400 font-bold text-sm uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:text-neutral-200 transition-all duration-300 disabled:opacity-50 cursor-pointer"
 						>
 							Cancel
 						</button>
 						<button
 							type="submit"
-							disabled={loading}
+							disabled={loading || deletingAccount}
 							className="flex-1 px-6 py-3 rounded-sm bg-neutral-800 text-neutral-100 font-bold text-sm uppercase tracking-widest border border-neutral-600 hover:bg-neutral-700 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.05)] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] disabled:opacity-50 cursor-pointer"
 						>
 							{loading ? "Saving..." : "Save Changes"}

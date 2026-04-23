@@ -5,6 +5,8 @@ import { DEFAULT_PUZZLE_TYPE, PUZZLE_TYPE_VALUES } from "../constants/puzzles";
 const steamProfileRegex =
 	/^https?:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/;
 
+export const DELETE_ACCOUNT_CONFIRMATION_PHRASE = "DELETE MY ACCOUNT";
+
 export const usernameSchema = z
 	.string()
 	.trim()
@@ -26,6 +28,16 @@ export const registerBodySchema = z.object({
 export const discordOnboardingBodySchema = z.object({
 	token: z.string().trim().min(1, "Discord onboarding token is required."),
 	username: usernameSchema.optional(),
+});
+
+export const deleteAccountBodySchema = z.object({
+	confirmationPhrase: z
+		.string()
+		.trim()
+		.refine(
+			(value) => value === DELETE_ACCOUNT_CONFIRMATION_PHRASE,
+			`Confirmation phrase must be exactly "${DELETE_ACCOUNT_CONFIRMATION_PHRASE}".`
+		),
 });
 
 export const friendsActionSchema = z

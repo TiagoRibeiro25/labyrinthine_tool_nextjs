@@ -4,7 +4,11 @@ import { NextResponse } from "next/server";
 import { db } from "../../../db";
 import { users } from "../../../db/schema";
 import { authOptions } from "../../../lib/auth";
-import { getFirstZodErrorMessage, profileUpdateSchema } from "../../../lib/validation";
+import {
+	deleteAccountBodySchema,
+	getFirstZodErrorMessage,
+	profileUpdateSchema,
+} from "../../../lib/validation";
 
 export async function PUT(req: Request) {
 	try {
@@ -66,6 +70,46 @@ export async function PUT(req: Request) {
 		);
 	} catch (error) {
 		console.error("Error updating profile:", error);
+		return NextResponse.json(
+			{ message: "An internal server error occurred." },
+			{ status: 500 }
+		);
+	}
+}
+
+export async function DELETE(req: Request) {
+	try {
+		const session = await getServerSession(authOptions);
+		const sessionUser = session?.user as { id?: string } | undefined;
+
+		if (!session || !sessionUser || !sessionUser.id) {
+			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
+		}
+
+		let body: unknown;
+		try {
+			body = await req.json();
+		} catch {
+			return NextResponse.json({ message: "Invalid JSON body." }, { status: 400 });
+		}
+
+		const parsed = deleteAccountBodySchema.safeParse(body);
+
+		if (!parsed.success) {
+			return NextResponse.json(
+				{ message: getFirstZodErrorMessage(parsed.error) },
+				{ status: 400 }
+			);
+		}
+
+		await db.delete(users).where(eq(users.id, sessionUser.id));
+
+		return NextResponse.json(
+			{ message: "Account deleted successfully." },
+			{ status: 200 }
+		);
+	} catch (error) {
+		console.error("Error deleting account:", error);
 		return NextResponse.json(
 			{ message: "An internal server error occurred." },
 			{ status: 500 }

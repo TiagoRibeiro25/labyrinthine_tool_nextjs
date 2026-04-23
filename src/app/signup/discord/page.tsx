@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { useApi } from "../../../hooks/useApi";
 
 interface OnboardingPreviewResponse {
 	discordDisplayName: string;
@@ -16,27 +17,19 @@ interface OnboardingCompleteResponse {
 	loginToken: string;
 }
 
-async function parseErrorMessage(response: Response, fallback: string) {
-	try {
-		const data = (await response.json()) as { message?: string };
-		return data.message || fallback;
-	} catch {
-		return fallback;
-	}
-}
-
 export default function DiscordSignUpPage() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const token = useMemo(() => searchParams.get("token")?.trim() || "", [searchParams]);
 
-	const [isLoadingPreview, setIsLoadingPreview] = useState(true);
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [error, setError] = useState("");
-	const [discordDisplayName, setDiscordDisplayName] = useState("");
-	const [preferredUsername, setPreferredUsername] = useState("");
-	const [customUsername, setCustomUsername] = useState("");
-	const [showCustomUsernameInput, setShowCustomUsernameInput] = useState(false);
+	const [isLoadingPreview, setIsLoadingPreview] = useState<boolean>(true);
+	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+	const [error, setError] = useState<string>("");
+	const [discordDisplayName, setDiscordDisplayName] = useState<string>("");
+	const [preferredUsername, setPreferredUsername] = useState<string>("");
+	const [customUsername, setCustomUsername] = useState<string>("");
+	const [showCustomUsernameInput, setShowCustomUsernameInput] = useState<boolean>(false);
+	const { execute } = useApi<OnboardingPreviewResponse | OnboardingCompleteResponse>();
 
 	useEffect(() => {
 		let cancelled = false;
@@ -52,25 +45,15 @@ export default function DiscordSignUpPage() {
 			setError("");
 
 			try {
-				const response = await fetch(
+				const data = (await execute(
 					`/api/auth/discord/onboarding?token=${encodeURIComponent(token)}`,
 					{
 						method: "GET",
 						cache: "no-store",
 					}
-				);
+				)) as OnboardingPreviewResponse | null;
 
-				if (!response.ok) {
-					const message = await parseErrorMessage(
-						response,
-						"Could not load Discord onboarding details."
-					);
-					throw new Error(message);
-				}
-
-				const data = (await response.json()) as OnboardingPreviewResponse;
-
-				if (!cancelled) {
+				if (!cancelled && data) {
 					setDiscordDisplayName(data.discordDisplayName);
 					setPreferredUsername(data.preferredAccountUsername);
 					setCustomUsername(data.preferredAccountUsername);
@@ -95,7 +78,7 @@ export default function DiscordSignUpPage() {
 		return () => {
 			cancelled = true;
 		};
-	}, [token]);
+	}, [token, execute]);
 
 	const completeSignup = async (username?: string) => {
 		if (!token) {
@@ -107,31 +90,17 @@ export default function DiscordSignUpPage() {
 		setError("");
 
 		try {
-			const response = await fetch("/api/auth/discord/onboarding", {
+			const data = (await execute("/api/auth/discord/onboarding", {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
 				body: JSON.stringify({
 					token,
 					...(username ? { username } : {}),
 				}),
-			});
+			})) as OnboardingCompleteResponse | null;
 
-			if (!response.ok) {
-				const message = await parseErrorMessage(
-					response,
-					"Could not create your account with Discord."
-				);
-
-				if (response.status === 409) {
-					setShowCustomUsernameInput(true);
-				}
-
-				throw new Error(message);
+			if (!data) {
+				throw new Error("Could not create your account with Discord.");
 			}
-
-			const data = (await response.json()) as OnboardingCompleteResponse;
 
 			const signInResult = await signIn("discord-token", {
 				token: data.loginToken,
@@ -145,10 +114,17 @@ export default function DiscordSignUpPage() {
 			router.push("/dashboard");
 			router.refresh();
 		} catch (err) {
+			if (
+				typeof err === "object" &&
+				err !== null &&
+				"status" in err &&
+				(err as { status?: number }).status === 409
+			) {
+				setShowCustomUsernameInput(true);
+			}
+
 			setError(
-				err instanceof Error
-					? err.message
-					: "Could not create your account with Discord."
+				err instanceof Error ? err.message : "Could not create your account with Discord."
 			);
 		} finally {
 			setIsSubmitting(false);
