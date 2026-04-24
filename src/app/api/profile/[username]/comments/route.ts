@@ -1,6 +1,11 @@
 import { and, desc, eq, or, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import {
+	PROFILE_COMMENT_COOLDOWN_MS as COMMENT_COOLDOWN_MS,
+	PROFILE_COMMENT_DUPLICATE_WINDOW_MS as DUPLICATE_WINDOW_MS,
+	PROFILE_COMMENT_MIN_ACCOUNT_AGE_MS as MIN_ACCOUNT_AGE_MS,
+} from "../../../../../constants/profile-comments";
 import { db } from "../../../../../db";
 import {
 	profileCommentReactions,
@@ -21,10 +26,6 @@ import {
 	profileCommentCreateBodySchema,
 	profileCommentsQuerySchema,
 } from "../../../../../lib/validation";
-
-const MIN_ACCOUNT_AGE_MS = 15 * 60 * 1000;
-const COMMENT_COOLDOWN_MS = 60 * 1000;
-const DUPLICATE_WINDOW_MS = 5 * 60 * 1000;
 
 export async function GET(
 	req: Request,

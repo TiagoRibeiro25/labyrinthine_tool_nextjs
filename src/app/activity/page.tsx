@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { FaArrowLeft, FaClockRotateLeft } from "react-icons/fa6";
 import RealtimeStatusBadge from "../../components/RealtimeStatusBadge";
+import { ACTIVITY_PAGE_SIZE } from "../../constants/pagination";
 import { REALTIME_TOPICS, type RealtimeStreamSnapshot } from "../../constants/realtime";
 import { useApi } from "../../hooks/useApi";
 import { useRealtimeStream } from "../../hooks/useRealtimeStream";
@@ -38,8 +39,6 @@ interface ActivityResponse {
 	};
 }
 
-const PAGE_SIZE = 20;
-
 export default function ActivityPage() {
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const { data, loading, error, execute } = useApi<ActivityResponse>();
@@ -51,7 +50,7 @@ export default function ActivityPage() {
 	const hasNextPage = pagination?.hasNextPage ?? false;
 
 	const fetchActivity = useCallback(async () => {
-		await execute(`/api/activity?page=${currentPage}&limit=${PAGE_SIZE}`);
+		await execute(`/api/activity?page=${currentPage}&limit=${ACTIVITY_PAGE_SIZE}`);
 	}, [currentPage, execute]);
 
 	const handleRealtimeUpdate = useCallback(() => {

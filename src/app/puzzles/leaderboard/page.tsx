@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaArrowLeft, FaLightbulb, FaPuzzlePiece, FaTrophy } from "react-icons/fa6";
+import { PUZZLE_LEADERBOARD_PAGE_SIZE } from "../../../constants/pagination";
 import { type PuzzleType } from "../../../constants/puzzles";
 import { useApi } from "../../../hooks/useApi";
 import { getUserAvatarUrl } from "../../../lib/avatar";
@@ -36,8 +37,6 @@ interface PuzzleLeaderboardResponse {
 	puzzleType: PuzzleType;
 }
 
-const PAGE_SIZE = 20;
-
 function formatDuration(durationMs: number) {
 	const totalSeconds = Math.floor(durationMs / 1000);
 	const minutes = Math.floor(totalSeconds / 60);
@@ -59,7 +58,7 @@ export default function PuzzleLeaderboardPage() {
 
 	useEffect(() => {
 		execute(
-			`/api/puzzles/leaderboard?puzzleType=${puzzleType}&page=${currentPage}&limit=${PAGE_SIZE}`
+			`/api/puzzles/leaderboard?puzzleType=${puzzleType}&page=${currentPage}&limit=${PUZZLE_LEADERBOARD_PAGE_SIZE}`
 		).catch(() => {});
 	}, [puzzleType, currentPage, execute]);
 

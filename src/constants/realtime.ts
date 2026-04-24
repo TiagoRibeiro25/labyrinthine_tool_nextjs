@@ -2,6 +2,8 @@ export const REALTIME_STREAM_API_PATH = "/api/realtime/stream";
 
 export const REALTIME_STREAM_POLL_MS = 5_000;
 
+export const REALTIME_HINT_EVENT = "realtime-hint";
+
 export const REALTIME_TOPICS = {
 	NOTIFICATIONS: "notifications",
 	ACTIVITY: "activity",

@@ -6,6 +6,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import ProfileCommentActionModal, {
 	type ProfileCommentActionModalState,
 } from "./ProfileCommentActionModal";
+import {
+	PROFILE_COMMENT_MAX_LENGTH as COMMENT_MAX_LENGTH,
+	PROFILE_COMMENT_REPORT_REASON_MAX_LENGTH as REPORT_REASON_MAX_LENGTH,
+	PROFILE_COMMENT_REPORT_REASON_MIN_LENGTH as REPORT_REASON_MIN_LENGTH,
+} from "../constants/profile-comments";
+import { PROFILE_COMMENTS_PAGE_SIZE as COMMENTS_PAGE_SIZE } from "../constants/pagination";
 import { useApi } from "../hooks/useApi";
 import { useToast } from "../hooks/useToast";
 import { getUserAvatarUrl } from "../lib/avatar";
@@ -68,9 +74,7 @@ interface CommentsApiResponse {
 	};
 }
 
-const COMMENT_MAX_LENGTH = 300;
-const REPORT_REASON_MIN_LENGTH = 5;
-const REPORT_REASON_MAX_LENGTH = 240;
+
 
 function formatTime(dateValue: string): string {
 	return new Date(dateValue).toLocaleString();
@@ -107,7 +111,7 @@ export default function ProfileCommentsSection({
 	const [sort, setSort] = useState<"newest" | "top">("newest");
 	const [pagination, setPagination] = useState<CommentsApiResponse["pagination"]>({
 		page: 1,
-		limit: 20,
+		limit: COMMENTS_PAGE_SIZE,
 		totalItems: 0,
 		totalPages: 1,
 		hasNextPage: false,
@@ -139,7 +143,7 @@ export default function ProfileCommentsSection({
 		try {
 			const params = new URLSearchParams({
 				page: String(page),
-				limit: "20",
+				limit: String(COMMENTS_PAGE_SIZE),
 				sort,
 			});
 

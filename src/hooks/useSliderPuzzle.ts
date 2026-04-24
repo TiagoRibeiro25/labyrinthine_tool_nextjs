@@ -1,13 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
+import {
+	SLIDER_PUZZLE_ANIMATION_DURATION_MS,
+	SLIDER_PUZZLE_GRID_SIZE,
+} from "../constants/slider-puzzle";
 import { PUZZLE_TIMER_TICK_MS, PUZZLE_TYPES } from "../constants/puzzles";
 import { currentTimeMs } from "../lib/puzzles";
-import {
-	ANIMATION_DURATION_MS,
-	checkSolved,
-	getSolvedState,
-	isAdjacent,
-	shufflePuzzle,
-} from "../lib/sliderPuzzle";
+import { checkSolved, getSolvedState, isAdjacent, shufflePuzzle } from "../lib/sliderPuzzle";
 import { usePuzzleScore } from "./usePuzzleScore";
 
 export function useSliderPuzzle() {
@@ -76,7 +74,10 @@ export function useSliderPuzzle() {
 
 			// Add animation state for visual feedback
 			setAnimatingTiles(new Set([index, emptyIndex]));
-			setTimeout(() => setAnimatingTiles(new Set()), ANIMATION_DURATION_MS);
+			setTimeout(
+				() => setAnimatingTiles(new Set()),
+				SLIDER_PUZZLE_ANIMATION_DURATION_MS
+			);
 
 			setTiles(newTiles);
 			setMoves((m) => m + 1);
@@ -99,26 +100,26 @@ export function useSliderPuzzle() {
 
 		const handleKeyPress = (e: KeyboardEvent) => {
 			const emptyIndex = tiles.indexOf(0);
-			const row = Math.floor(emptyIndex / 3);
-			const col = emptyIndex % 3;
+			const row = Math.floor(emptyIndex / SLIDER_PUZZLE_GRID_SIZE);
+			const col = emptyIndex % SLIDER_PUZZLE_GRID_SIZE;
 
 			let tileToMove: number | null = null;
 
 			switch (e.key) {
 				case "ArrowUp":
-					if (row < 2) {
-						tileToMove = emptyIndex + 3;
+					if (row < SLIDER_PUZZLE_GRID_SIZE - 1) {
+						tileToMove = emptyIndex + SLIDER_PUZZLE_GRID_SIZE;
 						e.preventDefault();
 					}
 					break;
 				case "ArrowDown":
 					if (row > 0) {
-						tileToMove = emptyIndex - 3;
+						tileToMove = emptyIndex - SLIDER_PUZZLE_GRID_SIZE;
 						e.preventDefault();
 					}
 					break;
 				case "ArrowLeft":
-					if (col < 2) {
+					if (col < SLIDER_PUZZLE_GRID_SIZE - 1) {
 						tileToMove = emptyIndex + 1;
 						e.preventDefault();
 					}

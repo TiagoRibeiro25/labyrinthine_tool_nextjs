@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { PUZZLE_TIMER_TICK_MS, PUZZLE_TYPES } from "../constants/puzzles";
 import {
-	generateBoard,
-	isSolved,
 	LIGHTS_OUT_ANIMATION_DURATION_MS,
-	toggleCells,
-} from "../lib/lightsOut";
+	LIGHTS_OUT_GRID_SIZE,
+} from "../constants/lights-out";
+import { PUZZLE_TIMER_TICK_MS, PUZZLE_TYPES } from "../constants/puzzles";
+import { generateBoard, isSolved, toggleCells } from "../lib/lightsOut";
 import { currentTimeMs } from "../lib/puzzles";
 import { usePuzzleScore } from "./usePuzzleScore";
 
@@ -63,14 +62,18 @@ export function useLightsOut() {
 			setMoves(finalMoves);
 
 			// Add animation for affected cells
-			const row = Math.floor(index / 3);
-			const col = index % 3;
+			const row = Math.floor(index / LIGHTS_OUT_GRID_SIZE);
+			const col = index % LIGHTS_OUT_GRID_SIZE;
 			const affectedIndices = new Set<number>([index]);
 
-			if (row > 0) affectedIndices.add((row - 1) * 3 + col);
-			if (row < 2) affectedIndices.add((row + 1) * 3 + col);
-			if (col > 0) affectedIndices.add(row * 3 + (col - 1));
-			if (col < 2) affectedIndices.add(row * 3 + (col + 1));
+			if (row > 0)
+				affectedIndices.add((row - 1) * LIGHTS_OUT_GRID_SIZE + col);
+			if (row < LIGHTS_OUT_GRID_SIZE - 1)
+				affectedIndices.add((row + 1) * LIGHTS_OUT_GRID_SIZE + col);
+			if (col > 0)
+				affectedIndices.add(row * LIGHTS_OUT_GRID_SIZE + (col - 1));
+			if (col < LIGHTS_OUT_GRID_SIZE - 1)
+				affectedIndices.add(row * LIGHTS_OUT_GRID_SIZE + (col + 1));
 
 			setAnimatingCells(affectedIndices);
 			setTimeout(() => setAnimatingCells(new Set()), LIGHTS_OUT_ANIMATION_DURATION_MS);

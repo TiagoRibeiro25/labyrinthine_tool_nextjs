@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaArrowLeft, FaMedal, FaTrophy } from "react-icons/fa6";
+import { LEADERBOARD_PAGE_SIZE } from "../../constants/pagination";
 import { useApi } from "../../hooks/useApi";
 import { getUserAvatarUrl } from "../../lib/avatar";
 
@@ -32,8 +33,6 @@ interface LeaderboardResponse {
 	pagination: LeaderboardPagination;
 }
 
-const PAGE_SIZE = 20;
-
 export default function LeaderboardPage() {
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const { data, loading, error, execute } = useApi<LeaderboardResponse>();
@@ -44,10 +43,12 @@ export default function LeaderboardPage() {
 	const hasNextPage = pagination?.hasNextPage ?? false;
 	const hasPreviousPage = pagination?.hasPreviousPage ?? currentPage > 1;
 	const currentPageFromApi = pagination?.page ?? currentPage;
-	const pageSize = pagination?.limit ?? PAGE_SIZE;
+	const pageSize = pagination?.limit ?? LEADERBOARD_PAGE_SIZE;
 
 	useEffect(() => {
-		execute(`/api/leaderboard?page=${currentPage}&limit=${PAGE_SIZE}`).catch(() => {});
+		execute(
+			`/api/leaderboard?page=${currentPage}&limit=${LEADERBOARD_PAGE_SIZE}`
+		).catch(() => {});
 	}, [currentPage, execute]);
 
 	const getRankColor = (index: number) => {

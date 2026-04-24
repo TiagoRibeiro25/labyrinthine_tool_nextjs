@@ -1,17 +1,7 @@
 import { and, eq, or } from "drizzle-orm";
+import { PROFILE_COMMENT_BANNED_PHRASES } from "../constants/profile-comments";
 import { db } from "../db";
 import { friendRequests, userBlocks, users } from "../db/schema";
-
-const BANNED_PHRASES = [
-	"nazi",
-	"hitler",
-	"kys",
-	"kill yourself",
-	"faggot",
-	"nigger",
-	"retard",
-	"rape",
-] as const;
 
 export type ProfileCommentVisibility = "everyone" | "friends_only" | "no_one";
 
@@ -37,7 +27,9 @@ export function normalizeCommentContent(content: string): string {
 
 export function containsDisallowedCommentText(content: string): boolean {
 	const normalized = content.toLowerCase();
-	return BANNED_PHRASES.some((phrase) => normalized.includes(phrase));
+	return PROFILE_COMMENT_BANNED_PHRASES.some((phrase) =>
+		normalized.includes(phrase)
+	);
 }
 
 export async function areUsersFriends(

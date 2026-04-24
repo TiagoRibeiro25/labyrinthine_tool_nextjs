@@ -1,11 +1,12 @@
 import { z } from "zod";
+import { DELETE_ACCOUNT_CONFIRMATION_PHRASE } from "../constants/account";
 import { ADMIN_CLEANUP_RETENTION_DAYS } from "../constants/admin";
 import { DEFAULT_PUZZLE_TYPE, PUZZLE_TYPE_VALUES } from "../constants/puzzles";
 
 const steamProfileRegex =
 	/^https?:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/;
 
-export const DELETE_ACCOUNT_CONFIRMATION_PHRASE = "DELETE MY ACCOUNT";
+
 
 export const usernameSchema = z
 	.string()

@@ -7,6 +7,10 @@ import {
 	FaTriangleExclamation,
 	FaXmark,
 } from "react-icons/fa6";
+import {
+	DEFAULT_TOAST_DURATION_MS,
+	MIN_TOAST_DURATION_MS,
+} from "../../constants/toast";
 
 export type ToastVariant = "success" | "error" | "info";
 
@@ -30,7 +34,7 @@ interface ToastContextValue {
 
 export const ToastContext = createContext<ToastContextValue | null>(null);
 
-const DEFAULT_DURATION_MS = 4000;
+
 
 function variantClasses(variant: ToastVariant): {
 	card: string;
@@ -77,7 +81,7 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
 	const showToast = useCallback(
 		(toast: Omit<ToastItem, "id">) => {
 			const id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-			const duration = toast.durationMs ?? DEFAULT_DURATION_MS;
+			const duration = toast.durationMs ?? DEFAULT_TOAST_DURATION_MS;
 
 			setToasts((prev) => [...prev, { ...toast, id }]);
 
@@ -85,7 +89,7 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
 				() => {
 					removeToast(id);
 				},
-				Math.max(1000, duration)
+				Math.max(MIN_TOAST_DURATION_MS, duration)
 			);
 
 			timeoutMapRef.current.set(id, timeoutId);

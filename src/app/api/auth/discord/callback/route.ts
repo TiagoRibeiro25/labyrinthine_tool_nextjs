@@ -1,6 +1,10 @@
 import { eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import {
+	DISCORD_OAUTH_RETURN_TO_COOKIE,
+	DISCORD_OAUTH_STATE_COOKIE,
+} from "../../../../../constants/auth";
 import { db } from "../../../../../db";
 import { users } from "../../../../../db/schema";
 import { authOptions } from "../../../../../lib/auth";
@@ -8,9 +12,6 @@ import {
 	formatDiscordDisplayName,
 	getDiscordAvatarUrl,
 } from "../../../../../lib/discord-auth";
-
-const DISCORD_STATE_COOKIE = "discord_oauth_state";
-const DISCORD_RETURN_TO_COOKIE = "discord_oauth_return_to";
 
 interface DiscordTokenResponse {
 	access_token?: string;
@@ -40,13 +41,13 @@ function sanitizeReturnTo(returnTo: string | null | undefined): string {
 function redirectWithCleanup(req: NextRequest, returnTo: string) {
 	const response = NextResponse.redirect(new URL(returnTo, req.nextUrl.origin));
 	response.cookies.set({
-		name: DISCORD_STATE_COOKIE,
+		name: DISCORD_OAUTH_STATE_COOKIE,
 		value: "",
 		path: "/",
 		maxAge: 0,
 	});
 	response.cookies.set({
-		name: DISCORD_RETURN_TO_COOKIE,
+		name: DISCORD_OAUTH_RETURN_TO_COOKIE,
 		value: "",
 		path: "/",
 		maxAge: 0,
@@ -55,8 +56,10 @@ function redirectWithCleanup(req: NextRequest, returnTo: string) {
 }
 
 export async function GET(req: NextRequest) {
-	const returnTo = sanitizeReturnTo(req.cookies.get(DISCORD_RETURN_TO_COOKIE)?.value);
-	const expectedState = req.cookies.get(DISCORD_STATE_COOKIE)?.value;
+	const returnTo = sanitizeReturnTo(
+		req.cookies.get(DISCORD_OAUTH_RETURN_TO_COOKIE)?.value
+	);
+	const expectedState = req.cookies.get(DISCORD_OAUTH_STATE_COOKIE)?.value;
 	const state = req.nextUrl.searchParams.get("state");
 	const code = req.nextUrl.searchParams.get("code");
 

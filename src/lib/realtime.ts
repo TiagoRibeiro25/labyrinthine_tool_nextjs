@@ -1,7 +1,7 @@
 import { EventEmitter } from "node:events";
-import { type RealtimeTopic } from "../constants/realtime";
+import { REALTIME_HINT_EVENT, type RealtimeTopic } from "../constants/realtime";
 
-const REALTIME_HINT_EVENT = "realtime-hint";
+
 
 export interface RealtimeHint {
 	topic: RealtimeTopic;

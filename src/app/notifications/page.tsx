@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { FaArrowLeft, FaBell } from "react-icons/fa6";
 import RealtimeStatusBadge from "../../components/RealtimeStatusBadge";
+import { NOTIFICATIONS_PAGE_SIZE } from "../../constants/pagination";
 import { REALTIME_TOPICS, type RealtimeStreamSnapshot } from "../../constants/realtime";
 import { useApi } from "../../hooks/useApi";
 import { useRealtimeStream } from "../../hooks/useRealtimeStream";
@@ -42,8 +43,6 @@ interface NotificationsResponse {
 	};
 }
 
-const PAGE_SIZE = 25;
-
 export default function NotificationsPage() {
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const { data, loading, error, execute } = useApi<NotificationsResponse>();
@@ -57,7 +56,9 @@ export default function NotificationsPage() {
 	const hasNextPage = pagination?.hasNextPage ?? false;
 
 	const fetchNotifications = useCallback(async () => {
-		await execute(`/api/notifications?page=${currentPage}&limit=${PAGE_SIZE}`);
+		await execute(
+			`/api/notifications?page=${currentPage}&limit=${NOTIFICATIONS_PAGE_SIZE}`
+		);
 	}, [currentPage, execute]);
 
 	const handleRealtimeUpdate = useCallback(() => {

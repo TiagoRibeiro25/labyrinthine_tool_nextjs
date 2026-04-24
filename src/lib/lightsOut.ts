@@ -1,6 +1,12 @@
-export const LIGHTS_OUT_GRID_SIZE = 3;
-export const LIGHTS_OUT_NUM_CELLS = LIGHTS_OUT_GRID_SIZE * LIGHTS_OUT_GRID_SIZE;
-export const LIGHTS_OUT_ANIMATION_DURATION_MS = 300;
+import {
+	LIGHTS_OUT_ANIMATION_DURATION_MS,
+	LIGHTS_OUT_GRID_SIZE,
+	LIGHTS_OUT_NUM_CELLS,
+	LIGHTS_OUT_SCRAMBLE_MAX_MOVES,
+	LIGHTS_OUT_SCRAMBLE_MIN_MOVES,
+} from "../constants/lights-out";
+
+export { LIGHTS_OUT_ANIMATION_DURATION_MS };
 
 // Toggle a cell and its adjacent neighbors
 export const toggleCells = (currentBoard: boolean[], index: number): boolean[] => {
@@ -41,7 +47,12 @@ export const generateBoard = (): boolean[] => {
 	let newBoard = Array(LIGHTS_OUT_NUM_CELLS).fill(true); // Start fully lit
 
 	// Apply random valid moves to scramble
-	const numMoves = 10 + Math.floor(Math.random() * 10);
+	const numMoves =
+		LIGHTS_OUT_SCRAMBLE_MIN_MOVES +
+		Math.floor(
+			Math.random() *
+				(LIGHTS_OUT_SCRAMBLE_MAX_MOVES - LIGHTS_OUT_SCRAMBLE_MIN_MOVES + 1)
+		);
 	for (let i = 0; i < numMoves; i++) {
 		const randomIdx = Math.floor(Math.random() * LIGHTS_OUT_NUM_CELLS);
 		newBoard = toggleCells(newBoard, randomIdx);

@@ -1,0 +1,2 @@
+export const DEFAULT_TOAST_DURATION_MS = 4_000;
+export const MIN_TOAST_DURATION_MS = 1_000;

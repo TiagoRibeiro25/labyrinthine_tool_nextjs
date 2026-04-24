@@ -1,9 +1,13 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import {
+	DISCORD_OAUTH_RETURN_TO_COOKIE,
+	DISCORD_OAUTH_STATE_COOKIE,
+	OAUTH_STATE_COOKIE_MAX_AGE_SECONDS,
+} from "../../../../../constants/auth";
 import { authOptions } from "../../../../../lib/auth";
 
-const DISCORD_STATE_COOKIE = "discord_oauth_state";
-const DISCORD_RETURN_TO_COOKIE = "discord_oauth_return_to";
+
 
 function sanitizeReturnTo(returnTo: string | null): string {
 	if (!returnTo) {
@@ -48,23 +52,23 @@ export async function GET(req: NextRequest) {
 	const secureCookie = process.env.NODE_ENV === "production";
 
 	response.cookies.set({
-		name: DISCORD_STATE_COOKIE,
+		name: DISCORD_OAUTH_STATE_COOKIE,
 		value: state,
 		httpOnly: true,
 		secure: secureCookie,
 		sameSite: "lax",
 		path: "/",
-		maxAge: 10 * 60,
+		maxAge: OAUTH_STATE_COOKIE_MAX_AGE_SECONDS,
 	});
 
 	response.cookies.set({
-		name: DISCORD_RETURN_TO_COOKIE,
+		name: DISCORD_OAUTH_RETURN_TO_COOKIE,
 		value: returnTo,
 		httpOnly: true,
 		secure: secureCookie,
 		sameSite: "lax",
 		path: "/",
-		maxAge: 10 * 60,
+		maxAge: OAUTH_STATE_COOKIE_MAX_AGE_SECONDS,
 	});
 
 	return response;

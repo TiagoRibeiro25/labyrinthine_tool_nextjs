@@ -1,9 +1,11 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import {
+	OAUTH_STATE_COOKIE_MAX_AGE_SECONDS,
+	STEAM_OAUTH_RETURN_TO_COOKIE,
+	STEAM_OAUTH_STATE_COOKIE,
+} from "../../../../../constants/auth";
 import { authOptions } from "../../../../../lib/auth";
-
-const STEAM_STATE_COOKIE = "steam_oauth_state";
-const STEAM_RETURN_TO_COOKIE = "steam_oauth_return_to";
 
 function sanitizeReturnTo(returnTo: string | null): string {
 	if (!returnTo) {
@@ -57,23 +59,23 @@ export async function GET(req: NextRequest) {
 	const secureCookie = process.env.NODE_ENV === "production";
 
 	response.cookies.set({
-		name: STEAM_STATE_COOKIE,
+		name: STEAM_OAUTH_STATE_COOKIE,
 		value: state,
 		httpOnly: true,
 		secure: secureCookie,
 		sameSite: "lax",
 		path: "/",
-		maxAge: 10 * 60,
+		maxAge: OAUTH_STATE_COOKIE_MAX_AGE_SECONDS,
 	});
 
 	response.cookies.set({
-		name: STEAM_RETURN_TO_COOKIE,
+		name: STEAM_OAUTH_RETURN_TO_COOKIE,
 		value: returnTo,
 		httpOnly: true,
 		secure: secureCookie,
 		sameSite: "lax",
 		path: "/",
-		maxAge: 10 * 60,
+		maxAge: OAUTH_STATE_COOKIE_MAX_AGE_SECONDS,
 	});
 
 	return response;

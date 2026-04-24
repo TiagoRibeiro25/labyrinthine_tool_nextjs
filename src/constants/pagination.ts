@@ -1,0 +1,5 @@
+export const ACTIVITY_PAGE_SIZE = 20;
+export const LEADERBOARD_PAGE_SIZE = 20;
+export const NOTIFICATIONS_PAGE_SIZE = 25;
+export const PUZZLE_LEADERBOARD_PAGE_SIZE = 20;
+export const PROFILE_COMMENTS_PAGE_SIZE = 20;

@@ -1,12 +1,13 @@
 import { eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import {
+	STEAM_OAUTH_RETURN_TO_COOKIE,
+	STEAM_OAUTH_STATE_COOKIE,
+} from "../../../../../constants/auth";
 import { db } from "../../../../../db";
 import { users } from "../../../../../db/schema";
 import { authOptions } from "../../../../../lib/auth";
-
-const STEAM_STATE_COOKIE = "steam_oauth_state";
-const STEAM_RETURN_TO_COOKIE = "steam_oauth_return_to";
 
 interface SteamPlayerSummary {
 	personaname?: string;
@@ -37,13 +38,13 @@ function sanitizeReturnTo(returnTo: string | null | undefined): string {
 function redirectWithCleanup(req: NextRequest, returnTo: string) {
 	const response = NextResponse.redirect(new URL(returnTo, req.nextUrl.origin));
 	response.cookies.set({
-		name: STEAM_STATE_COOKIE,
+		name: STEAM_OAUTH_STATE_COOKIE,
 		value: "",
 		path: "/",
 		maxAge: 0,
 	});
 	response.cookies.set({
-		name: STEAM_RETURN_TO_COOKIE,
+		name: STEAM_OAUTH_RETURN_TO_COOKIE,
 		value: "",
 		path: "/",
 		maxAge: 0,
@@ -61,8 +62,8 @@ function getSteamIdFromClaimedId(claimedId: string | null): string | null {
 }
 
 export async function GET(req: NextRequest) {
-	const returnTo = sanitizeReturnTo(req.cookies.get(STEAM_RETURN_TO_COOKIE)?.value);
-	const expectedState = req.cookies.get(STEAM_STATE_COOKIE)?.value;
+	const returnTo = sanitizeReturnTo(req.cookies.get(STEAM_OAUTH_RETURN_TO_COOKIE)?.value);
+	const expectedState = req.cookies.get(STEAM_OAUTH_STATE_COOKIE)?.value;
 	const state = req.nextUrl.searchParams.get("state");
 	const steamApiKey = process.env.STEAM_API_KEY;
 

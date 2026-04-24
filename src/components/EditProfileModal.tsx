@@ -11,7 +11,7 @@ import { useApi } from "../hooks/useApi";
 import { useOnClickOutside } from "../hooks/useOnClickOutside";
 import { useToast } from "../hooks/useToast";
 import { allCosmetics } from "../lib/cosmetics";
-import { DELETE_ACCOUNT_CONFIRMATION_PHRASE } from "../lib/validation";
+import { DELETE_ACCOUNT_CONFIRMATION_PHRASE } from "../constants/account";
 
 const availableAvatars = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
