@@ -1,4 +1,4 @@
-export const OAUTH_STATE_COOKIE_MAX_AGE_SECONDS = 10 * 60;
+export const OAUTH_STATE_COOKIE_MAX_AGE_SECONDS = 10 * 60; // 10 minutes
 
 export const DISCORD_OAUTH_STATE_COOKIE = "discord_oauth_state";
 export const DISCORD_OAUTH_RETURN_TO_COOKIE = "discord_oauth_return_to";

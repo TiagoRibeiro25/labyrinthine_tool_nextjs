@@ -1,6 +1,6 @@
 export const REALTIME_STREAM_API_PATH = "/api/realtime/stream";
 
-export const REALTIME_STREAM_POLL_MS = 5_000;
+export const REALTIME_STREAM_POLL_MS = 5_000; // 5 seconds
 
 export const REALTIME_HINT_EVENT = "realtime-hint";
 
