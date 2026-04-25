@@ -8,7 +8,7 @@ import Footer from "../components/Footer";
 import NotificationsCenter from "../components/NotificationsCenter";
 import AppProviders from "../components/providers/AppProviders";
 import { authOptions } from "../lib/auth";
-import ClickSpark from "../components/ClickSpark";
+import OptionalClickSpark from "../components/OptionalClickSpark";
 import "./globals.css";
 import Snowflakes from "@/components/Snowflakes";
 
@@ -38,21 +38,13 @@ export default async function RootLayout({
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<AppProviders>
 					<Background>
-						<ClickSpark
-							sparkColor="#f5f5f5"
-							sparkSize={14}
-							sparkRadius={18}
-							sparkCount={10}
-							duration={500}
-							easing="ease-out"
-							extraScale={1}
-						>
+						<OptionalClickSpark>
 							<main>{children}</main>
 							{isLoggedIn ? <NotificationsCenter /> : null}
 							<Snowflakes />
 							<CommandPalette />
 							<Footer />
-						</ClickSpark>
+						</OptionalClickSpark>
 					</Background>
 				</AppProviders>
 			</body>

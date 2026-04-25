@@ -12,8 +12,12 @@ import { useOnClickOutside } from "../hooks/useOnClickOutside";
 import { useToast } from "../hooks/useToast";
 import { allCosmetics } from "../lib/cosmetics";
 import { DELETE_ACCOUNT_CONFIRMATION_PHRASE } from "../constants/account";
+import {
+	CLICK_SPARK_DISABLED_STORAGE_KEY,
+	CLICK_SPARK_PREFERENCE_CHANGED_EVENT,
+} from "../constants/ui";
+import { AVAILABLE_AVATARS } from "@/constants/profile-avatars";
 
-const availableAvatars = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 interface EditProfileModalProps {
 	isOpen: boolean;
@@ -76,14 +80,38 @@ export default function EditProfileModal({
 	const [favoriteCosmeticId, setFavoriteCosmeticId] = useState<string>(
 		initialData.favoriteCosmeticId ? String(initialData.favoriteCosmeticId) : ""
 	);
-	const [deleteConfirmationPhrase, setDeleteConfirmationPhrase] =
-		useState<string>("");
+	const [deleteConfirmationPhrase, setDeleteConfirmationPhrase] = useState<string>("");
+	const [isClickSparkDisabled, setIsClickSparkDisabled] = useState<boolean>(false);
 	const [deletingAccount, setDeletingAccount] = useState<boolean>(false);
 	const [localError, setLocalError] = useState<string>("");
 	const { loading, error: apiError, execute, setError: setApiError } = useApi();
 	const toast = useToast();
 
 	const error = localError || apiError;
+
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
+
+		setIsClickSparkDisabled(
+			window.localStorage.getItem(CLICK_SPARK_DISABLED_STORAGE_KEY) === "true"
+		);
+	}, []);
+
+	const handleClickSparkPreferenceChange = (disabled: boolean) => {
+		setIsClickSparkDisabled(disabled);
+
+		if (typeof window === "undefined") {
+			return;
+		}
+
+		window.localStorage.setItem(
+			CLICK_SPARK_DISABLED_STORAGE_KEY,
+			disabled ? "true" : "false"
+		);
+		window.dispatchEvent(new Event(CLICK_SPARK_PREFERENCE_CHANGED_EVENT));
+	};
 
 	if (!isOpen || typeof document === "undefined") return null;
 
@@ -157,8 +185,7 @@ export default function EditProfileModal({
 			toast.success("Account deleted", "Your account and related data were removed.");
 			await signOut({ callbackUrl: "/" });
 		} catch (err) {
-			const message =
-				err instanceof Error ? err.message : "Failed to delete account.";
+			const message = err instanceof Error ? err.message : "Failed to delete account.";
 			setLocalError(message);
 			toast.error("Could not delete account", message);
 		} finally {
@@ -337,6 +364,29 @@ export default function EditProfileModal({
 
 					<div className="space-y-2">
 						<label className="block text-xs font-bold text-neutral-400 uppercase tracking-widest">
+							Click Spark Effect
+						</label>
+						<div className="w-full bg-neutral-900/50 border border-neutral-800 text-neutral-100 px-4 py-3 rounded-sm">
+							<label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-400">
+								<input
+									type="checkbox"
+									checked={isClickSparkDisabled}
+									onChange={(event) =>
+										handleClickSparkPreferenceChange(event.target.checked)
+									}
+									disabled={loading || deletingAccount}
+									className="h-4 w-4 accent-neutral-200"
+								/>
+								Disable click spark effect
+							</label>
+							<p className="mt-1 text-[10px] text-neutral-600 uppercase tracking-widest">
+								Saved locally on this browser.
+							</p>
+						</div>
+					</div>
+
+					<div className="space-y-2">
+						<label className="block text-xs font-bold text-neutral-400 uppercase tracking-widest">
 							Favorite Cosmetic
 						</label>
 						<select
@@ -390,7 +440,7 @@ export default function EditProfileModal({
 							Select Profile Picture
 						</label>
 						<div className="grid grid-cols-5 gap-3">
-							{availableAvatars.map((id) => (
+							{AVAILABLE_AVATARS.map((id) => (
 								<button
 									key={id}
 									type="button"
@@ -419,8 +469,8 @@ export default function EditProfileModal({
 								Danger Zone
 							</p>
 							<p className="text-xs text-red-200/90">
-								This will permanently delete your account and all related data.
-								This action cannot be undone.
+								This will permanently delete your account and all related data. This
+								action cannot be undone.
 							</p>
 							<p className="text-[11px] text-red-300/90 font-semibold">
 								Type{" "}
@@ -443,8 +493,7 @@ export default function EditProfileModal({
 								disabled={
 									loading ||
 									deletingAccount ||
-									deleteConfirmationPhrase.trim() !==
-										DELETE_ACCOUNT_CONFIRMATION_PHRASE
+									deleteConfirmationPhrase.trim() !== DELETE_ACCOUNT_CONFIRMATION_PHRASE
 								}
 								className="w-full px-6 py-3 rounded-sm bg-red-950/60 text-red-100 font-bold text-sm uppercase tracking-widest border border-red-700 hover:bg-red-900/70 hover:border-red-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
 							>
