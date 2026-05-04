@@ -5,7 +5,12 @@ import {
 } from "../constants/slider-puzzle";
 import { PUZZLE_TIMER_TICK_MS, PUZZLE_TYPES } from "../constants/puzzles";
 import { currentTimeMs } from "../lib/puzzles";
-import { checkSolved, getSolvedState, isAdjacent, shufflePuzzle } from "../lib/sliderPuzzle";
+import {
+	checkSolved,
+	getSolvedState,
+	isAdjacent,
+	shufflePuzzle,
+} from "../lib/sliderPuzzle";
 import { usePuzzleScore } from "./usePuzzleScore";
 
 export function useSliderPuzzle() {
@@ -74,10 +79,7 @@ export function useSliderPuzzle() {
 
 			// Add animation state for visual feedback
 			setAnimatingTiles(new Set([index, emptyIndex]));
-			setTimeout(
-				() => setAnimatingTiles(new Set()),
-				SLIDER_PUZZLE_ANIMATION_DURATION_MS
-			);
+			setTimeout(() => setAnimatingTiles(new Set()), SLIDER_PUZZLE_ANIMATION_DURATION_MS);
 
 			setTiles(newTiles);
 			setMoves((m) => m + 1);
