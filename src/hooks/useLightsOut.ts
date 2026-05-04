@@ -66,14 +66,18 @@ export function useLightsOut() {
 			const col = index % LIGHTS_OUT_GRID_SIZE;
 			const affectedIndices = new Set<number>([index]);
 
-			if (row > 0)
+			if (row > 0) {
 				affectedIndices.add((row - 1) * LIGHTS_OUT_GRID_SIZE + col);
-			if (row < LIGHTS_OUT_GRID_SIZE - 1)
+			}
+			if (row < LIGHTS_OUT_GRID_SIZE - 1) {
 				affectedIndices.add((row + 1) * LIGHTS_OUT_GRID_SIZE + col);
-			if (col > 0)
+			}
+			if (col > 0) {
 				affectedIndices.add(row * LIGHTS_OUT_GRID_SIZE + (col - 1));
-			if (col < LIGHTS_OUT_GRID_SIZE - 1)
+			}
+			if (col < LIGHTS_OUT_GRID_SIZE - 1) {
 				affectedIndices.add(row * LIGHTS_OUT_GRID_SIZE + (col + 1));
+			}
 
 			setAnimatingCells(affectedIndices);
 			setTimeout(() => setAnimatingCells(new Set()), LIGHTS_OUT_ANIMATION_DURATION_MS);
