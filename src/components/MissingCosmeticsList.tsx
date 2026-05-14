@@ -243,8 +243,8 @@ export default function MissingCosmeticsList({
 												/>
 											</div>
 										</div>
-										<div className="flex min-h-[3.25rem] items-center justify-center border-t border-neutral-800/70 bg-neutral-900/80 px-3 py-3">
-											<p className="line-clamp-2 min-h-[2.25rem] text-center text-[11px] sm:text-xs uppercase tracking-[0.13em] font-semibold leading-relaxed text-neutral-200">
+										<div className="flex min-h-13 items-center justify-center border-t border-neutral-800/70 bg-neutral-900/80 px-3 py-3">
+											<p className="line-clamp-2 min-h-9 text-center text-[11px] sm:text-xs uppercase tracking-[0.13em] font-semibold leading-relaxed text-neutral-200">
 												{item.name}
 											</p>
 										</div>

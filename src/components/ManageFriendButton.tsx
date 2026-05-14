@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { FaCheck, FaXmark, FaUserXmark } from "react-icons/fa6";
 import { createPortal } from "react-dom";
 import { useApi } from "../hooks/useApi";
