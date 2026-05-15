@@ -1,6 +1,4 @@
-import type { FC } from "react";
-
-const Footer: FC = () => {
+export default function Footer() {
 	return (
 		<footer className="w-full max-w-5xl mx-auto px-6 pt-8 border-t border-neutral-900/80 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left mb-8">
 			<div className="flex items-center justify-center md:justify-start gap-3">
@@ -24,6 +22,4 @@ const Footer: FC = () => {
 			</div>
 		</footer>
 	);
-};
-
-export default Footer;
+}
