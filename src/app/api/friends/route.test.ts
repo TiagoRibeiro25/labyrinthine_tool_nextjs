@@ -165,7 +165,7 @@ describe("friends route", () => {
 		const response = await POST(
 			requestWithBody({
 				action: "accept",
-				requestId: "11111111-1111-1111-1111-111111111111",
+				requestId: "11111111-1111-4111-8111-111111111111",
 			})
 		);
 

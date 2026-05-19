@@ -141,7 +141,7 @@ describe("notifications route", () => {
 			new Request("http://localhost/api/notifications", {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ notificationId: "11111111-1111-1111-1111-111111111111" }),
+				body: JSON.stringify({ notificationId: "11111111-1111-4111-8111-111111111111" }),
 			})
 		);
 		expect(response.status).toBe(200);

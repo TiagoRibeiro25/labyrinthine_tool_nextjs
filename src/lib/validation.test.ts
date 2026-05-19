@@ -27,7 +27,7 @@ describe("validation schemas", () => {
 		expect(
 			friendsActionSchema.safeParse({
 				action: "accept",
-				requestId: "11111111-1111-1111-1111-111111111111",
+				requestId: "11111111-1111-4111-8111-111111111111",
 			}).success
 		).toBe(true);
 		expect(
@@ -86,7 +86,7 @@ describe("validation schemas", () => {
 		expect(notificationsMarkReadBodySchema.safeParse({}).success).toBe(false);
 		expect(
 			notificationsMarkReadBodySchema.safeParse({
-				notificationId: "11111111-1111-1111-1111-111111111111",
+				notificationId: "11111111-1111-4111-8111-111111111111",
 			}).success
 		).toBe(true);
 		expect(notificationsMarkReadBodySchema.safeParse({ markAll: true }).success).toBe(
