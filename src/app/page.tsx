@@ -7,6 +7,7 @@ import HeroSection from "../components/home/HeroSection";
 import ProgressLoopSection from "../components/home/ProgressLoopSection";
 import SteamChangelogSection from "../components/home/SteamChangelogSection";
 import TrailerSection from "../components/home/TrailerSection";
+import WikiGuideSection from "../components/home/WikiGuideSection";
 import { authOptions } from "../lib/auth";
 
 export default async function Home() {
@@ -20,6 +21,7 @@ export default async function Home() {
 			<DiscordCommunitySection />
 			<FeatureHighlightsSection />
 			<ProgressLoopSection />
+			<WikiGuideSection />
 			<SteamChangelogSection />
 			<FaqSection />
 			<FinalCtaSection isAuthenticated={isAuthenticated} />

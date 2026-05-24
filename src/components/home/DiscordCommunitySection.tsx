@@ -59,9 +59,7 @@ export default async function DiscordCommunitySection() {
 								<p className="mt-2 text-3xl sm:text-4xl font-black text-emerald-300">
 									{stats.onlineCount.toLocaleString()}
 								</p>
-								<p className="mt-2 text-sm text-neutral-400">
-									Active in voice and chat
-								</p>
+								<p className="mt-2 text-sm text-neutral-400">Active in voice and chat</p>
 							</article>
 						</div>
 					) : (
