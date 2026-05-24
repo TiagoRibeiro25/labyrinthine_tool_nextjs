@@ -4,6 +4,7 @@ import FeatureHighlightsSection from "../components/home/FeatureHighlightsSectio
 import FinalCtaSection from "../components/home/FinalCtaSection";
 import HeroSection from "../components/home/HeroSection";
 import ProgressLoopSection from "../components/home/ProgressLoopSection";
+import SteamChangelogSection from "../components/home/SteamChangelogSection";
 import TrailerSection from "../components/home/TrailerSection";
 import { authOptions } from "../lib/auth";
 
@@ -17,6 +18,7 @@ export default async function Home() {
 			<TrailerSection />
 			<FeatureHighlightsSection />
 			<ProgressLoopSection />
+			<SteamChangelogSection />
 			<FaqSection />
 			<FinalCtaSection isAuthenticated={isAuthenticated} />
 		</main>

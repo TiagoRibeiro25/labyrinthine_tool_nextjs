@@ -1,5 +1,6 @@
 import { FaSteam } from "react-icons/fa6";
 import PlayerCount from "../PlayerCount";
+import { LABYRINTHINE_STEAM_STORE_URL } from "@/constants/steam";
 
 export default function TrailerSection() {
 	return (
@@ -36,7 +37,7 @@ export default function TrailerSection() {
 
 				<div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 					<a
-						href="https://store.steampowered.com/app/1302240/Labyrinthine/"
+						href={LABYRINTHINE_STEAM_STORE_URL}
 						target="_blank"
 						rel="noopener noreferrer"
 						className="group inline-flex w-full sm:w-auto items-center justify-center gap-3 rounded-full border border-neutral-700 bg-neutral-900 px-7 py-3 text-sm sm:text-base font-bold uppercase tracking-[0.14em] text-neutral-100 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-400 hover:bg-neutral-800 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]"
