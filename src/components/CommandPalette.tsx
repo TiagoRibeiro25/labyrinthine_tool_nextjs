@@ -148,7 +148,11 @@ const COMMANDS: CommandItem[] = [
 	},
 ];
 
-export default function CommandPalette() {
+interface CommandPaletteProps {
+	embedded?: boolean;
+}
+
+export default function CommandPalette({ embedded = false }: CommandPaletteProps) {
 	const router = useRouter();
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -329,7 +333,7 @@ export default function CommandPalette() {
 			<button
 				type="button"
 				onClick={openPalette}
-				className="fixed bottom-5 right-5 z-40 hidden sm:flex items-center gap-3 px-4 py-2.5 rounded-sm bg-black/80 backdrop-blur-md border border-neutral-700 text-neutral-300 hover:text-white hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.5)]"
+				className={`${embedded ? "" : "fixed bottom-5 right-5 z-40"} hidden sm:flex items-center gap-3 px-4 py-2.5 rounded-sm bg-black/80 backdrop-blur-md border border-neutral-700 text-neutral-300 hover:text-white hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.5)]`}
 				aria-label="Open command palette"
 			>
 				<FaCompass className="w-4 h-4 text-neutral-400" />

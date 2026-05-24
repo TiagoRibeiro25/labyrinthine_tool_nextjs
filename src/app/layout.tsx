@@ -6,6 +6,7 @@ import Background from "../components/Background";
 import CommandPalette from "../components/CommandPalette";
 import Footer from "../components/Footer";
 import NotificationsCenter from "../components/NotificationsCenter";
+import UserQuickMenuLoader from "../components/UserQuickMenuLoader";
 import AppProviders from "../components/providers/AppProviders";
 import { authOptions } from "../lib/auth";
 import OptionalClickSpark from "../components/OptionalClickSpark";
@@ -42,7 +43,14 @@ export default async function RootLayout({
 							<main>{children}</main>
 							{isLoggedIn ? <NotificationsCenter /> : null}
 							<Snowflakes />
-							<CommandPalette />
+							{isLoggedIn ? (
+								<div className="fixed bottom-5 right-5 z-40 hidden sm:flex items-center gap-3">
+									<CommandPalette embedded />
+									<UserQuickMenuLoader userId={sessionUser.id} />
+								</div>
+							) : (
+								<CommandPalette />
+							)}
 							<Footer />
 						</OptionalClickSpark>
 					</Background>
