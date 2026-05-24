@@ -31,7 +31,8 @@ export default async function RootLayout({
 }>) {
 	const session = await getServerSession(authOptions);
 	const sessionUser = session?.user as { id?: string } | undefined;
-	const isLoggedIn = Boolean(sessionUser?.id);
+	const userId = sessionUser?.id;
+	const isLoggedIn = typeof userId === "string" && userId.length > 0;
 
 	return (
 		<html lang="en">
@@ -44,7 +45,7 @@ export default async function RootLayout({
 							<Snowflakes />
 							{isLoggedIn ? (
 								<div className="fixed bottom-5 right-5 z-40 flex">
-									<UserQuickMenuLoader userId={sessionUser.id} />
+									<UserQuickMenuLoader userId={userId} />
 								</div>
 							) : null}
 							<Footer />
