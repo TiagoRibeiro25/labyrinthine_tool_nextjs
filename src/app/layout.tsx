@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { Geist, Geist_Mono } from "next/font/google";
 import Background from "../components/Background";
-import CommandPalette from "../components/CommandPalette";
 import Footer from "../components/Footer";
 import NotificationsCenter from "../components/NotificationsCenter";
 import UserQuickMenuLoader from "../components/UserQuickMenuLoader";
@@ -44,13 +43,10 @@ export default async function RootLayout({
 							{isLoggedIn ? <NotificationsCenter /> : null}
 							<Snowflakes />
 							{isLoggedIn ? (
-								<div className="fixed bottom-5 right-5 z-40 hidden sm:flex items-center gap-3">
-									<CommandPalette embedded />
+								<div className="fixed bottom-5 right-5 z-40 flex">
 									<UserQuickMenuLoader userId={sessionUser.id} />
 								</div>
-							) : (
-								<CommandPalette />
-							)}
+							) : null}
 							<Footer />
 						</OptionalClickSpark>
 					</Background>
