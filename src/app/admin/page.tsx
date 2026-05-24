@@ -18,9 +18,9 @@ import { authOptions } from "../../lib/auth";
 import { getReportedCommentsPage } from "../../lib/admin-reported-comments";
 
 interface AdminPageProps {
-	searchParams?: {
+	searchParams?: Promise<{
 		reportedCommentsPage?: string;
-	};
+	}>;
 }
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
@@ -43,7 +43,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 		redirect("/dashboard");
 	}
 
-	const requestedReportedCommentsPage = Number(searchParams?.reportedCommentsPage ?? "1");
+	const params = await searchParams;
+	const requestedReportedCommentsPage = Number(params?.reportedCommentsPage ?? "1");
 	const reportedCommentsPage = await getReportedCommentsPage(
 		Number.isFinite(requestedReportedCommentsPage) ? requestedReportedCommentsPage : 1,
 		10
