@@ -47,20 +47,24 @@ const ClickSpark = ({
 			return;
 		}
 
-		const parent = canvas.parentElement;
-		if (!parent) {
-			return;
-		}
-
 		let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
-		let ro: ResizeObserver | null = null;
 
+		// Size to the viewport only. Observing the page wrapper on tall routes (e.g. wardrobe)
+		// previously created enormous canvases and could crash the tab while resizing.
 		const resizeCanvas = () => {
-			const { width, height } = parent.getBoundingClientRect();
-			if (canvas.width !== width || canvas.height !== height) {
-				canvas.width = width;
-				canvas.height = height;
+			const width = window.innerWidth;
+			const height = window.innerHeight;
+			const dpr = Math.min(window.devicePixelRatio || 1, 2);
+			const pixelWidth = Math.floor(width * dpr);
+			const pixelHeight = Math.floor(height * dpr);
+
+			if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+				canvas.width = pixelWidth;
+				canvas.height = pixelHeight;
 			}
+
+			canvas.style.width = `${width}px`;
+			canvas.style.height = `${height}px`;
 		};
 
 		const handleResize = () => {
@@ -70,19 +74,10 @@ const ClickSpark = ({
 			resizeTimeout = setTimeout(resizeCanvas, 100);
 		};
 
-		if (typeof ResizeObserver !== "undefined") {
-			ro = new ResizeObserver(handleResize);
-			ro.observe(parent);
-		} else {
-			window.addEventListener("resize", handleResize);
-		}
-
+		window.addEventListener("resize", handleResize);
 		resizeCanvas();
 
 		return () => {
-			if (ro) {
-				ro.disconnect();
-			}
 			window.removeEventListener("resize", handleResize);
 			if (resizeTimeout) {
 				clearTimeout(resizeTimeout);
@@ -120,7 +115,12 @@ const ClickSpark = ({
 		let animationId = 0;
 
 		const draw = (timestamp: number) => {
+			const cssWidth = canvas.clientWidth || window.innerWidth;
+			const dpr = cssWidth > 0 ? canvas.width / cssWidth : 1;
+
+			ctx.setTransform(1, 0, 0, 1, 0, 0);
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
 			sparksRef.current = sparksRef.current.filter((spark) => {
 				const elapsed = timestamp - spark.startTime;
@@ -184,7 +184,7 @@ const ClickSpark = ({
 		<div className="relative h-full w-full" onPointerDown={handlePointerDown}>
 			<canvas
 				ref={canvasRef}
-				className="pointer-events-none absolute inset-0 block h-full w-full select-none"
+				className="pointer-events-none fixed inset-0 block h-full w-full select-none"
 				style={{ zIndex: 99 }}
 			/>
 			{children}

@@ -438,7 +438,7 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 						({ categoryName, filteredItems, categoryUnlockedCount }) => (
 							<section
 								key={categoryName}
-								className="rounded-3xl border border-neutral-800/70 bg-neutral-950/45 p-4 sm:p-6 lg:p-8 shadow-[0_18px_45px_rgba(0,0,0,0.35)]"
+								className="rounded-3xl border border-neutral-800/70 bg-neutral-950/45 p-4 sm:p-6 lg:p-8 shadow-[0_18px_45px_rgba(0,0,0,0.35)] [content-visibility:auto] [contain-intrinsic-size:auto_600px]"
 							>
 								<div className="flex flex-col gap-4 border-b border-neutral-800/70 pb-4 mb-5 sm:flex-row sm:items-end sm:justify-between">
 									<div>
@@ -528,7 +528,7 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 															alt={item.name}
 															fill
 															className="object-contain"
-															sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
+															sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 20vw"
 															loading="lazy"
 														/>
 													</div>
