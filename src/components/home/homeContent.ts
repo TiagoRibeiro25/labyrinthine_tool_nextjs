@@ -26,7 +26,7 @@ export const featureBlocks: FeatureBlock[] = [
 		title: "Puzzle Companion",
 		description:
 			"Practice core puzzle types and compare your best puzzle results on dedicated leaderboard views.",
-		accent: "Train outside runs, then apply what you learned in-game.",
+		accent: "Train outside runs, then apply what you learned in game.",
 	},
 	{
 		title: "Friends & Compare",
