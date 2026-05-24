@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 import FaqSection from "../components/home/FaqSection";
+import DiscordCommunitySection from "../components/home/DiscordCommunitySection";
 import FeatureHighlightsSection from "../components/home/FeatureHighlightsSection";
 import FinalCtaSection from "../components/home/FinalCtaSection";
 import HeroSection from "../components/home/HeroSection";
@@ -16,6 +17,7 @@ export default async function Home() {
 		<main className="min-h-screen text-neutral-200 selection:bg-neutral-800/50 selection:text-neutral-200 flex flex-col items-center pb-16 sm:pb-20 relative z-10">
 			<HeroSection isAuthenticated={isAuthenticated} />
 			<TrailerSection />
+			<DiscordCommunitySection />
 			<FeatureHighlightsSection />
 			<ProgressLoopSection />
 			<SteamChangelogSection />
