@@ -224,7 +224,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 	}));
 
 	return (
-		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-8 sm:py-12 px-4 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
+		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-6 sm:py-12 px-3 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
 			<div className="w-full max-w-5xl rounded-3xl bg-[linear-gradient(145deg,rgba(9,11,13,0.95),rgba(18,23,29,0.9))] backdrop-blur-md border border-neutral-800/80 shadow-[0_24px_80px_rgba(0,0,0,0.45)] relative overflow-hidden flex flex-col">
 				<Link
 					href="/dashboard"
@@ -246,7 +246,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 				</div>
 
 				{/* --- PROFILE CONTENT --- */}
-				<div className="px-6 sm:px-10 pb-10 -mt-16 sm:-mt-20 relative z-10 flex flex-col sm:flex-row gap-8">
+				<div className="px-4 sm:px-10 pb-8 sm:pb-10 -mt-14 sm:-mt-20 relative z-10 flex flex-col sm:flex-row gap-6 sm:gap-8">
 					{/* Left Column: Avatar & Actions */}
 					<div className="flex flex-col items-center sm:items-start shrink-0">
 						{/* Avatar */}
@@ -261,7 +261,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 						</div>
 
 						{/* Actions */}
-						<div className="w-full mt-6 flex flex-col gap-3">
+						<div className="w-full mt-4 sm:mt-6 flex flex-col gap-2 sm:gap-3">
 							{isOwnProfile ? (
 								<EditProfileButton
 									initialData={{
@@ -309,7 +309,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 					{/* Right Column: Info & Stats */}
 					<div className="flex-1 pt-2 sm:pt-20 flex flex-col text-center sm:text-left">
 						{/* Username & Badges */}
-						<div className="flex flex-col sm:flex-row items-center sm:items-end gap-3 mb-6">
+						<div className="flex flex-col sm:flex-row items-center sm:items-end gap-2 sm:gap-3 mb-4 sm:mb-6">
 							<h1 className="text-3xl sm:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-100 to-neutral-400 uppercase leading-none">
 								{targetUser.username}
 							</h1>
@@ -321,7 +321,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 						</div>
 
 						{/* Bio / Member Since */}
-						<div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8 mb-8">
+						<div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-8 mb-5 sm:mb-8">
 							<div className="space-y-2">
 								<p className="text-sm text-neutral-500 font-medium tracking-wide">
 									Surviving the fog since {targetUser.createdAt.toLocaleDateString()}
@@ -340,11 +340,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 						</div>
 
 						{/* Social Links Panel */}
-						<div className="bg-black/50 border border-neutral-800 p-5 rounded-sm">
+						<div className="bg-black/50 border border-neutral-800 p-4 sm:p-5 rounded-sm">
 							<h3 className="text-xs font-bold text-neutral-600 uppercase tracking-widest mb-4 border-b border-neutral-800/50 pb-2">
 								Connections
 							</h3>
-							<div className="space-y-3">
+							<div className="space-y-2 sm:space-y-3">
 								{/* Steam Link */}
 								{targetUser.steamProfileUrl ? (
 									<a
@@ -387,7 +387,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 						</div>
 
 						{/* Cosmetics Preview Panel */}
-						<div className="mt-8 bg-black/50 border border-neutral-800 p-5 rounded-sm">
+						<div className="mt-6 sm:mt-8 bg-black/50 border border-neutral-800 p-4 sm:p-5 rounded-sm">
 							<div className="flex justify-between items-end border-b border-neutral-800/50 pb-2 mb-4">
 								<h3 className="text-xs font-bold text-neutral-600 uppercase tracking-widest flex items-center gap-2">
 									<FaShirt /> Collection
@@ -399,7 +399,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
 							<Link
 								href={`/profile/${targetUser.username}/missing`}
-								className="w-full flex items-center justify-between p-4 bg-neutral-900/30 border border-neutral-800 rounded-sm hover:bg-neutral-800/60 hover:border-neutral-500 transition-all duration-300 group"
+								className="w-full flex items-center justify-between p-3 sm:p-4 bg-neutral-900/30 border border-neutral-800 rounded-sm hover:bg-neutral-800/60 hover:border-neutral-500 transition-all duration-300 group"
 							>
 								<div className="flex flex-col text-left">
 									<span className="text-sm font-bold text-neutral-200 uppercase tracking-widest group-hover:text-white transition-colors">
@@ -414,7 +414,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 								</span>
 							</Link>
 
-							<div className="mt-4 p-4 bg-neutral-900/30 border border-neutral-800 rounded-sm">
+							<div className="mt-4 p-3 sm:p-4 bg-neutral-900/30 border border-neutral-800 rounded-sm">
 								<p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-2">
 									Favorite Cosmetic
 								</p>
@@ -423,7 +423,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 								</p>
 							</div>
 
-							<div className="mt-4 p-4 bg-neutral-900/30 border border-neutral-800 rounded-sm">
+							<div className="mt-4 p-3 sm:p-4 bg-neutral-900/30 border border-neutral-800 rounded-sm">
 								<p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-3">
 									Puzzle Records
 								</p>
@@ -463,14 +463,14 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 								completedCategoryCount={completedCategoryCount}
 								totalCategoryCount={totalCategoryCount}
 							/>
-
-							<ProfileCommentsSection
-								profileUsername={targetUser.username}
-								isOwnProfile={isOwnProfile}
-								isLoggedIn={Boolean(currentUserId)}
-								historyItems={commentHistory}
-							/>
 						</div>
+
+						<ProfileCommentsSection
+							profileUsername={targetUser.username}
+							isOwnProfile={isOwnProfile}
+							isLoggedIn={Boolean(currentUserId)}
+							historyItems={commentHistory}
+						/>
 					</div>
 				</div>
 			</div>

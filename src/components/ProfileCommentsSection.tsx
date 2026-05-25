@@ -420,7 +420,7 @@ export default function ProfileCommentsSection({
 
 	return (
 		<>
-			<section className="mt-8 bg-black/50 border border-neutral-800 p-5 rounded-sm">
+			<section className="mt-6 sm:mt-8 bg-black/50 border border-neutral-800 px-3 py-4 sm:p-5 rounded-none sm:rounded-sm -mx-4 sm:mx-0 text-left">
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-800/60 pb-3 mb-4">
 					<div>
 						<h3 className="text-xs font-bold text-neutral-600 uppercase tracking-widest">
@@ -452,7 +452,7 @@ export default function ProfileCommentsSection({
 							maxLength={COMMENT_MAX_LENGTH}
 							rows={3}
 							placeholder="Leave a note on this profile wall..."
-							className="w-full resize-none bg-neutral-900/60 border border-neutral-800 text-neutral-100 px-4 py-3 rounded-sm focus:outline-none focus:border-neutral-500"
+							className="w-full resize-none bg-neutral-900/60 border border-neutral-800 text-neutral-100 px-3 sm:px-4 py-3 rounded-sm focus:outline-none focus:border-neutral-500"
 						/>
 						<div className="flex items-center justify-between">
 							<p className="text-[10px] text-neutral-600 font-bold uppercase tracking-widest">
@@ -501,7 +501,7 @@ export default function ProfileCommentsSection({
 							return (
 								<article
 									key={comment.id}
-									className={`p-4 rounded-sm border ${
+									className={`p-3 sm:p-4 rounded-sm border ${
 										comment.isPinned
 											? "bg-amber-950/15 border-amber-800/60"
 											: "bg-neutral-900/30 border-neutral-800"

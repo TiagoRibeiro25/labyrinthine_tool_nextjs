@@ -1,7 +1,4 @@
-import {
-	DISCORD_INVITE_API_URL,
-	VALKO_DISCORD_INVITE_CODE,
-} from "../constants/discord";
+import { DISCORD_INVITE_API_URL, VALKO_DISCORD_INVITE_CODE } from "../constants/discord";
 
 export interface DiscordInviteStats {
 	guildName: string;
