@@ -18,6 +18,7 @@ import LogoutButton from "../../components/LogoutButton";
 import { db } from "../../db";
 import { friendRequests, userCosmetics, users } from "../../db/schema";
 import { authOptions } from "../../lib/auth";
+import ContactDeveloperInfo from "@/components/ContactDeveloperInfo";
 
 export default async function DashboardPage() {
 	const session = await getServerSession(authOptions);
@@ -268,6 +269,7 @@ export default async function DashboardPage() {
 					<LogoutButton />
 				</div>
 			</div>
+			<ContactDeveloperInfo />
 		</main>
 	);
 }
