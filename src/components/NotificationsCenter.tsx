@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaBell, FaCheck, FaXmark } from "react-icons/fa6";
 import { REALTIME_TOPICS, type RealtimeStreamSnapshot } from "../constants/realtime";
@@ -31,30 +32,26 @@ interface NotificationsResponse {
 }
 
 export default function NotificationsCenter() {
+	const pathname = usePathname();
 	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [streamUnreadCount, setStreamUnreadCount] = useState<number | null>(null);
 	const panelRef = useRef<HTMLDivElement>(null);
-	const { data, loading, execute } = useApi<NotificationsResponse>();
+	const hasLoadedListRef = useRef(false);
+	const { data, loading, execute, setData } = useApi<NotificationsResponse>();
 	const { execute: executeMarkRead } = useApi<{ message: string }>();
 	const notifications = data?.data ?? [];
-	const unreadCount = data?.unreadCount ?? 0;
+	const unreadCount = data?.unreadCount ?? streamUnreadCount ?? 0;
 
 	useOnClickOutside(panelRef, () => setIsOpen(false));
 
 	const refresh = useCallback(async () => {
 		try {
 			await execute("/api/notifications?limit=12");
+			hasLoadedListRef.current = true;
 		} catch {
 			// Ignore fetch errors for floating center.
 		}
 	}, [execute]);
-
-	const handleRealtimeUpdate = useCallback(() => {
-		if (document.visibilityState !== "visible") {
-			return;
-		}
-
-		refresh().catch(() => {});
-	}, [refresh]);
 
 	const handleRealtimeStreamPayload = useCallback(
 		(payload: RealtimeStreamSnapshot) => {
@@ -62,15 +59,67 @@ export default function NotificationsCenter() {
 				return;
 			}
 
-			handleRealtimeUpdate();
+			setStreamUnreadCount(payload.notifications.unreadCount);
+
+			if (document.visibilityState !== "visible") {
+				return;
+			}
+
+			if (isOpen || hasLoadedListRef.current) {
+				refresh().catch(() => {});
+			}
 		},
-		[handleRealtimeUpdate]
+		[isOpen, refresh]
 	);
 
 	const { status: realtimeStatus, reconnect: reconnectRealtime } = useRealtimeStream({
 		topics: [REALTIME_TOPICS.NOTIFICATIONS],
 		onUpdate: handleRealtimeStreamPayload,
+		enabled: pathname !== "/notifications",
 	});
+
+	const applyMarkReadLocally = useCallback(
+		(notificationId?: string) => {
+			setData((previous) => {
+				if (!previous) {
+					return previous;
+				}
+
+				if (!notificationId) {
+					return {
+						...previous,
+						unreadCount: 0,
+						data: previous.data.map((item) => ({ ...item, isRead: true })),
+					};
+				}
+
+				const wasUnread = previous.data.some(
+					(item) => item.id === notificationId && !item.isRead
+				);
+
+				return {
+					...previous,
+					unreadCount: wasUnread ? Math.max(0, previous.unreadCount - 1) : previous.unreadCount,
+					data: previous.data.map((item) =>
+						item.id === notificationId ? { ...item, isRead: true } : item
+					),
+				};
+			});
+
+			setStreamUnreadCount((previous) => {
+				if (previous === null) {
+					return previous;
+				}
+
+				if (!notificationId) {
+					return 0;
+				}
+
+				return Math.max(0, previous - 1);
+			});
+		},
+		[setData]
+	);
 
 	const markAllRead = async () => {
 		try {
@@ -78,7 +127,7 @@ export default function NotificationsCenter() {
 				method: "PATCH",
 				body: JSON.stringify({ markAll: true }),
 			});
-			await refresh();
+			applyMarkReadLocally();
 		} catch {
 			// Keep UX resilient if the request fails.
 		}
@@ -90,27 +139,23 @@ export default function NotificationsCenter() {
 				method: "PATCH",
 				body: JSON.stringify({ notificationId }),
 			});
-			await refresh();
+			applyMarkReadLocally(notificationId);
 		} catch {
 			// Keep UX resilient if the request fails.
 		}
 	};
 
 	useEffect(() => {
+		if (!isOpen) {
+			return;
+		}
+
 		refresh().catch(() => {});
+	}, [isOpen, refresh]);
 
-		const handleVisibilityChange = () => {
-			if (document.visibilityState === "visible") {
-				refresh().catch(() => {});
-			}
-		};
-
-		document.addEventListener("visibilitychange", handleVisibilityChange);
-
-		return () => {
-			document.removeEventListener("visibilitychange", handleVisibilityChange);
-		};
-	}, [refresh]);
+	if (pathname === "/notifications") {
+		return null;
+	}
 
 	return (
 		<div className="fixed top-5 right-5 z-40">

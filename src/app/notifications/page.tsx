@@ -45,7 +45,7 @@ interface NotificationsResponse {
 
 export default function NotificationsPage() {
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const { data, loading, error, execute } = useApi<NotificationsResponse>();
+	const { data, loading, error, execute, setData } = useApi<NotificationsResponse>();
 	const { execute: executeMarkRead } = useApi<{ message: string }>();
 	const notifications = data?.data ?? [];
 	const unreadCount = data?.unreadCount ?? 0;
@@ -85,13 +85,27 @@ export default function NotificationsPage() {
 		onUpdate: handleRealtimeStreamPayload,
 	});
 
+	const applyMarkReadLocally = useCallback(() => {
+		setData((previous) => {
+			if (!previous) {
+				return previous;
+			}
+
+			return {
+				...previous,
+				unreadCount: 0,
+				data: previous.data.map((item) => ({ ...item, isRead: true })),
+			};
+		});
+	}, [setData]);
+
 	const markAllRead = async () => {
 		try {
 			await executeMarkRead("/api/notifications", {
 				method: "PATCH",
 				body: JSON.stringify({ markAll: true }),
 			});
-			await fetchNotifications();
+			applyMarkReadLocally();
 		} catch {
 			// Keep UI resilient if mark-all fails
 		}

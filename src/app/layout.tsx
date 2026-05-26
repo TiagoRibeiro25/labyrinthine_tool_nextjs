@@ -4,8 +4,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Background from "../components/Background";
 import Footer from "../components/Footer";
 import NotificationsCenter from "../components/NotificationsCenter";
-import UserQuickMenuLoader from "../components/UserQuickMenuLoader";
+import UserQuickMenu from "../components/UserQuickMenu";
 import AppProviders from "../components/providers/AppProviders";
+import { getUserQuickMenuData } from "../lib/layout-user-menu";
 import { getValidatedServerSession } from "../lib/session-user";
 import OptionalClickSpark from "../components/OptionalClickSpark";
 import "./globals.css";
@@ -32,6 +33,7 @@ export default async function RootLayout({
 	const sessionUser = session?.user as { id?: string } | undefined;
 	const userId = sessionUser?.id;
 	const isLoggedIn = typeof userId === "string" && userId.length > 0;
+	const quickMenuUser = isLoggedIn ? await getUserQuickMenuData(userId) : null;
 
 	return (
 		<html lang="en">
@@ -42,9 +44,12 @@ export default async function RootLayout({
 							<main>{children}</main>
 							{isLoggedIn ? <NotificationsCenter /> : null}
 							<Snowflakes />
-							{isLoggedIn ? (
+							{quickMenuUser ? (
 								<div className="fixed bottom-5 right-5 z-40 flex">
-									<UserQuickMenuLoader userId={userId} />
+									<UserQuickMenu
+										username={quickMenuUser.username}
+										avatarUrl={quickMenuUser.avatarUrl}
+									/>
 								</div>
 							) : null}
 							<Footer />

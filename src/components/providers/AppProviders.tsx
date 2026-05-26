@@ -11,7 +11,7 @@ interface AppProvidersProps extends PropsWithChildren {
 
 export default function AppProviders({ children, session }: AppProvidersProps) {
 	return (
-		<SessionProvider session={session}>
+		<SessionProvider session={session} refetchOnWindowFocus={false}>
 			<InvalidSessionHandler />
 			<ToastProvider>{children}</ToastProvider>
 		</SessionProvider>

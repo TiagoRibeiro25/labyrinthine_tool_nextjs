@@ -1,8 +1,9 @@
 import { getServerSession, type Session } from "next-auth";
+import { cache } from "react";
 import { authOptions } from "./auth";
 import { userExistsById } from "./user-exists";
 
-export async function getValidatedServerSession(): Promise<Session | null> {
+export const getValidatedServerSession = cache(async (): Promise<Session | null> => {
 	const session = await getServerSession(authOptions);
 	const sessionUser = session?.user as { id?: string } | undefined;
 	const userId = sessionUser?.id;
@@ -21,4 +22,4 @@ export async function getValidatedServerSession(): Promise<Session | null> {
 	}
 
 	return session;
-}
+});

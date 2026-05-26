@@ -1,14 +1,10 @@
 import { eq } from "drizzle-orm";
+import { cache } from "react";
 import { db } from "../db";
 import { users } from "../db/schema";
-import { getUserAvatarUrl } from "../lib/avatar";
-import UserQuickMenu from "./UserQuickMenu";
+import { getUserAvatarUrl } from "./avatar";
 
-interface UserQuickMenuLoaderProps {
-	userId: string;
-}
-
-export default async function UserQuickMenuLoader({ userId }: UserQuickMenuLoaderProps) {
+export const getUserQuickMenuData = cache(async (userId: string) => {
 	const userResult = await db
 		.select({
 			username: users.username,
@@ -27,10 +23,8 @@ export default async function UserQuickMenuLoader({ userId }: UserQuickMenuLoade
 		return null;
 	}
 
-	return (
-		<UserQuickMenu
-			username={user.username}
-			avatarUrl={getUserAvatarUrl(user)}
-		/>
-	);
-}
+	return {
+		username: user.username,
+		avatarUrl: getUserAvatarUrl(user),
+	};
+});

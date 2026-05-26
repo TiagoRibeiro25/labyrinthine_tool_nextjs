@@ -1,8 +1,9 @@
 import { eq } from "drizzle-orm";
+import { cache } from "react";
 import { db } from "../db";
 import { users } from "../db/schema";
 
-export async function userExistsById(userId: string): Promise<boolean> {
+export const userExistsById = cache(async (userId: string): Promise<boolean> => {
 	const result = await db
 		.select({ id: users.id })
 		.from(users)
@@ -10,4 +11,4 @@ export async function userExistsById(userId: string): Promise<boolean> {
 		.limit(1);
 
 	return Boolean(result[0]);
-}
+});
