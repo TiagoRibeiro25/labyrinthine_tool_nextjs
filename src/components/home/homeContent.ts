@@ -70,16 +70,16 @@ export const faqs: FaqItem[] = [
 	{
 		question: "Do I need an account to browse the site?",
 		answer:
-			"No. You can browse puzzles and general information without signing in. An account is required for tracking, social features, and personalized progress.",
+			"No. You can browse the site and use all features without an account, but creating a free account allows you to save your unlocked cosmetics to your profile and compare collections with friends.",
 	},
 	{
 		question: "Can I use this with my friends?",
 		answer:
-			"Yes. Friend tools are built for side-by-side comparison so you can quickly decide who should prioritize which objectives.",
+			"Yes. You can send and accept friend requests to compare collections and coordinate on what to target next.",
 	},
 	{
 		question: "Is this only useful for veterans?",
 		answer:
-			"Not at all. New players can use puzzle references and progression views to learn faster while avoiding common early mistakes.",
+			"Not at all. New players can use this site to track their progress, learn about cosmetics, and practice puzzles before they encounter them in game. Veterans can use it to maintain their collection, coordinate with friends, and train puzzles outside of runs.",
 	},
 ];
