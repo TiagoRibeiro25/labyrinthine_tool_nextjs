@@ -20,13 +20,20 @@ export default function useCoarsePointer() {
 		const update = () => {
 			const hasTouchEvents = "ontouchstart" in window;
 			const hasTouchPoints =
-				typeof navigator !== "undefined" && typeof navigator.maxTouchPoints === "number" && navigator.maxTouchPoints > 0;
-			setIsCoarse(coarseQuery.matches || mobileQuery.matches || hasTouchEvents || hasTouchPoints);
+				typeof navigator !== "undefined" &&
+				typeof navigator.maxTouchPoints === "number" &&
+				navigator.maxTouchPoints > 0;
+			setIsCoarse(
+				coarseQuery.matches || mobileQuery.matches || hasTouchEvents || hasTouchPoints
+			);
 		};
 		update();
 
 		// Safari fallback
-		if (typeof coarseQuery.addEventListener === "function" && typeof mobileQuery.addEventListener === "function") {
+		if (
+			typeof coarseQuery.addEventListener === "function" &&
+			typeof mobileQuery.addEventListener === "function"
+		) {
 			coarseQuery.addEventListener("change", update);
 			mobileQuery.addEventListener("change", update);
 			return () => {
@@ -45,4 +52,3 @@ export default function useCoarsePointer() {
 
 	return isCoarse;
 }
-

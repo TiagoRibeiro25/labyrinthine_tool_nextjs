@@ -7,10 +7,7 @@ import {
 	FaTriangleExclamation,
 	FaXmark,
 } from "react-icons/fa6";
-import {
-	DEFAULT_TOAST_DURATION_MS,
-	MIN_TOAST_DURATION_MS,
-} from "../../constants/toast";
+import { DEFAULT_TOAST_DURATION_MS, MIN_TOAST_DURATION_MS } from "../../constants/toast";
 
 export type ToastVariant = "success" | "error" | "info";
 
@@ -33,8 +30,6 @@ interface ToastContextValue {
 }
 
 export const ToastContext = createContext<ToastContextValue | null>(null);
-
-
 
 function variantClasses(variant: ToastVariant): {
 	card: string;

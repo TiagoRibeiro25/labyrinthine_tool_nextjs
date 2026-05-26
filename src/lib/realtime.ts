@@ -1,8 +1,6 @@
 import { EventEmitter } from "node:events";
 import { REALTIME_HINT_EVENT, type RealtimeTopic } from "../constants/realtime";
 
-
-
 export interface RealtimeHint {
 	topic: RealtimeTopic;
 	userIds?: string[];

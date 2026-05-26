@@ -27,9 +27,7 @@ export function normalizeCommentContent(content: string): string {
 
 export function containsDisallowedCommentText(content: string): boolean {
 	const normalized = content.toLowerCase();
-	return PROFILE_COMMENT_BANNED_PHRASES.some((phrase) =>
-		normalized.includes(phrase)
-	);
+	return PROFILE_COMMENT_BANNED_PHRASES.some((phrase) => normalized.includes(phrase));
 }
 
 export async function areUsersFriends(

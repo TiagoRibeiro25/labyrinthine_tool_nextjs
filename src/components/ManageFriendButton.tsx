@@ -23,7 +23,11 @@ export default function ManageFriendButton({
 	const router = useRouter();
 	const { loading, execute } = useApi();
 	const { success, error } = useToast();
-	const { isOpen: isRemoveModalOpen, open: openRemoveModal, close: closeRemoveModal } = useDisclosure();
+	const {
+		isOpen: isRemoveModalOpen,
+		open: openRemoveModal,
+		close: closeRemoveModal,
+	} = useDisclosure();
 	const removeModalRef = useRef<HTMLDivElement>(null);
 
 	useOnClickOutside(removeModalRef, closeRemoveModal);

@@ -46,9 +46,9 @@ export default function LeaderboardPage() {
 	const pageSize = pagination?.limit ?? LEADERBOARD_PAGE_SIZE;
 
 	useEffect(() => {
-		execute(
-			`/api/leaderboard?page=${currentPage}&limit=${LEADERBOARD_PAGE_SIZE}`
-		).catch(() => {});
+		execute(`/api/leaderboard?page=${currentPage}&limit=${LEADERBOARD_PAGE_SIZE}`).catch(
+			() => {}
+		);
 	}, [currentPage, execute]);
 
 	const getRankColor = (index: number) => {

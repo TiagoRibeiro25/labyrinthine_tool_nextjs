@@ -61,8 +61,7 @@ export async function PATCH(
 		if (targetUser.createdViaDiscord) {
 			return NextResponse.json(
 				{
-					message:
-						"This account signs in with Discord and does not use a password.",
+					message: "This account signs in with Discord and does not use a password.",
 				},
 				{ status: 400 }
 			);

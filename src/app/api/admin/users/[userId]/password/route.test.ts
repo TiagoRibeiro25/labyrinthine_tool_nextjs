@@ -51,11 +51,14 @@ describe("admin change password route", () => {
 		mockedGetServerSession.mockResolvedValue(null);
 
 		const response = await PATCH(
-			new Request("http://localhost/api/admin/users/22222222-2222-4222-8222-222222222222/password", {
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ password: "new-password" }),
-			}),
+			new Request(
+				"http://localhost/api/admin/users/22222222-2222-4222-8222-222222222222/password",
+				{
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ password: "new-password" }),
+				}
+			),
 			{ params: Promise.resolve({ userId: "22222222-2222-4222-8222-222222222222" }) }
 		);
 
@@ -86,11 +89,14 @@ describe("admin change password route", () => {
 		mockedDb.update.mockReturnValue({ set: updateSet });
 
 		const response = await PATCH(
-			new Request("http://localhost/api/admin/users/22222222-2222-4222-8222-222222222222/password", {
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ password: "new-password" }),
-			}),
+			new Request(
+				"http://localhost/api/admin/users/22222222-2222-4222-8222-222222222222/password",
+				{
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ password: "new-password" }),
+				}
+			),
 			{ params: Promise.resolve({ userId: "22222222-2222-4222-8222-222222222222" }) }
 		);
 
@@ -119,11 +125,14 @@ describe("admin change password route", () => {
 			.mockImplementationOnce(() => targetChain);
 
 		const response = await PATCH(
-			new Request("http://localhost/api/admin/users/22222222-2222-4222-8222-222222222222/password", {
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ password: "new-password" }),
-			}),
+			new Request(
+				"http://localhost/api/admin/users/22222222-2222-4222-8222-222222222222/password",
+				{
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ password: "new-password" }),
+				}
+			),
 			{ params: Promise.resolve({ userId: "22222222-2222-4222-8222-222222222222" }) }
 		);
 

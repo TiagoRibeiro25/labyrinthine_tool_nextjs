@@ -36,8 +36,6 @@ function sanitizeReturnTo(returnTo: string | null | undefined): string {
 	return returnTo;
 }
 
-
-
 function redirectWithCleanup(req: NextRequest, returnTo: string) {
 	const response = NextResponse.redirect(new URL(returnTo, req.nextUrl.origin));
 	response.cookies.set({

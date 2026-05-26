@@ -7,8 +7,6 @@ import {
 } from "../../../../../constants/auth";
 import { authOptions } from "../../../../../lib/auth";
 
-
-
 function sanitizeReturnTo(returnTo: string | null): string {
 	if (!returnTo) {
 		return "/";

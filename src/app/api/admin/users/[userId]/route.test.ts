@@ -45,11 +45,14 @@ describe("admin delete user route", () => {
 		mockedGetServerSession.mockResolvedValue(null);
 
 		const response = await DELETE(
-			new Request("http://localhost/api/admin/users/22222222-2222-4222-8222-222222222222", {
-				method: "DELETE",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ confirmationUsername: "player" }),
-			}),
+			new Request(
+				"http://localhost/api/admin/users/22222222-2222-4222-8222-222222222222",
+				{
+					method: "DELETE",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ confirmationUsername: "player" }),
+				}
+			),
 			{ params: Promise.resolve({ userId: "22222222-2222-4222-8222-222222222222" }) }
 		);
 
@@ -64,11 +67,14 @@ describe("admin delete user route", () => {
 		mockedDb.select.mockReturnValue(userChain);
 
 		const response = await DELETE(
-			new Request("http://localhost/api/admin/users/22222222-2222-4222-8222-222222222222", {
-				method: "DELETE",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ confirmationUsername: "player" }),
-			}),
+			new Request(
+				"http://localhost/api/admin/users/22222222-2222-4222-8222-222222222222",
+				{
+					method: "DELETE",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ confirmationUsername: "player" }),
+				}
+			),
 			{ params: Promise.resolve({ userId: "22222222-2222-4222-8222-222222222222" }) }
 		);
 
@@ -83,11 +89,14 @@ describe("admin delete user route", () => {
 		mockedDb.select.mockReturnValue(adminChain);
 
 		const response = await DELETE(
-			new Request("http://localhost/api/admin/users/11111111-1111-4111-8111-111111111111", {
-				method: "DELETE",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ confirmationUsername: "admin" }),
-			}),
+			new Request(
+				"http://localhost/api/admin/users/11111111-1111-4111-8111-111111111111",
+				{
+					method: "DELETE",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ confirmationUsername: "admin" }),
+				}
+			),
 			{ params: Promise.resolve({ userId: "11111111-1111-4111-8111-111111111111" }) }
 		);
 
@@ -117,11 +126,14 @@ describe("admin delete user route", () => {
 		mockedDb.delete.mockReturnValue({ where: deleteWhere });
 
 		const response = await DELETE(
-			new Request("http://localhost/api/admin/users/22222222-2222-4222-8222-222222222222", {
-				method: "DELETE",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ confirmationUsername: "player" }),
-			}),
+			new Request(
+				"http://localhost/api/admin/users/22222222-2222-4222-8222-222222222222",
+				{
+					method: "DELETE",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ confirmationUsername: "player" }),
+				}
+			),
 			{ params: Promise.resolve({ userId: "22222222-2222-4222-8222-222222222222" }) }
 		);
 

@@ -1,4 +1,4 @@
-import PaintingSlotsPuzzle from "@/components/PaintingSlotsPuzzle";
+import PaitingsSlotsPuzzle from "@/components/PaintingSlotsPuzzle";
 import { Metadata } from "next";
 import Link from "next/link";
 import { FaArrowLeft } from "react-icons/fa6";
@@ -27,14 +27,14 @@ export default function PaitingsPage() {
 				</h1>
 
 				<p className="max-w-2xl mx-auto text-lg text-neutral-400 mb-2 font-medium tracking-wide">
-					Drag paitings and drop them into the 4 empty slots. Use the × button to remove a paiting.
+					Drag paitings and drop them into the 4 empty slots. Use the × button to remove a
+					paiting.
 				</p>
 
 				<div className="w-full">
-					<PaintingSlotsPuzzle />
+					<PaitingsSlotsPuzzle />
 				</div>
 			</div>
 		</main>
 	);
 }
-

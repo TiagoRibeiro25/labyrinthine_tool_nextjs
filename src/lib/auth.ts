@@ -54,10 +54,7 @@ const providers: NextAuthOptions["providers"] = [
 					return null;
 				}
 
-				const isPasswordValid = await bcrypt.compare(
-					credentials.password,
-					user.password
-				);
+				const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
 
 				if (!isPasswordValid) {
 					return null;

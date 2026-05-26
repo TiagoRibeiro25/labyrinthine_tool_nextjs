@@ -21,7 +21,13 @@ import DroppableSlot from "./DroppableSlot";
 import DraggablePaitingCard from "./DraggablePaitingCard";
 import PaitingCard from "./PaitingCard";
 
-function PaintingsListRemoveTarget({ id, children }: { id: string; children: React.ReactNode }) {
+function PaintingsListRemoveTarget({
+	id,
+	children,
+}: {
+	id: string;
+	children: React.ReactNode;
+}) {
 	const { ref } = useDroppable({ id });
 	return <div ref={(node) => ref(node)}>{children}</div>;
 }
@@ -29,7 +35,9 @@ function PaintingsListRemoveTarget({ id, children }: { id: string; children: Rea
 function SlotRowWrapper({ children }: { children: ReactNode }) {
 	return (
 		<div className="w-full overflow-x-auto">
-			<div className="flex gap-3 flex-nowrap justify-center min-w-max px-1">{children}</div>
+			<div className="flex gap-3 flex-nowrap justify-center min-w-max px-1">
+				{children}
+			</div>
 		</div>
 	);
 }
@@ -50,7 +58,10 @@ function TouchPaintingCard({
 			className="w-full text-left focus:outline-none"
 			aria-pressed={isSelected}
 		>
-			<PaitingCard paintingName={paintingName} className={isSelected ? "ring-4 ring-emerald-400/20" : ""} />
+			<PaitingCard
+				paintingName={paintingName}
+				className={isSelected ? "ring-4 ring-emerald-400/20" : ""}
+			/>
 		</button>
 	);
 }
@@ -126,16 +137,20 @@ export default function PaitingsSlotsPuzzle() {
 	const [activeDragId, setActiveDragId] = useState<string | null>(null);
 	const [selectedPaintingName, setSelectedPaintingName] = useState<string | null>(null);
 	const isTouchMode = useCoarsePointer();
-	const { ref: paintingsListDroppableRef, isDropTarget: isOverPaintingsList } = useDroppable({
-		id: PAITINGS_PUZZLE_PAINTINGS_LIST_DROP_ID,
-	});
+	const { ref: paintingsListDroppableRef, isDropTarget: isOverPaintingsList } =
+		useDroppable({
+			id: PAITINGS_PUZZLE_PAINTINGS_LIST_DROP_ID,
+		});
 
 	const availablePaintings = useMemo(() => {
 		const placed = new Set(slots.filter(Boolean) as string[]);
 		return PAITINGS_PUZZLE_PAINTING_NAMES.filter((name) => !placed.has(name));
 	}, [slots]);
 
-	const activePaintingName = useMemo(() => parsePaintingName(activeDragId), [activeDragId]);
+	const activePaintingName = useMemo(
+		() => parsePaintingName(activeDragId),
+		[activeDragId]
+	);
 
 	function clearSlot(slotIndex: number) {
 		setSlots((prev) => {
@@ -180,7 +195,8 @@ export default function PaitingsSlotsPuzzle() {
 						const paintingName = slots[slotIndex];
 
 						const canPlace = selectedPaintingName != null && paintingName == null;
-						const isSelected = selectedPaintingName != null && paintingName === selectedPaintingName;
+						const isSelected =
+							selectedPaintingName != null && paintingName === selectedPaintingName;
 
 						return (
 							<div key={slotIndex} className="flex-none w-20 sm:w-24 md:w-28 lg:w-32">
@@ -212,7 +228,8 @@ export default function PaitingsSlotsPuzzle() {
 										movePaintingToSlot(selectedPaintingName, slotIndex);
 									}}
 									onClear={() => {
-										if (paintingName && paintingName === selectedPaintingName) setSelectedPaintingName(null);
+										if (paintingName && paintingName === selectedPaintingName)
+											setSelectedPaintingName(null);
 										clearSlot(slotIndex);
 									}}
 								/>
@@ -232,7 +249,9 @@ export default function PaitingsSlotsPuzzle() {
 					<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
 						{availablePaintings.length === 0 ? (
 							<div className="col-span-full text-center py-10 border border-dashed border-neutral-800 rounded-2xl bg-neutral-950/20">
-								<p className="text-neutral-500 text-xs font-bold uppercase tracking-widest">All slots filled.</p>
+								<p className="text-neutral-500 text-xs font-bold uppercase tracking-widest">
+									All slots filled.
+								</p>
 								<p className="text-neutral-600 text-[11px] font-semibold mt-2">
 									Tap a filled slot to select, then tap another slot to move.
 								</p>
@@ -269,10 +288,17 @@ export default function PaitingsSlotsPuzzle() {
 		if (!paintingName) return;
 
 		// Dropping into the paintings section should "remove" from the slots.
-		const targetIdString = typeof targetId === "string" ? targetId : typeof targetId === "number" ? String(targetId) : null;
+		const targetIdString =
+			typeof targetId === "string"
+				? targetId
+				: typeof targetId === "number"
+					? String(targetId)
+					: null;
 		if (
 			targetIdString === PAITINGS_PUZZLE_PAINTINGS_LIST_DROP_ID ||
-			(targetIdString ? targetIdString.startsWith(PAITINGS_PUZZLE_PAINTINGS_LIST_ITEM_DROP_PREFIX) : false)
+			(targetIdString
+				? targetIdString.startsWith(PAITINGS_PUZZLE_PAINTINGS_LIST_ITEM_DROP_PREFIX)
+				: false)
 		) {
 			setSlots((prev) => {
 				const next = [...prev];
@@ -343,7 +369,10 @@ export default function PaitingsSlotsPuzzle() {
 							</div>
 						) : (
 							availablePaintings.map((paintingName, index) => (
-								<PaintingsListRemoveTarget key={paintingName} id={`${PAITINGS_PUZZLE_PAINTINGS_LIST_ITEM_DROP_PREFIX}${index}`}>
+								<PaintingsListRemoveTarget
+									key={paintingName}
+									id={`${PAITINGS_PUZZLE_PAINTINGS_LIST_ITEM_DROP_PREFIX}${index}`}
+								>
 									<DraggablePaitingCard paintingName={paintingName} />
 								</PaintingsListRemoveTarget>
 							))
@@ -355,11 +384,14 @@ export default function PaitingsSlotsPuzzle() {
 			<DragOverlay>
 				{activePaintingName ? (
 					<div className="w-20 sm:w-24 md:w-28 lg:w-32">
-						<PaitingCard paintingName={activePaintingName} isGhost className="pointer-events-none opacity-90" />
+						<PaitingCard
+							paintingName={activePaintingName}
+							isGhost
+							className="pointer-events-none opacity-90"
+						/>
 					</div>
 				) : null}
 			</DragOverlay>
 		</DragDropProvider>
 	);
 }
-

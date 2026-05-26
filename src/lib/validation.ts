@@ -6,8 +6,6 @@ import { DEFAULT_PUZZLE_TYPE, PUZZLE_TYPE_VALUES } from "../constants/puzzles";
 const steamProfileRegex =
 	/^https?:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/;
 
-
-
 export const usernameSchema = z
 	.string()
 	.trim()
@@ -254,10 +252,7 @@ export const adminUsersQuerySchema = z.object({
 });
 
 export const adminDeleteUserBodySchema = z.object({
-	confirmationUsername: z
-		.string()
-		.trim()
-		.min(1, "Confirmation username is required."),
+	confirmationUsername: z.string().trim().min(1, "Confirmation username is required."),
 });
 
 export const adminChangePasswordBodySchema = z.object({

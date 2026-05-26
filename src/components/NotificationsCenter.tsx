@@ -99,7 +99,9 @@ export default function NotificationsCenter() {
 
 				return {
 					...previous,
-					unreadCount: wasUnread ? Math.max(0, previous.unreadCount - 1) : previous.unreadCount,
+					unreadCount: wasUnread
+						? Math.max(0, previous.unreadCount - 1)
+						: previous.unreadCount,
 					data: previous.data.map((item) =>
 						item.id === notificationId ? { ...item, isRead: true } : item
 					),

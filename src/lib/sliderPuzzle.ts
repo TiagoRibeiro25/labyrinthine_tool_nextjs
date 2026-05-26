@@ -5,10 +5,7 @@ import {
 
 // Get the solved state of the puzzle
 export const getSolvedState = (): number[] => {
-	const state = Array.from(
-		{ length: SLIDER_PUZZLE_NUM_TILES - 1 },
-		(_, i) => i + 1
-	);
+	const state = Array.from({ length: SLIDER_PUZZLE_NUM_TILES - 1 }, (_, i) => i + 1);
 	state.push(0); // 0 represents the empty tile
 	return state;
 };
@@ -29,8 +26,7 @@ export const getValidAdjacentMoves = (index: number): number[] => {
 	const col = index % SLIDER_PUZZLE_GRID_SIZE;
 
 	if (row > 0) moves.push(index - SLIDER_PUZZLE_GRID_SIZE); // Up
-	if (row < SLIDER_PUZZLE_GRID_SIZE - 1)
-		moves.push(index + SLIDER_PUZZLE_GRID_SIZE); // Down
+	if (row < SLIDER_PUZZLE_GRID_SIZE - 1) moves.push(index + SLIDER_PUZZLE_GRID_SIZE); // Down
 	if (col > 0) moves.push(index - 1); // Left
 	if (col < SLIDER_PUZZLE_GRID_SIZE - 1) moves.push(index + 1); // Right
 

@@ -183,10 +183,7 @@ export async function POST(req: Request) {
 		}
 
 		if (!createdUser) {
-			return NextResponse.json(
-				{ message: "Failed to create account." },
-				{ status: 500 }
-			);
+			return NextResponse.json({ message: "Failed to create account." }, { status: 500 });
 		}
 
 		const loginToken = createDiscordLoginToken({ userId: createdUser.id }, secret);

@@ -30,35 +30,35 @@ export default function PuzzlesPage() {
 
 				<div className="w-full mt-2 sm:mt-4">
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
-					<Link
-						href="/puzzles/slider-puzzle"
-						className="group flex flex-col items-center justify-center gap-4 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full"
-					>
-						<FaPuzzlePiece className="w-12 h-12 text-neutral-400 group-hover:text-white group-hover:scale-110 transition-all duration-300" />
-						<span className="font-bold text-xl uppercase tracking-widest">
-							Slider Puzzle
-						</span>
-					</Link>
+						<Link
+							href="/puzzles/slider-puzzle"
+							className="group flex flex-col items-center justify-center gap-4 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full"
+						>
+							<FaPuzzlePiece className="w-12 h-12 text-neutral-400 group-hover:text-white group-hover:scale-110 transition-all duration-300" />
+							<span className="font-bold text-xl uppercase tracking-widest">
+								Slider Puzzle
+							</span>
+						</Link>
 
-					<Link
-						href="/puzzles/lights-out"
-						className="group flex flex-col items-center justify-center gap-4 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full"
-					>
-						<FaLightbulb className="w-12 h-12 text-neutral-400 group-hover:text-white group-hover:scale-110 transition-all duration-300" />
-						<span className="font-bold text-xl uppercase tracking-widest">
-							Lights Out
-						</span>
-					</Link>
+						<Link
+							href="/puzzles/lights-out"
+							className="group flex flex-col items-center justify-center gap-4 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full"
+						>
+							<FaLightbulb className="w-12 h-12 text-neutral-400 group-hover:text-white group-hover:scale-110 transition-all duration-300" />
+							<span className="font-bold text-xl uppercase tracking-widest">
+								Lights Out
+							</span>
+						</Link>
 
-					<Link
-						href="/puzzles/paitings"
-						className="group flex flex-col items-center justify-center gap-4 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-emerald-400/60 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full"
-					>
-						<FaPuzzlePiece className="w-12 h-12 text-neutral-400 group-hover:text-emerald-300 group-hover:scale-110 transition-all duration-300" />
-						<span className="font-bold text-xl uppercase tracking-widest text-center">
-							Painting Slots
-						</span>
-					</Link>
+						<Link
+							href="/puzzles/paitings"
+							className="group flex flex-col items-center justify-center gap-4 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-emerald-400/60 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full"
+						>
+							<FaPuzzlePiece className="w-12 h-12 text-neutral-400 group-hover:text-emerald-300 group-hover:scale-110 transition-all duration-300" />
+							<span className="font-bold text-xl uppercase tracking-widest text-center">
+								Painting Slots
+							</span>
+						</Link>
 					</div>
 
 					<Link

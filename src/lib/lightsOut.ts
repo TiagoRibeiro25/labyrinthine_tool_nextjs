@@ -50,8 +50,7 @@ export const generateBoard = (): boolean[] => {
 	const numMoves =
 		LIGHTS_OUT_SCRAMBLE_MIN_MOVES +
 		Math.floor(
-			Math.random() *
-				(LIGHTS_OUT_SCRAMBLE_MAX_MOVES - LIGHTS_OUT_SCRAMBLE_MIN_MOVES + 1)
+			Math.random() * (LIGHTS_OUT_SCRAMBLE_MAX_MOVES - LIGHTS_OUT_SCRAMBLE_MIN_MOVES + 1)
 		);
 	for (let i = 0; i < numMoves; i++) {
 		const randomIdx = Math.floor(Math.random() * LIGHTS_OUT_NUM_CELLS);

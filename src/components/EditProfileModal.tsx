@@ -18,7 +18,6 @@ import {
 } from "../constants/ui";
 import { AVAILABLE_AVATARS } from "@/constants/profile-avatars";
 
-
 interface EditProfileModalProps {
 	isOpen: boolean;
 	onClose: () => void;

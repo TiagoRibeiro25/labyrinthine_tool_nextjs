@@ -35,7 +35,9 @@ export default function AdminUserManagementSection({
 }: AdminUserManagementSectionProps) {
 	const router = useRouter();
 	const { success, error } = useToast();
-	const { execute: executeAction, loading: actionLoading } = useApi<{ message: string }>();
+	const { execute: executeAction, loading: actionLoading } = useApi<{
+		message: string;
+	}>();
 	const {
 		execute: executeSearch,
 		loading: searchLoading,
@@ -46,7 +48,9 @@ export default function AdminUserManagementSection({
 	const [displayedUsers, setDisplayedUsers] = useState<AdminManagedUser[]>(users);
 	const [expandedUserIds, setExpandedUserIds] = useState<Record<string, boolean>>({});
 	const [passwordDrafts, setPasswordDrafts] = useState<Record<string, string>>({});
-	const [deleteConfirmations, setDeleteConfirmations] = useState<Record<string, string>>({});
+	const [deleteConfirmations, setDeleteConfirmations] = useState<Record<string, string>>(
+		{}
+	);
 
 	const [debouncedQuery] = useDebounce(searchQuery, 400);
 	const isSearching = debouncedQuery.trim().length > 0;
@@ -269,8 +273,8 @@ export default function AdminUserManagementSection({
 											{user.createdViaDiscord ? (
 												<div className="p-4 bg-black/30 border border-neutral-800 rounded-xl">
 													<p className="text-sm text-neutral-400 leading-relaxed">
-														This account was created with Discord and signs in
-														with Discord only. There is no password to reset.
+														This account was created with Discord and signs in with
+														Discord only. There is no password to reset.
 													</p>
 												</div>
 											) : (
@@ -329,8 +333,7 @@ export default function AdminUserManagementSection({
 															onClick={() => handleDeleteUser(user)}
 															disabled={
 																actionLoading ||
-																deleteConfirmations[user.id]?.trim() !==
-																	user.username
+																deleteConfirmations[user.id]?.trim() !== user.username
 															}
 															className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-sm bg-red-950/40 text-red-200 font-bold text-[11px] uppercase tracking-widest border border-red-900 hover:bg-red-900/50 hover:border-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 														>

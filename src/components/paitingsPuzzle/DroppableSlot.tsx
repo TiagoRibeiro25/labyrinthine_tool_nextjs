@@ -38,9 +38,7 @@ export default function DroppableSlot({
 		<div
 			ref={(node) => droppableRef(node)}
 			className={`relative w-full rounded-2xl transition-all duration-200 ${
-				isDropTarget
-					? "ring-4 ring-amber-400/20"
-					: ""
+				isDropTarget ? "ring-4 ring-amber-400/20" : ""
 			}`}
 		>
 			{paintingName ? (
@@ -62,4 +60,3 @@ export default function DroppableSlot({
 		</div>
 	);
 }
-

@@ -34,4 +34,3 @@ export function parseSlotIndex(overId: unknown): number | null {
 export function getPaintingImageSrc(paintingName: string) {
 	return `/images/paitings/${encodeURIComponent(`${paintingName}.png`)}`;
 }
-

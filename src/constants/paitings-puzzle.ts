@@ -10,4 +10,3 @@ export const PAITINGS_PUZZLE_PAINTING_NAMES = paitingsData as string[];
 export const PAITINGS_PUZZLE_PAINTINGS_LIST_DROP_ID = "paintings-list";
 
 export const PAITINGS_PUZZLE_PAINTINGS_LIST_ITEM_DROP_PREFIX = "paintings-list-item:";
-

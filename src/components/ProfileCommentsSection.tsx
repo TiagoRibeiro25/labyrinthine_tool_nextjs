@@ -74,8 +74,6 @@ interface CommentsApiResponse {
 	};
 }
 
-
-
 function formatTime(dateValue: string): string {
 	return new Date(dateValue).toLocaleString();
 }

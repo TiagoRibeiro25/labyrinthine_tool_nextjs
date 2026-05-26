@@ -38,11 +38,7 @@ export default function UserQuickMenu({ username, avatarUrl }: UserQuickMenuProp
 	const router = useRouter();
 	const menuRef = useRef<HTMLDivElement>(null);
 	const { isOpen, toggle, close } = useDisclosure();
-	const {
-		isOpen: isLogoutOpen,
-		open: openLogout,
-		close: closeLogout,
-	} = useDisclosure();
+	const { isOpen: isLogoutOpen, open: openLogout, close: closeLogout } = useDisclosure();
 
 	useOnClickOutside(menuRef, close);
 
