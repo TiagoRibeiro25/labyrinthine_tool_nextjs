@@ -28,10 +28,11 @@ export default function PuzzlesPage() {
 					Select a puzzle type to practice.
 				</p>
 
-				<div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full sm:w-auto mt-2 sm:mt-4">
+				<div className="w-full mt-2 sm:mt-4">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
 					<Link
 						href="/puzzles/slider-puzzle"
-						className="group flex flex-col items-center justify-center gap-4 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full sm:w-64"
+						className="group flex flex-col items-center justify-center gap-4 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full"
 					>
 						<FaPuzzlePiece className="w-12 h-12 text-neutral-400 group-hover:text-white group-hover:scale-110 transition-all duration-300" />
 						<span className="font-bold text-xl uppercase tracking-widest">
@@ -41,7 +42,7 @@ export default function PuzzlesPage() {
 
 					<Link
 						href="/puzzles/lights-out"
-						className="group flex flex-col items-center justify-center gap-4 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full sm:w-64"
+						className="group flex flex-col items-center justify-center gap-4 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full"
 					>
 						<FaLightbulb className="w-12 h-12 text-neutral-400 group-hover:text-white group-hover:scale-110 transition-all duration-300" />
 						<span className="font-bold text-xl uppercase tracking-widest">
@@ -50,11 +51,22 @@ export default function PuzzlesPage() {
 					</Link>
 
 					<Link
-						href="/puzzles/leaderboard"
-						className="group flex flex-col items-center justify-center gap-4 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full sm:w-64"
+						href="/puzzles/paitings"
+						className="group flex flex-col items-center justify-center gap-4 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-emerald-400/60 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full"
 					>
-						<FaTrophy className="w-12 h-12 text-neutral-400 group-hover:text-yellow-400 group-hover:scale-110 transition-all duration-300" />
+						<FaPuzzlePiece className="w-12 h-12 text-neutral-400 group-hover:text-emerald-300 group-hover:scale-110 transition-all duration-300" />
 						<span className="font-bold text-xl uppercase tracking-widest text-center">
+							Painting Slots
+						</span>
+					</Link>
+					</div>
+
+					<Link
+						href="/puzzles/leaderboard"
+						className="mt-6 group flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-neutral-900/60 text-neutral-100 border border-neutral-800 hover:bg-neutral-800 hover:border-yellow-400/50 transition-all duration-300 shadow-[0_0_24px_rgba(255,255,255,0.06)] hover:shadow-[0_0_44px_rgba(255,255,255,0.14)] w-full"
+					>
+						<FaTrophy className="w-6 h-6 text-neutral-400 group-hover:text-yellow-400 transition-colors" />
+						<span className="font-black text-sm sm:text-base uppercase tracking-[0.2em] text-center">
 							Puzzle Leaderboards
 						</span>
 					</Link>
