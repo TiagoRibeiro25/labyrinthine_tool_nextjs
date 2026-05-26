@@ -2,9 +2,10 @@ import { desc, eq, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { FaArrowLeft, FaShield, FaUsers } from "react-icons/fa6";
+import { FaArrowLeft, FaShield } from "react-icons/fa6";
 import AdminCleanupSection from "../../components/AdminCleanupSection";
 import AdminReportedCommentsSection from "../../components/AdminReportedCommentsSection";
+import AdminUserManagementSection from "../../components/AdminUserManagementSection";
 import { db } from "../../db";
 import {
 	activityEvents,
@@ -15,6 +16,7 @@ import {
 	users,
 } from "../../db/schema";
 import { authOptions } from "../../lib/auth";
+import { ADMIN_USERS_LIST_LIMIT } from "../../constants/admin";
 import { getReportedCommentsPage } from "../../lib/admin-reported-comments";
 
 interface AdminPageProps {
@@ -57,7 +59,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 		totalNotificationsResult,
 		pendingFriendRequestsResult,
 		totalPuzzleRunsResult,
-		recentSignups,
+		managedUsers,
 	] = await Promise.all([
 		db.select({ count: sql<number>`count(*)`.mapWith(Number) }).from(users),
 		db.select({ count: sql<number>`count(*)`.mapWith(Number) }).from(userCosmetics),
@@ -73,11 +75,12 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 				id: users.id,
 				username: users.username,
 				isAdministrator: users.isAdministrator,
+				createdViaDiscord: users.createdViaDiscord,
 				createdAt: users.createdAt,
 			})
 			.from(users)
 			.orderBy(desc(users.createdAt))
-			.limit(12),
+			.limit(ADMIN_USERS_LIST_LIMIT),
 	]);
 
 	const metrics = [
@@ -141,34 +144,16 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 					pagination={reportedCommentsPage.pagination}
 				/>
 
-				<div className="mt-8 p-5 bg-black/50 border border-neutral-800 rounded-2xl">
-					<h3 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4 border-b border-neutral-800/50 pb-2 flex items-center gap-2">
-						<FaUsers /> Recent Signups
-					</h3>
-					<div className="space-y-3">
-						{recentSignups.map((user) => (
-							<Link
-								key={user.id}
-								href={`/profile/${user.username}`}
-								className="flex items-center justify-between gap-3 p-3 bg-neutral-900/40 border border-neutral-800 rounded-xl hover:bg-neutral-800/60 hover:border-neutral-500 transition-colors"
-							>
-								<div className="min-w-0">
-									<p className="text-sm font-bold uppercase tracking-widest text-neutral-200 truncate">
-										{user.username}
-									</p>
-									<p className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold mt-1">
-										Joined {user.createdAt.toLocaleDateString()}
-									</p>
-								</div>
-								{user.isAdministrator ? (
-									<span className="px-2 py-1 bg-amber-900/40 text-amber-300 text-[10px] font-bold uppercase tracking-widest border border-amber-700 rounded-sm">
-										Admin
-									</span>
-								) : null}
-							</Link>
-						))}
-					</div>
-				</div>
+				<AdminUserManagementSection
+					users={managedUsers.map((user) => ({
+						id: user.id,
+						username: user.username,
+						isAdministrator: user.isAdministrator,
+						createdViaDiscord: user.createdViaDiscord,
+						createdAt: user.createdAt.toISOString(),
+					}))}
+					currentUserId={currentUser.id}
+				/>
 			</div>
 		</main>
 	);

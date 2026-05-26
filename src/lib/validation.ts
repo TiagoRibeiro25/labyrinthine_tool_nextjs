@@ -244,6 +244,29 @@ export const puzzleLeaderboardQuerySchema = z.object({
 		.default(20),
 });
 
+export const adminUsersQuerySchema = z.object({
+	q: z
+		.string()
+		.trim()
+		.min(1, "Search query is required.")
+		.max(64, "Search query is too long.")
+		.optional(),
+});
+
+export const adminDeleteUserBodySchema = z.object({
+	confirmationUsername: z
+		.string()
+		.trim()
+		.min(1, "Confirmation username is required."),
+});
+
+export const adminChangePasswordBodySchema = z.object({
+	password: z
+		.string()
+		.min(6, "Password must be at least 6 characters long.")
+		.max(128, "Password must be at most 128 characters long."),
+});
+
 export const adminCleanupBodySchema = z.object({
 	retentionDays: z.coerce
 		.number()
@@ -317,6 +340,8 @@ export type ProfileUpdateBody = z.infer<typeof profileUpdateSchema>;
 export type CosmeticsToggleBody = z.infer<typeof cosmeticsToggleBodySchema>;
 export type NotificationsMarkReadBody = z.infer<typeof notificationsMarkReadBodySchema>;
 export type PuzzleScoreBody = z.infer<typeof puzzleScoreBodySchema>;
+export type AdminDeleteUserBody = z.infer<typeof adminDeleteUserBodySchema>;
+export type AdminChangePasswordBody = z.infer<typeof adminChangePasswordBodySchema>;
 export type AdminCleanupBody = z.infer<typeof adminCleanupBodySchema>;
 export type ProfileCommentCreateBody = z.infer<typeof profileCommentCreateBodySchema>;
 export type ProfileCommentUpdateBody = z.infer<typeof profileCommentUpdateBodySchema>;

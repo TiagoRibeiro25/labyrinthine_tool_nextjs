@@ -163,6 +163,7 @@ export async function POST(req: Request) {
 					password: hashedPassword,
 					profilePictureId: "1",
 					profileBannerId: "chap1",
+					createdViaDiscord: true,
 					discordId: onboardingPayload.discordId,
 					discordUsername: onboardingPayload.discordDisplayName,
 					discordAvatarUrl: onboardingPayload.discordAvatarUrl,

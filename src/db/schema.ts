@@ -34,6 +34,7 @@ export const users = pgTable(
 			.default("everyone")
 			.notNull(),
 		isAdministrator: boolean("is_administrator").default(false).notNull(),
+		createdViaDiscord: boolean("created_via_discord").default(false).notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")
 			.defaultNow()

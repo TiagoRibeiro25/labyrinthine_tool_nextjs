@@ -1,1 +1,2 @@
 export const ADMIN_CLEANUP_RETENTION_DAYS = 30;
+export const ADMIN_USERS_LIST_LIMIT = 10;
