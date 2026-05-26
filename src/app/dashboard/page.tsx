@@ -1,5 +1,4 @@
 import { and, eq, or } from "drizzle-orm";
-import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
@@ -17,23 +16,22 @@ import {
 import LogoutButton from "../../components/LogoutButton";
 import { db } from "../../db";
 import { friendRequests, userCosmetics, users } from "../../db/schema";
-import { authOptions } from "../../lib/auth";
+import { getValidatedServerSession } from "../../lib/session-user";
 import ContactDeveloperInfo from "@/components/ContactDeveloperInfo";
 
 export default async function DashboardPage() {
-	const session = await getServerSession(authOptions);
+	const session = await getValidatedServerSession();
 
 	const sessionUser = session?.user as { id?: string; name?: string | null } | undefined;
 
-	if (!session || !sessionUser || !sessionUser.id) {
+	if (!session || !sessionUser?.id) {
 		redirect("/login");
 	}
 
-	const currentUserId = sessionUser.id;
 	const targetUserResult = await db
 		.select()
 		.from(users)
-		.where(eq(users.id, currentUserId))
+		.where(eq(users.id, sessionUser.id))
 		.limit(1);
 
 	const targetUser = targetUserResult[0];

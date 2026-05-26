@@ -1,13 +1,12 @@
 import { METADATA } from "@/data/metadata";
 import type { Metadata } from "next";
-import { getServerSession } from "next-auth";
 import { Geist, Geist_Mono } from "next/font/google";
 import Background from "../components/Background";
 import Footer from "../components/Footer";
 import NotificationsCenter from "../components/NotificationsCenter";
 import UserQuickMenuLoader from "../components/UserQuickMenuLoader";
 import AppProviders from "../components/providers/AppProviders";
-import { authOptions } from "../lib/auth";
+import { getValidatedServerSession } from "../lib/session-user";
 import OptionalClickSpark from "../components/OptionalClickSpark";
 import "./globals.css";
 import Snowflakes from "@/components/Snowflakes";
@@ -29,7 +28,7 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const session = await getServerSession(authOptions);
+	const session = await getValidatedServerSession();
 	const sessionUser = session?.user as { id?: string } | undefined;
 	const userId = sessionUser?.id;
 	const isLoggedIn = typeof userId === "string" && userId.length > 0;
@@ -37,7 +36,7 @@ export default async function RootLayout({
 	return (
 		<html lang="en">
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-				<AppProviders>
+				<AppProviders session={session}>
 					<Background>
 						<OptionalClickSpark>
 							<main>{children}</main>

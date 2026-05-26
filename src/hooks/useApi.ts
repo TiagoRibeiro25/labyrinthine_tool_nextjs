@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { invalidateClientSession } from "../lib/invalidate-client-session";
 
 export class ApiError extends Error {
 	status: number;
@@ -37,6 +38,11 @@ export function useApi<T = unknown>() {
 					// Fallback to status text if JSON parsing fails
 					errorMessage = `HTTP error! status: ${res.status}`;
 				}
+
+				if (res.status === 401) {
+					void invalidateClientSession();
+				}
+
 				throw new ApiError(errorMessage, res.status);
 			}
 

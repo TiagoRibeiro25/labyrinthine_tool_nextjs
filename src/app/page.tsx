@@ -1,4 +1,3 @@
-import { getServerSession } from "next-auth";
 import FaqSection from "../components/home/FaqSection";
 import DiscordCommunitySection from "../components/home/DiscordCommunitySection";
 import FeatureHighlightsSection from "../components/home/FeatureHighlightsSection";
@@ -8,10 +7,10 @@ import ProgressLoopSection from "../components/home/ProgressLoopSection";
 import SteamChangelogSection from "../components/home/SteamChangelogSection";
 import TrailerSection from "../components/home/TrailerSection";
 import WikiGuideSection from "../components/home/WikiGuideSection";
-import { authOptions } from "../lib/auth";
+import { getValidatedServerSession } from "../lib/session-user";
 
 export default async function Home() {
-	const session = await getServerSession(authOptions);
+	const session = await getValidatedServerSession();
 	const isAuthenticated = Boolean(session);
 
 	return (

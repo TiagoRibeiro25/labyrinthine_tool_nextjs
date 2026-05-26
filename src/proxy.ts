@@ -1,45 +1,56 @@
 import { getToken } from "next-auth/jwt";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { clearAuthSessionCookies } from "./lib/auth-cookies";
+import { isAuthenticatedToken } from "./lib/auth-token";
 
 export async function proxy(req: NextRequest) {
-	// Retrieve the current user's session token
 	const token = await getToken({
 		req,
 		secret: process.env.NEXTAUTH_SECRET!,
 	});
 
+	const isAuthenticated = await isAuthenticatedToken(token);
+	const hasStaleToken = Boolean(token) && !isAuthenticated;
+
 	const isAuthPage =
 		req.nextUrl.pathname.startsWith("/login") ||
 		req.nextUrl.pathname.startsWith("/signup");
 
-	// If the user is logged in and trying to access an authentication page,
-	// redirect them to the dashboard.
 	if (isAuthPage) {
-		if (token) {
+		if (isAuthenticated) {
 			return NextResponse.redirect(new URL("/dashboard", req.url));
 		}
+
+		if (hasStaleToken) {
+			const response = NextResponse.next();
+			clearAuthSessionCookies(response);
+			return response;
+		}
+
 		return NextResponse.next();
 	}
 
-	// If the user is NOT logged in and trying to access a protected route
-	// (any route matched by the config below that isn't an auth page),
-	// redirect them to the login page.
-	if (!token) {
+	if (!isAuthenticated) {
 		let from = req.nextUrl.pathname;
 		if (req.nextUrl.search) {
 			from += req.nextUrl.search;
 		}
 
-		return NextResponse.redirect(
+		const response = NextResponse.redirect(
 			new URL(`/login?callbackUrl=${encodeURIComponent(from)}`, req.url)
 		);
+
+		if (hasStaleToken) {
+			clearAuthSessionCookies(response);
+		}
+
+		return response;
 	}
 
 	return NextResponse.next();
 }
 
-// Specify the paths that the middleware will run on.
 export const config = {
 	matcher: [
 		"/dashboard/:path*",

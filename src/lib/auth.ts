@@ -12,6 +12,7 @@ import {
 } from "./discord-auth";
 import { rateLimit } from "./rate-limit";
 import { getClientIpFromHeaders } from "./request";
+import { userExistsById } from "./user-exists";
 
 const providers: NextAuthOptions["providers"] = [
 	CredentialsProvider({
@@ -185,15 +186,39 @@ export const authOptions: NextAuthOptions = {
 			}
 		},
 		async jwt({ token, user }) {
-			if (user) {
+			if (user?.id) {
 				token.id = user.id;
+				delete token.userDeleted;
 			}
+
+			const userId = typeof token.id === "string" ? token.id : undefined;
+
+			if (!userId) {
+				return token;
+			}
+
+			const exists = await userExistsById(userId);
+
+			if (!exists) {
+				return { userDeleted: true };
+			}
+
+			delete token.userDeleted;
 			return token;
 		},
 		async session({ session, token }) {
-			if (token && session.user) {
-				(session.user as { id?: string }).id = token.id as string | undefined;
+			if (token.userDeleted || typeof token.id !== "string") {
+				return {
+					...session,
+					user: {},
+					expires: new Date(0).toISOString(),
+				};
 			}
+
+			if (session.user) {
+				(session.user as { id?: string }).id = token.id;
+			}
+
 			return session;
 		},
 	},

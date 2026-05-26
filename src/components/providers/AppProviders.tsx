@@ -1,8 +1,19 @@
 "use client";
 
+import { SessionProvider, type Session } from "next-auth/react";
 import { type PropsWithChildren } from "react";
+import InvalidSessionHandler from "@/components/InvalidSessionHandler";
 import ToastProvider from "@/components/toast/ToastProvider";
 
-export default function AppProviders({ children }: PropsWithChildren) {
-	return <ToastProvider>{children}</ToastProvider>;
+interface AppProvidersProps extends PropsWithChildren {
+	session: Session | null;
+}
+
+export default function AppProviders({ children, session }: AppProvidersProps) {
+	return (
+		<SessionProvider session={session}>
+			<InvalidSessionHandler />
+			<ToastProvider>{children}</ToastProvider>
+		</SessionProvider>
+	);
 }
