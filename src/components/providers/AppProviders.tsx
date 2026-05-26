@@ -1,6 +1,7 @@
 "use client";
 
-import { SessionProvider, type Session } from "next-auth/react";
+import type { Session } from "next-auth";
+import { SessionProvider } from "next-auth/react";
 import { type PropsWithChildren } from "react";
 import InvalidSessionHandler from "@/components/InvalidSessionHandler";
 import ToastProvider from "@/components/toast/ToastProvider";
