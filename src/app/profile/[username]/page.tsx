@@ -224,7 +224,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 	}));
 
 	return (
-		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-5 sm:py-10 px-2 sm:px-5 relative z-10 selection:bg-cyan-400/20 selection:text-cyan-100">
+		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-5 sm:py-10 px-2 sm:px-5 relative z-10 selection:bg-cyan-400/20 selection:text-cyan-100 overflow-x-hidden">
 			<div className="w-full max-w-7xl rounded-[2rem] border border-neutral-800/90 bg-neutral-950/80 backdrop-blur-xl shadow-[0_40px_120px_rgba(0,0,0,0.55)] overflow-hidden relative">
 				<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_12%,rgba(16,185,129,0.12),transparent_36%),radial-gradient(circle_at_86%_16%,rgba(56,189,248,0.16),transparent_34%),radial-gradient(circle_at_50%_90%,rgba(168,85,247,0.14),transparent_38%)]" />
 
@@ -247,10 +247,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 						</Link>
 					</div>
 
-					<div className="absolute inset-x-4 bottom-4 sm:inset-x-8 sm:bottom-8 z-20">
+					<div className="relative mx-4 mt-14 mb-4 sm:absolute sm:mx-0 sm:mt-0 sm:mb-0 sm:inset-x-8 sm:bottom-8 z-20">
 						<div className="rounded-2xl border border-neutral-700/80 bg-neutral-950/70 backdrop-blur-xl px-4 py-4 sm:px-6 sm:py-5">
 							<div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-								<div className="flex items-end gap-4 sm:gap-5">
+								<div className="flex items-end gap-4 sm:gap-5 min-w-0">
 									<div className="h-20 w-20 sm:h-28 sm:w-28 lg:h-32 lg:w-32 rounded-2xl overflow-hidden border border-neutral-600/80 ring-2 ring-neutral-950/80 shadow-[0_8px_28px_rgba(0,0,0,0.45)] relative shrink-0">
 										<Image
 											src={profilePictureUrl}
@@ -260,9 +260,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 											sizes="(max-width: 640px) 80px, (max-width: 1024px) 112px, 128px"
 										/>
 									</div>
-									<div className="pb-1">
-										<div className="flex flex-wrap items-center gap-2 sm:gap-3">
-											<h1 className="text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white">
+									<div className="pb-1 min-w-0">
+										<div className="flex flex-nowrap sm:flex-wrap items-center gap-2 sm:gap-3 min-w-0">
+											<h1 className="text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white truncate min-w-0 max-w-[calc(100vw-10.5rem)] sm:max-w-none">
 												{targetUser.username}
 											</h1>
 											{targetUser.isAdministrator && (
