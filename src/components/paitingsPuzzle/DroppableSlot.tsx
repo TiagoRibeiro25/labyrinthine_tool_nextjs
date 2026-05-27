@@ -24,11 +24,11 @@ function RemoveButton({ onClick }: { onClick: () => void }) {
 export default function DroppableSlot({
 	slotIndex,
 	paintingName,
-	onClear,
+	onClearAction,
 }: {
 	slotIndex: number;
 	paintingName: string | null;
-	onClear: () => void;
+	onClearAction: () => void;
 }) {
 	const { ref: droppableRef, isDropTarget } = useDroppable({
 		id: getSlotDropId(slotIndex),
@@ -44,7 +44,7 @@ export default function DroppableSlot({
 			{paintingName ? (
 				<DraggablePaitingCard
 					paintingName={paintingName}
-					actions={<RemoveButton onClick={onClear} />}
+					actions={<RemoveButton onClick={onClearAction} />}
 				/>
 			) : (
 				<div className="relative w-full aspect-square rounded-2xl border-2 border-dashed border-neutral-800 bg-neutral-950/20 overflow-hidden flex flex-col items-center justify-center">

@@ -11,26 +11,12 @@ import { useMemo, useState, type ReactNode } from "react";
 import {
 	PAITINGS_PUZZLE_PAINTING_NAMES,
 	PAITINGS_PUZZLE_SLOT_COUNT,
-	PAITINGS_PUZZLE_PAINTINGS_LIST_DROP_ID,
-	PAITINGS_PUZZLE_PAINTINGS_LIST_ITEM_DROP_PREFIX,
 } from "@/constants/paitings-puzzle";
 import { parsePaintingName, parseSlotIndex } from "@/lib/paitings-puzzle";
 import useCoarsePointer from "@/hooks/useCoarsePointer";
-import { useDroppable } from "@dnd-kit/react";
 import DroppableSlot from "./DroppableSlot";
 import DraggablePaitingCard from "./DraggablePaitingCard";
 import PaitingCard from "./PaitingCard";
-
-function PaintingsListRemoveTarget({
-	id,
-	children,
-}: {
-	id: string;
-	children: React.ReactNode;
-}) {
-	const { ref } = useDroppable({ id });
-	return <div ref={(node) => ref(node)}>{children}</div>;
-}
 
 function SlotRowWrapper({ children }: { children: ReactNode }) {
 	return (
@@ -137,10 +123,6 @@ export default function PaitingsSlotsPuzzle() {
 	const [activeDragId, setActiveDragId] = useState<string | null>(null);
 	const [selectedPaintingName, setSelectedPaintingName] = useState<string | null>(null);
 	const isTouchMode = useCoarsePointer();
-	const { ref: paintingsListDroppableRef, isDropTarget: isOverPaintingsList } =
-		useDroppable({
-			id: PAITINGS_PUZZLE_PAINTINGS_LIST_DROP_ID,
-		});
 
 	const availablePaintings = useMemo(() => {
 		const placed = new Set(slots.filter(Boolean) as string[]);
@@ -172,7 +154,7 @@ export default function PaitingsSlotsPuzzle() {
 		setSelectedPaintingName(null);
 	}
 
-	function placeAvailablePainting(paintingName: string) {
+	function placeAvailablePainting(paintingName: string, markAsSelected = true) {
 		const emptyIndex = slots.findIndex((slot) => slot === null);
 		if (emptyIndex === -1) return; // all slots filled => do nothing
 		setSlots((prev) => {
@@ -184,7 +166,9 @@ export default function PaitingsSlotsPuzzle() {
 			next[emptyIndex] = paintingName;
 			return next;
 		});
-		setSelectedPaintingName(paintingName);
+		if (markAsSelected) {
+			setSelectedPaintingName(paintingName);
+		}
 	}
 
 	if (isTouchMode) {
@@ -238,10 +222,7 @@ export default function PaitingsSlotsPuzzle() {
 					})}
 				</SlotRowWrapper>
 
-				<div
-					className={`w-full ${isOverPaintingsList ? "ring-4 ring-emerald-400/20" : ""}`}
-					ref={(node) => paintingsListDroppableRef(node)}
-				>
+				<div className="w-full">
 					<h2 className="text-sm uppercase tracking-[0.14em] font-bold text-neutral-300 mb-3">
 						Paitings
 					</h2>
@@ -287,29 +268,6 @@ export default function PaitingsSlotsPuzzle() {
 		const paintingName = parsePaintingName(event.operation.source?.id);
 		if (!paintingName) return;
 
-		// Dropping into the paintings section should "remove" from the slots.
-		const targetIdString =
-			typeof targetId === "string"
-				? targetId
-				: typeof targetId === "number"
-					? String(targetId)
-					: null;
-		if (
-			targetIdString === PAITINGS_PUZZLE_PAINTINGS_LIST_DROP_ID ||
-			(targetIdString
-				? targetIdString.startsWith(PAITINGS_PUZZLE_PAINTINGS_LIST_ITEM_DROP_PREFIX)
-				: false)
-		) {
-			setSlots((prev) => {
-				const next = [...prev];
-				for (let i = 0; i < next.length; i++) {
-					if (next[i] === paintingName) next[i] = null;
-				}
-				return next;
-			});
-			return;
-		}
-
 		const slotIndex = parseSlotIndex(targetId);
 		if (slotIndex === null) return;
 
@@ -343,16 +301,13 @@ export default function PaitingsSlotsPuzzle() {
 							<DroppableSlot
 								slotIndex={slotIndex}
 								paintingName={slots[slotIndex]}
-								onClear={() => clearSlot(slotIndex)}
+								onClearAction={() => clearSlot(slotIndex)}
 							/>
 						</div>
 					))}
 				</SlotRowWrapper>
 
-				<div
-					className={`w-full ${isOverPaintingsList ? "ring-4 ring-emerald-400/20" : ""}`}
-					ref={(node) => paintingsListDroppableRef(node)}
-				>
+				<div className="w-full">
 					<h2 className="text-sm uppercase tracking-[0.14em] font-bold text-neutral-300 mb-3">
 						Paitings
 					</h2>
@@ -368,13 +323,12 @@ export default function PaitingsSlotsPuzzle() {
 								</p>
 							</div>
 						) : (
-							availablePaintings.map((paintingName, index) => (
-								<PaintingsListRemoveTarget
+							availablePaintings.map((paintingName) => (
+								<DraggablePaitingCard
 									key={paintingName}
-									id={`${PAITINGS_PUZZLE_PAINTINGS_LIST_ITEM_DROP_PREFIX}${index}`}
-								>
-									<DraggablePaitingCard paintingName={paintingName} />
-								</PaintingsListRemoveTarget>
+									paintingName={paintingName}
+									onClick={() => placeAvailablePainting(paintingName, false)}
+								/>
 							))
 						)}
 					</div>

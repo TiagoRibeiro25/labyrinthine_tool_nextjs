@@ -27,8 +27,7 @@ export default function PaitingsPage() {
 				</h1>
 
 				<p className="max-w-2xl mx-auto text-lg text-neutral-400 mb-2 font-medium tracking-wide">
-					Drag paitings and drop them into the 4 empty slots. Use the × button to remove a
-					paiting.
+					Drag or click the paitings to place them in the correct slots.
 				</p>
 
 				<div className="w-full">

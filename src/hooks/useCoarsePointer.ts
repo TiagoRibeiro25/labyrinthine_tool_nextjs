@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
  * making drag-and-drop harder. Used to switch to tap-based controls.
  */
 export default function useCoarsePointer() {
-	const [isCoarse, setIsCoarse] = useState(false);
+	const [isCoarse, setIsCoarse] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
