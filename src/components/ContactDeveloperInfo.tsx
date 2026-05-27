@@ -3,7 +3,7 @@ import { FaDiscord } from "react-icons/fa6";
 
 export default function ContactDeveloperInfo() {
 	return (
-		<div className="w-full max-w-6xl mt-6 rounded-2xl border border-neutral-800 bg-black/40 px-5 py-4 sm:px-6 sm:py-5 text-center sm:text-left">
+		<div className="w-full mt-6 rounded-2xl border border-neutral-800 bg-black/40 px-5 py-4 sm:px-6 sm:py-5 text-center sm:text-left">
 			<div className="flex flex-col sm:flex-row items-center justify-between gap-3">
 				<div>
 					<p className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-500">
