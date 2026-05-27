@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { FaCheck, FaXmark, FaUserXmark } from "react-icons/fa6";
 import { createPortal } from "react-dom";
-import { useApi } from "../hooks/useApi";
-import { useToast } from "../hooks/useToast";
-import { useDisclosure } from "../hooks/useDisclosure";
-import { useOnClickOutside } from "../hooks/useOnClickOutside";
+import { useApi } from "../../hooks/useApi";
+import { useToast } from "../../hooks/useToast";
+import { useDisclosure } from "../../hooks/useDisclosure";
+import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 
 interface ManageFriendButtonProps {
 	requestId: string;

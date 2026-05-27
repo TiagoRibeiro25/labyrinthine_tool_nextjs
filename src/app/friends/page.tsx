@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FaArrowLeft, FaUserGroup } from "react-icons/fa6";
-import ManageFriendButton from "../../components/ManageFriendButton";
+import ManageFriendButton from "../../components/profile/ManageFriendButton";
 import { db } from "../../db";
 import { friendRequests } from "../../db/schema";
 import { authOptions } from "../../lib/auth";

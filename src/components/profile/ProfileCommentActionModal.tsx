@@ -3,7 +3,7 @@
 import { createPortal } from "react-dom";
 import { useRef } from "react";
 import { FaXmark } from "react-icons/fa6";
-import { useOnClickOutside } from "../hooks/useOnClickOutside";
+import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 
 export type ProfileCommentActionModalState =
 	| {

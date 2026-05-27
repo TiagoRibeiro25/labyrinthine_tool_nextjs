@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { FaClockRotateLeft, FaTrashCan } from "react-icons/fa6";
-import { ADMIN_CLEANUP_RETENTION_DAYS } from "../constants/admin";
-import { useApi } from "../hooks/useApi";
-import { useToast } from "../hooks/useToast";
+import { ADMIN_CLEANUP_RETENTION_DAYS } from "../../constants/admin";
+import { useApi } from "../../hooks/useApi";
+import { useToast } from "../../hooks/useToast";
 
 interface CleanupResponse {
 	message: string;

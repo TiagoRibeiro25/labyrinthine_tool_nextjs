@@ -10,11 +10,11 @@ import {
 	PROFILE_COMMENT_MAX_LENGTH as COMMENT_MAX_LENGTH,
 	PROFILE_COMMENT_REPORT_REASON_MAX_LENGTH as REPORT_REASON_MAX_LENGTH,
 	PROFILE_COMMENT_REPORT_REASON_MIN_LENGTH as REPORT_REASON_MIN_LENGTH,
-} from "../constants/profile-comments";
-import { PROFILE_COMMENTS_PAGE_SIZE as COMMENTS_PAGE_SIZE } from "../constants/pagination";
-import { useApi } from "../hooks/useApi";
-import { useToast } from "../hooks/useToast";
-import { getUserAvatarUrl } from "../lib/avatar";
+} from "../../constants/profile-comments";
+import { PROFILE_COMMENTS_PAGE_SIZE as COMMENTS_PAGE_SIZE } from "../../constants/pagination";
+import { useApi } from "../../hooks/useApi";
+import { useToast } from "../../hooks/useToast";
+import { getUserAvatarUrl } from "../../lib/avatar";
 
 type WallComment = {
 	id: string;

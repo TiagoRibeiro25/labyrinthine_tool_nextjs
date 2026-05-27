@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FaFilter, FaLock, FaMagnifyingGlass } from "react-icons/fa6";
-import { type CosmeticItem, allTypes } from "../lib/cosmetics";
+import { type CosmeticItem, allTypes } from "../../lib/cosmetics";
 
 interface MissingCosmeticsListProps {
 	missingByCategory: Record<string, CosmeticItem[]>;

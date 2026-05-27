@@ -6,16 +6,16 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FaXmark } from "react-icons/fa6";
-import { PROFILE_BANNER_OPTIONS } from "../data/profile-banners";
-import { useApi } from "../hooks/useApi";
-import { useOnClickOutside } from "../hooks/useOnClickOutside";
-import { useToast } from "../hooks/useToast";
-import { allCosmetics } from "../lib/cosmetics";
-import { DELETE_ACCOUNT_CONFIRMATION_PHRASE } from "../constants/account";
+import { PROFILE_BANNER_OPTIONS } from "../../data/profile-banners";
+import { useApi } from "../../hooks/useApi";
+import { useOnClickOutside } from "../../hooks/useOnClickOutside";
+import { useToast } from "../../hooks/useToast";
+import { allCosmetics } from "../../lib/cosmetics";
+import { DELETE_ACCOUNT_CONFIRMATION_PHRASE } from "../../constants/account";
 import {
 	CLICK_SPARK_DISABLED_STORAGE_KEY,
 	CLICK_SPARK_PREFERENCE_CHANGED_EVENT,
-} from "../constants/ui";
+} from "../../constants/ui";
 import { AVAILABLE_AVATARS } from "@/constants/profile-avatars";
 
 interface EditProfileModalProps {

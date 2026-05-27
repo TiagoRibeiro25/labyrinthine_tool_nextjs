@@ -3,9 +3,9 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FaArrowLeft, FaShield } from "react-icons/fa6";
-import AdminCleanupSection from "../../components/AdminCleanupSection";
-import AdminReportedCommentsSection from "../../components/AdminReportedCommentsSection";
-import AdminUserManagementSection from "../../components/AdminUserManagementSection";
+import AdminCleanupSection from "../../components/admin/AdminCleanupSection";
+import AdminReportedCommentsSection from "../../components/admin/AdminReportedCommentsSection";
+import AdminUserManagementSection from "../../components/admin/AdminUserManagementSection";
 import { db } from "../../db";
 import {
 	activityEvents,

@@ -5,7 +5,7 @@ import {
 	FaTrophy,
 	FaUserGroup,
 } from "react-icons/fa6";
-import type { AchievementIcon, ProfileAchievement } from "../lib/profile-achievements";
+import type { AchievementIcon, ProfileAchievement } from "../../lib/profile-achievements";
 
 type ProfileAchievementsPanelProps = {
 	achievements: ProfileAchievement[];

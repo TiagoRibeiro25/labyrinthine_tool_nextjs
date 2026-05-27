@@ -11,10 +11,10 @@ import {
 	FaSteam,
 	FaUserGroup,
 } from "react-icons/fa6";
-import EditProfileButton from "../../../components/EditProfileButton";
-import FriendActions from "../../../components/FriendActions";
-import ProfileAchievementsPanel from "../../../components/ProfileAchievementsPanel";
-import ProfileCommentsSection from "../../../components/ProfileCommentsSection";
+import EditProfileButton from "../../../components/profile/EditProfileButton";
+import FriendActions from "../../../components/profile/FriendActions";
+import ProfileAchievementsPanel from "../../../components/profile/ProfileAchievementsPanel";
+import ProfileCommentsSection from "../../../components/profile/ProfileCommentsSection";
 import { getBannerImageById } from "../../../data/profile-banners";
 import { db } from "../../../db";
 import {

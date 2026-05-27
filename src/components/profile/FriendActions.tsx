@@ -4,10 +4,10 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { FaUserPlus, FaUserXmark, FaXmark } from "react-icons/fa6";
 import { createPortal } from "react-dom";
-import { useApi } from "../hooks/useApi";
-import { useToast } from "../hooks/useToast";
-import { useDisclosure } from "../hooks/useDisclosure";
-import { useOnClickOutside } from "../hooks/useOnClickOutside";
+import { useApi } from "../../hooks/useApi";
+import { useToast } from "../../hooks/useToast";
+import { useDisclosure } from "../../hooks/useDisclosure";
+import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 
 type FriendStatus = "none" | "pending_sent" | "pending_received" | "friends";
 

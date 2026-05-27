@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa6";
-import MissingCosmeticsList from "../../../../components/MissingCosmeticsList";
+import MissingCosmeticsList from "../../../../components/profile/MissingCosmeticsList";
 import { db } from "../../../../db";
 import { userCosmetics, users } from "../../../../db/schema";
 import { categories } from "../../../../lib/cosmetics";

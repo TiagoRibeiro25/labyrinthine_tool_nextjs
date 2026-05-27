@@ -12,9 +12,9 @@ import {
 	FaUsers,
 } from "react-icons/fa6";
 import { useDebounce } from "use-debounce";
-import { ADMIN_USERS_LIST_LIMIT } from "../constants/admin";
-import { useApi } from "../hooks/useApi";
-import { useToast } from "../hooks/useToast";
+import { ADMIN_USERS_LIST_LIMIT } from "../../constants/admin";
+import { useApi } from "../../hooks/useApi";
+import { useToast } from "../../hooks/useToast";
 
 export interface AdminManagedUser {
 	id: string;

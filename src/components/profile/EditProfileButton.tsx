@@ -1,6 +1,6 @@
 "use client";
 
-import { useDisclosure } from "../hooks/useDisclosure";
+import { useDisclosure } from "../../hooks/useDisclosure";
 import EditProfileModal from "./EditProfileModal";
 
 interface EditProfileButtonProps {

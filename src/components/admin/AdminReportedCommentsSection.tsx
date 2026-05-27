@@ -4,12 +4,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { FaTriangleExclamation } from "react-icons/fa6";
-import { useApi } from "../hooks/useApi";
-import { useToast } from "../hooks/useToast";
+import { useApi } from "../../hooks/useApi";
+import { useToast } from "../../hooks/useToast";
 import type {
 	ReportedCommentRow,
 	ReportedCommentsPagination,
-} from "../lib/admin-reported-comments";
+} from "../../lib/admin-reported-comments";
 
 interface AdminReportedCommentsSectionProps {
 	items: ReportedCommentRow[];
