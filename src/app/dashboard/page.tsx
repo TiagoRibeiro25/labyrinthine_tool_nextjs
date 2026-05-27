@@ -138,7 +138,7 @@ export default async function DashboardPage() {
 			<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,rgba(16,185,129,0.12),transparent_36%),radial-gradient(circle_at_86%_18%,rgba(56,189,248,0.16),transparent_34%),radial-gradient(circle_at_45%_92%,rgba(168,85,247,0.14),transparent_38%)]" />
 
 			<div className="relative w-full max-w-7xl mx-auto">
-				<div className="rounded-[2rem] border border-neutral-800/90 bg-neutral-950/75 backdrop-blur-xl shadow-[0_40px_120px_rgba(0,0,0,0.55)] overflow-hidden">
+				<div className="rounded-4xl border border-neutral-800/90 bg-neutral-950/75 backdrop-blur-xl shadow-[0_40px_120px_rgba(0,0,0,0.55)] overflow-hidden">
 					<header className="relative px-4 sm:px-8 pt-6 sm:pt-8 pb-5 border-b border-neutral-800/80">
 						<div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
 							<div className="min-w-0">
