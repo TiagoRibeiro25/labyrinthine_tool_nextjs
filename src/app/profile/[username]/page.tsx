@@ -224,235 +224,175 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 	}));
 
 	return (
-		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-6 sm:py-12 px-3 sm:px-6 relative z-10 selection:bg-neutral-800/50 selection:text-neutral-200">
-			<div className="w-full max-w-5xl rounded-3xl bg-[linear-gradient(145deg,rgba(9,11,13,0.95),rgba(18,23,29,0.9))] backdrop-blur-md border border-neutral-800/80 shadow-[0_24px_80px_rgba(0,0,0,0.45)] relative overflow-hidden flex flex-col">
-				<Link
-					href="/dashboard"
-					className="absolute left-6 top-6 sm:left-10 sm:top-8 z-20 inline-flex items-center gap-2 rounded-full border border-neutral-700 bg-black/35 px-4 py-2 text-[11px] uppercase tracking-[0.16em] font-semibold text-neutral-300 hover:border-neutral-500 hover:text-neutral-100 transition-colors"
-				>
-					&larr; Back to Dashboard
-				</Link>
+		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-5 sm:py-10 px-2 sm:px-5 relative z-10 selection:bg-cyan-400/20 selection:text-cyan-100">
+			<div className="w-full max-w-7xl rounded-[2rem] border border-neutral-800/90 bg-neutral-950/80 backdrop-blur-xl shadow-[0_40px_120px_rgba(0,0,0,0.55)] overflow-hidden relative">
+				<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_12%,rgba(16,185,129,0.12),transparent_36%),radial-gradient(circle_at_86%_16%,rgba(56,189,248,0.16),transparent_34%),radial-gradient(circle_at_50%_90%,rgba(168,85,247,0.14),transparent_38%)]" />
 
-				{/* --- HEADER BANNER --- */}
-				<div className="h-36 sm:h-56 border-b border-neutral-800 relative overflow-hidden bg-neutral-950">
+				<section className="relative min-h-[280px] sm:min-h-[340px] border-b border-neutral-800/80">
 					<Image
 						src={profileBannerUrl}
 						alt={`${targetUser.username}'s banner`}
 						fill
 						className="object-cover object-center"
-						sizes="(max-width: 640px) 100vw, 1024px"
+						sizes="(max-width: 640px) 100vw, 1280px"
 					/>
-					<div className="absolute inset-0 bg-linear-to-b from-black/20 via-black/35 to-black/85" />
-				</div>
+					<div className="absolute inset-0 bg-linear-to-b from-black/15 via-black/40 to-neutral-950/95" />
 
-				{/* --- PROFILE CONTENT --- */}
-				<div className="px-4 sm:px-10 pb-8 sm:pb-10 -mt-14 sm:-mt-20 relative z-10 flex flex-col sm:flex-row gap-6 sm:gap-8">
-					{/* Left Column: Avatar & Actions */}
-					<div className="flex flex-col items-center sm:items-start shrink-0">
-						{/* Avatar */}
-						<div className="w-32 h-32 sm:w-40 sm:h-40 border-4 border-black shadow-2xl bg-neutral-900 overflow-hidden rounded-sm relative">
-							<Image
-								src={profilePictureUrl}
-								alt={`${targetUser.username}'s Avatar`}
-								fill
-								className="object-cover"
-								sizes="(max-width: 640px) 128px, 160px"
-							/>
-						</div>
-
-						{/* Actions */}
-						<div className="w-full mt-4 sm:mt-6 flex flex-col gap-2 sm:gap-3">
-							{isOwnProfile ? (
-								<EditProfileButton
-									initialData={{
-										bio: targetUser.bio,
-										discordUsername: targetUser.discordUsername,
-										discordAvatarUrl: targetUser.discordAvatarUrl,
-										useDiscordAvatar: targetUser.useDiscordAvatar,
-										steamUsername: targetUser.steamUsername,
-										steamAvatarUrl: targetUser.steamAvatarUrl,
-										useSteamAvatar: targetUser.useSteamAvatar,
-										steamProfileUrl: targetUser.steamProfileUrl,
-										profileCommentVisibility,
-										profilePictureId: targetUser.profilePictureId,
-										profileBannerId: targetUser.profileBannerId,
-										favoriteCosmeticId: targetUser.favoriteCosmeticId,
-									}}
-								/>
-							) : currentUserId ? (
-								<>
-									<FriendActions
-										targetUsername={targetUser.username}
-										initialStatus={friendStatus}
-										initialRequestId={activeRequestId}
-									/>
-									{friendStatus === "friends" && (
-										<Link
-											href={`/compare/${targetUser.username}`}
-											className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-sm bg-neutral-900/50 text-neutral-300 font-bold text-xs uppercase tracking-widest border border-neutral-700 hover:bg-neutral-800 hover:text-white hover:border-neutral-500 transition-all duration-300"
-										>
-											Compare Collections
-										</Link>
-									)}
-								</>
-							) : (
-								<Link
-									href="/login"
-									className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-sm bg-neutral-900/50 text-neutral-400 font-bold text-xs uppercase tracking-widest border border-neutral-800 hover:bg-neutral-800 hover:text-neutral-200 transition-all duration-300"
-								>
-									Login to Add Friend
-								</Link>
-							)}
-						</div>
+					<div className="absolute left-4 top-4 sm:left-8 sm:top-8 z-20">
+						<Link
+							href="/dashboard"
+							className="inline-flex items-center gap-2 rounded-full border border-neutral-600/90 bg-black/55 px-4 py-2 text-[11px] uppercase tracking-[0.16em] font-semibold text-neutral-200 hover:border-cyan-500/60 hover:text-cyan-100 transition-colors"
+						>
+							&larr; Back to Dashboard
+						</Link>
 					</div>
 
-					{/* Right Column: Info & Stats */}
-					<div className="flex-1 pt-2 sm:pt-20 flex flex-col text-center sm:text-left">
-						{/* Username & Badges */}
-						<div className="flex flex-col sm:flex-row items-center sm:items-end gap-2 sm:gap-3 mb-4 sm:mb-6">
-							<h1 className="text-3xl sm:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-100 to-neutral-400 uppercase leading-none">
-								{targetUser.username}
-							</h1>
-							{targetUser.isAdministrator && (
-								<span className="px-3 py-1 bg-red-900 text-red-100 text-[10px] font-black uppercase tracking-widest border border-red-500 rounded-sm mb-1 shadow-[0_0_10px_rgba(220,38,38,0.3)]">
-									Admin
-								</span>
-							)}
+					<div className="absolute inset-x-4 bottom-4 sm:inset-x-8 sm:bottom-8 z-20">
+						<div className="rounded-2xl border border-neutral-700/80 bg-neutral-950/70 backdrop-blur-xl px-4 py-4 sm:px-6 sm:py-5">
+							<div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+								<div className="flex items-end gap-4 sm:gap-5">
+									<div className="h-20 w-20 sm:h-28 sm:w-28 lg:h-32 lg:w-32 rounded-2xl overflow-hidden border border-neutral-600/80 ring-2 ring-neutral-950/80 shadow-[0_8px_28px_rgba(0,0,0,0.45)] relative shrink-0">
+										<Image
+											src={profilePictureUrl}
+											alt={`${targetUser.username}'s avatar`}
+											fill
+											className="object-cover"
+											sizes="(max-width: 640px) 80px, (max-width: 1024px) 112px, 128px"
+										/>
+									</div>
+									<div className="pb-1">
+										<div className="flex flex-wrap items-center gap-2 sm:gap-3">
+											<h1 className="text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white">
+												{targetUser.username}
+											</h1>
+											{targetUser.isAdministrator && (
+												<span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.14em] border border-red-500/70 bg-red-950/70 text-red-100">
+													Admin
+												</span>
+											)}
+										</div>
+										<p className="mt-1 text-xs sm:text-sm text-neutral-400 font-medium">
+											Surviving the fog since {targetUser.createdAt.toLocaleDateString()}
+										</p>
+									</div>
+								</div>
+								<div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+									<div className="rounded-xl border border-neutral-700/80 bg-neutral-900/70 px-3 py-2 text-center">
+										<p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-bold">
+											Friends
+										</p>
+										<p className="text-lg font-black text-white">{friendsCount}</p>
+									</div>
+									<div className="rounded-xl border border-neutral-700/80 bg-neutral-900/70 px-3 py-2 text-center">
+										<p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-bold">
+											Unlocked
+										</p>
+										<p className="text-lg font-black text-emerald-400">{unlockedCount}</p>
+									</div>
+									<div className="rounded-xl border border-neutral-700/80 bg-neutral-900/70 px-3 py-2 text-center">
+										<p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-bold">
+											Categories
+										</p>
+										<p className="text-lg font-black text-cyan-300">
+											{completedCategoryCount}/{totalCategoryCount}
+										</p>
+									</div>
+									<div className="rounded-xl border border-neutral-700/80 bg-neutral-900/70 px-3 py-2 text-center">
+										<p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-bold">
+											Achievements
+										</p>
+										<p className="text-lg font-black text-amber-300">
+											{unlockedAchievementsCount}/{achievements.length}
+										</p>
+									</div>
+								</div>
+							</div>
 						</div>
+					</div>
+				</section>
 
-						{/* Bio / Member Since */}
-						<div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-8 mb-5 sm:mb-8">
-							<div className="space-y-2">
-								<p className="text-sm text-neutral-500 font-medium tracking-wide">
-									Surviving the fog since {targetUser.createdAt.toLocaleDateString()}
+				<section className="relative z-10 p-4 sm:p-8 lg:p-10">
+					<div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_350px] gap-6 lg:gap-8">
+						<div className="space-y-6">
+							<div className="rounded-2xl border border-neutral-800 bg-neutral-900/35 p-4 sm:p-6">
+								<p className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.2em] mb-2">
+									About
 								</p>
-								<p className="max-w-2xl text-sm text-neutral-300 font-medium leading-relaxed">
+								<p className="text-sm sm:text-[15px] text-neutral-200 leading-relaxed max-w-3xl">
 									{targetUser.bio || "No survivor bio yet. Edit profile to add one."}
 								</p>
 							</div>
-							<Link
-								href={`/profile/${targetUser.username}/friends`}
-								className="flex items-center gap-2 text-sm text-neutral-400 font-bold tracking-widest uppercase bg-neutral-900/50 px-3 py-1 rounded-sm border border-neutral-800 hover:bg-neutral-800/60 hover:border-neutral-500 transition-all duration-300"
-							>
-								<FaUserGroup className="text-neutral-500" />
-								{friendsCount} {friendsCount === 1 ? "Friend" : "Friends"}
-							</Link>
-						</div>
 
-						{/* Social Links Panel */}
-						<div className="bg-black/50 border border-neutral-800 p-4 sm:p-5 rounded-sm">
-							<h3 className="text-xs font-bold text-neutral-600 uppercase tracking-widest mb-4 border-b border-neutral-800/50 pb-2">
-								Connections
-							</h3>
-							<div className="space-y-2 sm:space-y-3">
-								{/* Steam Link */}
-								{targetUser.steamProfileUrl ? (
-									<a
-										href={targetUser.steamProfileUrl}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="flex items-center gap-3 text-neutral-300 hover:text-white transition-colors group w-fit"
-									>
-										<FaSteam className="text-xl text-neutral-500 group-hover:text-blue-400 transition-colors" />
-										<span className="text-sm font-medium tracking-wide truncate">
-											{targetUser.steamUsername || "Steam Profile"}
-										</span>
-									</a>
-								) : (
-									<div className="flex items-center gap-3 text-neutral-600">
-										<FaSteam className="text-xl opacity-50" />
-										<span className="text-sm font-medium tracking-wide italic">
-											Not connected
-										</span>
-									</div>
-								)}
-
-								{/* Discord Username */}
-								{targetUser.discordUsername ? (
-									<div className="flex items-center gap-3 text-neutral-300">
-										<FaDiscord className="text-xl text-[#5865F2]" />
-										<span className="text-sm font-medium tracking-wide select-all">
-											{targetUser.discordUsername}
-										</span>
-									</div>
-								) : (
-									<div className="flex items-center gap-3 text-neutral-600">
-										<FaDiscord className="text-xl opacity-50" />
-										<span className="text-sm font-medium tracking-wide italic">
-											Not connected
-										</span>
-									</div>
-								)}
-							</div>
-						</div>
-
-						{/* Cosmetics Preview Panel */}
-						<div className="mt-6 sm:mt-8 bg-black/50 border border-neutral-800 p-4 sm:p-5 rounded-sm">
-							<div className="flex justify-between items-end border-b border-neutral-800/50 pb-2 mb-4">
-								<h3 className="text-xs font-bold text-neutral-600 uppercase tracking-widest flex items-center gap-2">
-									<FaShirt /> Collection
-								</h3>
-								<span className="text-xs font-bold text-emerald-500 tracking-widest">
-									{unlockedCount} Unlocked
-								</span>
-							</div>
-
-							<Link
-								href={`/profile/${targetUser.username}/missing`}
-								className="w-full flex items-center justify-between p-3 sm:p-4 bg-neutral-900/30 border border-neutral-800 rounded-sm hover:bg-neutral-800/60 hover:border-neutral-500 transition-all duration-300 group"
-							>
-								<div className="flex flex-col text-left">
-									<span className="text-sm font-bold text-neutral-200 uppercase tracking-widest group-hover:text-white transition-colors">
-										Missing Cosmetics
-									</span>
-									<span className="text-xs text-neutral-500 font-medium italic mt-1">
-										View items yet to be discovered
+							<div className="rounded-2xl border border-neutral-800 bg-neutral-900/35 p-4 sm:p-6">
+								<div className="flex items-center justify-between gap-3 mb-4">
+									<h3 className="text-[11px] font-bold text-neutral-500 uppercase tracking-[0.2em] flex items-center gap-2">
+										<FaShirt /> Collection
+									</h3>
+									<span className="text-[11px] font-bold text-emerald-400 uppercase tracking-[0.17em]">
+										{unlockedCount} Unlocked
 									</span>
 								</div>
-								<span className="text-neutral-600 group-hover:translate-x-1 group-hover:text-neutral-400 transition-all">
-									&rarr;
-								</span>
-							</Link>
 
-							<div className="mt-4 p-3 sm:p-4 bg-neutral-900/30 border border-neutral-800 rounded-sm">
-								<p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-2">
-									Favorite Cosmetic
-								</p>
-								<p className="text-sm font-bold text-neutral-200 uppercase tracking-wide">
-									{favoriteCosmetic?.name || "No favorite cosmetic selected"}
-								</p>
+								<div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+									<Link
+										href={`/profile/${targetUser.username}/missing`}
+										className="rounded-xl border border-neutral-700 bg-neutral-900/65 px-4 py-3 hover:border-cyan-500/60 hover:bg-neutral-800/70 transition-colors group"
+									>
+										<p className="text-sm font-bold uppercase tracking-[0.13em] text-neutral-100">
+											Missing Cosmetics
+										</p>
+										<p className="text-xs text-neutral-500 mt-1">
+											View items yet to be discovered
+										</p>
+										<p className="text-xs text-cyan-300 mt-3 group-hover:translate-x-1 transition-transform">
+											Open collection gap &rarr;
+										</p>
+									</Link>
+									<div className="rounded-xl border border-neutral-700 bg-neutral-900/65 px-4 py-3">
+										<p className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500">
+											Favorite Cosmetic
+										</p>
+										<p className="text-sm font-bold uppercase tracking-[0.12em] text-neutral-100 mt-2">
+											{favoriteCosmetic?.name || "No favorite cosmetic selected"}
+										</p>
+									</div>
+								</div>
 							</div>
 
-							<div className="mt-4 p-3 sm:p-4 bg-neutral-900/30 border border-neutral-800 rounded-sm">
-								<p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-3">
+							<div className="rounded-2xl border border-neutral-800 bg-neutral-900/35 p-4 sm:p-6">
+								<p className="text-[11px] font-bold text-neutral-500 uppercase tracking-[0.2em] mb-4">
 									Puzzle Records
 								</p>
-								<div className="space-y-3">
-									<div className="flex items-center justify-between gap-3">
-										<div className="flex items-center gap-2 text-neutral-300">
-											<FaLightbulb className="text-amber-400" />
-											<span className="text-xs font-bold uppercase tracking-widest">
-												Lights Out
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+									<div className="rounded-xl border border-neutral-700 bg-neutral-900/65 px-4 py-3">
+										<div className="flex items-center justify-between gap-3">
+											<div className="flex items-center gap-2 text-neutral-100">
+												<FaLightbulb className="text-amber-400" />
+												<span className="text-xs font-bold uppercase tracking-[0.14em]">
+													Lights Out
+												</span>
+											</div>
+											<span className="text-xs text-neutral-300 font-semibold">
+												{lightsOutBest
+													? `${formatDuration(lightsOutBest.durationMs)} (${lightsOutBest.moves} moves)`
+													: "No record"}
 											</span>
 										</div>
-										<span className="text-xs font-bold text-neutral-200 uppercase tracking-widest">
-											{lightsOutBest
-												? `${formatDuration(lightsOutBest.durationMs)} (${lightsOutBest.moves} moves)`
-												: "No record"}
-										</span>
 									</div>
-									<div className="flex items-center justify-between gap-3">
-										<div className="flex items-center gap-2 text-neutral-300">
-											<FaPuzzlePiece className="text-sky-400" />
-											<span className="text-xs font-bold uppercase tracking-widest">
-												Slider Puzzle
+									<div className="rounded-xl border border-neutral-700 bg-neutral-900/65 px-4 py-3">
+										<div className="flex items-center justify-between gap-3">
+											<div className="flex items-center gap-2 text-neutral-100">
+												<FaPuzzlePiece className="text-sky-400" />
+												<span className="text-xs font-bold uppercase tracking-[0.14em]">
+													Slider Puzzle
+												</span>
+											</div>
+											<span className="text-xs text-neutral-300 font-semibold">
+												{sliderPuzzleBest
+													? `${formatDuration(sliderPuzzleBest.durationMs)} (${sliderPuzzleBest.moves} moves)`
+													: "No record"}
 											</span>
 										</div>
-										<span className="text-xs font-bold text-neutral-200 uppercase tracking-widest">
-											{sliderPuzzleBest
-												? `${formatDuration(sliderPuzzleBest.durationMs)} (${sliderPuzzleBest.moves} moves)`
-												: "No record"}
-										</span>
 									</div>
 								</div>
 							</div>
@@ -465,14 +405,110 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 							/>
 						</div>
 
-						<ProfileCommentsSection
-							profileUsername={targetUser.username}
-							isOwnProfile={isOwnProfile}
-							isLoggedIn={Boolean(currentUserId)}
-							historyItems={commentHistory}
-						/>
+						<aside className="space-y-6">
+							<div className="rounded-2xl border border-neutral-800 bg-neutral-900/35 p-4 sm:p-5">
+								<div className="space-y-3">
+									<Link
+										href={`/profile/${targetUser.username}/friends`}
+										className="inline-flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-900/70 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-neutral-200 hover:border-cyan-500/60 hover:text-cyan-200 transition-colors"
+									>
+										<FaUserGroup className="text-neutral-400" />
+										View Friends
+									</Link>
+									<div className="flex flex-col gap-2.5">
+										{isOwnProfile ? (
+											<EditProfileButton
+												initialData={{
+													bio: targetUser.bio,
+													discordUsername: targetUser.discordUsername,
+													discordAvatarUrl: targetUser.discordAvatarUrl,
+													useDiscordAvatar: targetUser.useDiscordAvatar,
+													steamUsername: targetUser.steamUsername,
+													steamAvatarUrl: targetUser.steamAvatarUrl,
+													useSteamAvatar: targetUser.useSteamAvatar,
+													steamProfileUrl: targetUser.steamProfileUrl,
+													profileCommentVisibility,
+													profilePictureId: targetUser.profilePictureId,
+													profileBannerId: targetUser.profileBannerId,
+													favoriteCosmeticId: targetUser.favoriteCosmeticId,
+												}}
+											/>
+										) : currentUserId ? (
+											<>
+												<FriendActions
+													targetUsername={targetUser.username}
+													initialStatus={friendStatus}
+													initialRequestId={activeRequestId}
+												/>
+												{friendStatus === "friends" && (
+													<Link
+														href={`/compare/${targetUser.username}`}
+														className="w-full flex items-center justify-center px-4 py-2.5 rounded-lg border border-neutral-700 bg-neutral-900/70 text-neutral-100 text-xs font-bold uppercase tracking-[0.14em] hover:border-cyan-500/60 hover:text-cyan-200 transition-colors"
+													>
+														Compare Collections
+													</Link>
+												)}
+											</>
+										) : (
+											<Link
+												href="/login"
+												className="w-full flex items-center justify-center px-4 py-2.5 rounded-lg border border-neutral-700 bg-neutral-900/60 text-neutral-300 text-xs font-bold uppercase tracking-[0.14em] hover:border-cyan-500/60 hover:text-cyan-200 transition-colors"
+											>
+												Login to Add Friend
+											</Link>
+										)}
+									</div>
+								</div>
+							</div>
+
+							<div className="rounded-2xl border border-neutral-800 bg-neutral-900/35 p-4 sm:p-5">
+								<h3 className="text-[11px] font-bold text-neutral-500 uppercase tracking-[0.2em] mb-4">
+									Connections
+								</h3>
+								<div className="space-y-3">
+									{targetUser.steamProfileUrl ? (
+										<a
+											href={targetUser.steamProfileUrl}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="flex items-center gap-3 rounded-lg border border-neutral-700 bg-neutral-900/65 px-3 py-2 text-neutral-200 hover:border-blue-500/60 hover:text-white transition-colors"
+										>
+											<FaSteam className="text-lg text-neutral-400" />
+											<span className="text-sm truncate">
+												{targetUser.steamUsername || "Steam Profile"}
+											</span>
+										</a>
+									) : (
+										<div className="flex items-center gap-3 rounded-lg border border-neutral-800 bg-neutral-900/40 px-3 py-2 text-neutral-500">
+											<FaSteam className="text-lg opacity-60" />
+											<span className="text-sm italic">Steam not connected</span>
+										</div>
+									)}
+									{targetUser.discordUsername ? (
+										<div className="flex items-center gap-3 rounded-lg border border-neutral-700 bg-neutral-900/65 px-3 py-2 text-neutral-200">
+											<FaDiscord className="text-lg text-[#5865F2]" />
+											<span className="text-sm select-all truncate">
+												{targetUser.discordUsername}
+											</span>
+										</div>
+									) : (
+										<div className="flex items-center gap-3 rounded-lg border border-neutral-800 bg-neutral-900/40 px-3 py-2 text-neutral-500">
+											<FaDiscord className="text-lg opacity-60" />
+											<span className="text-sm italic">Discord not connected</span>
+										</div>
+									)}
+								</div>
+							</div>
+						</aside>
 					</div>
-				</div>
+
+					<ProfileCommentsSection
+						profileUsername={targetUser.username}
+						isOwnProfile={isOwnProfile}
+						isLoggedIn={Boolean(currentUserId)}
+						historyItems={commentHistory}
+					/>
+				</section>
 			</div>
 		</main>
 	);

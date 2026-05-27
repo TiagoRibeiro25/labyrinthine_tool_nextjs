@@ -418,10 +418,10 @@ export default function ProfileCommentsSection({
 
 	return (
 		<>
-			<section className="mt-6 sm:mt-8 bg-black/50 border border-neutral-800 px-3 py-4 sm:p-5 rounded-none sm:rounded-sm -mx-4 sm:mx-0 text-left">
+			<section className="mt-6 sm:mt-8 bg-black/45 border border-neutral-800 px-3 py-4 sm:p-5 rounded-none sm:rounded-xl -mx-4 sm:mx-0 text-left">
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-800/60 pb-3 mb-4">
 					<div>
-						<h3 className="text-xs font-bold text-neutral-600 uppercase tracking-widest">
+						<h3 className="text-xs font-bold text-neutral-500 uppercase tracking-[0.18em]">
 							Profile Wall
 						</h3>
 						<p className="text-[11px] text-neutral-500 mt-1">{wallPolicyLabel}</p>
@@ -434,7 +434,7 @@ export default function ProfileCommentsSection({
 								setPage(1);
 								setSort(event.target.value as "newest" | "top");
 							}}
-							className="bg-neutral-900 border border-neutral-700 text-neutral-200 px-2 py-1 rounded-sm"
+							className="bg-neutral-900 border border-neutral-700 text-neutral-200 px-2 py-1 rounded-md"
 						>
 							<option value="newest">Newest</option>
 							<option value="top">Top liked</option>
@@ -450,7 +450,7 @@ export default function ProfileCommentsSection({
 							maxLength={COMMENT_MAX_LENGTH}
 							rows={3}
 							placeholder="Leave a note on this profile wall..."
-							className="w-full resize-none bg-neutral-900/60 border border-neutral-800 text-neutral-100 px-3 sm:px-4 py-3 rounded-sm focus:outline-none focus:border-neutral-500"
+							className="w-full resize-none bg-neutral-900/60 border border-neutral-800 text-neutral-100 px-3 sm:px-4 py-3 rounded-lg focus:outline-none focus:border-neutral-500"
 						/>
 						<div className="flex items-center justify-between">
 							<p className="text-[10px] text-neutral-600 font-bold uppercase tracking-widest">
@@ -459,7 +459,7 @@ export default function ProfileCommentsSection({
 							<button
 								type="submit"
 								disabled={createCommentLoading}
-								className="px-4 py-2 rounded-sm bg-neutral-800 text-neutral-100 text-xs font-bold uppercase tracking-widest border border-neutral-600 hover:bg-neutral-700 hover:border-neutral-400 disabled:opacity-50 cursor-pointer"
+								className="px-4 py-2 rounded-lg bg-neutral-800 text-neutral-100 text-xs font-bold uppercase tracking-widest border border-neutral-600 hover:bg-neutral-700 hover:border-neutral-400 disabled:opacity-50 cursor-pointer"
 							>
 								{createCommentLoading ? "Posting..." : "Post Comment"}
 							</button>
@@ -499,7 +499,7 @@ export default function ProfileCommentsSection({
 							return (
 								<article
 									key={comment.id}
-									className={`p-3 sm:p-4 rounded-sm border ${
+									className={`p-3 sm:p-4 rounded-lg border ${
 										comment.isPinned
 											? "bg-amber-950/15 border-amber-800/60"
 											: "bg-neutral-900/30 border-neutral-800"
@@ -507,7 +507,7 @@ export default function ProfileCommentsSection({
 								>
 									<div className="flex items-start justify-between gap-3">
 										<div className="flex items-start gap-3 min-w-0">
-											<div className="w-9 h-9 rounded-sm overflow-hidden border border-neutral-700 relative shrink-0">
+											<div className="w-9 h-9 rounded-md overflow-hidden border border-neutral-700 relative shrink-0">
 												<Image
 													src={avatarUrl}
 													alt={`${comment.author.username} avatar`}
@@ -545,7 +545,7 @@ export default function ProfileCommentsSection({
 										<div className="flex items-center gap-2 shrink-0">
 											<button
 												onClick={() => void handleLikeToggle(comment)}
-												className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 border rounded-sm cursor-pointer ${
+												className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 border rounded-md cursor-pointer ${
 													comment.currentUserLiked
 														? "text-emerald-300 border-emerald-700"
 														: "text-neutral-400 border-neutral-700"
@@ -564,7 +564,7 @@ export default function ProfileCommentsSection({
 										{comment.permissions.canEdit && (
 											<button
 												onClick={() => openEditModal(comment)}
-												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-neutral-700 text-neutral-400 rounded-sm hover:text-neutral-200 cursor-pointer"
+												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-neutral-700 text-neutral-400 rounded-md hover:text-neutral-200 cursor-pointer"
 											>
 												Edit
 											</button>
@@ -572,7 +572,7 @@ export default function ProfileCommentsSection({
 										{comment.permissions.canDelete && (
 											<button
 												onClick={() => openDeleteModal(comment.id)}
-												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-red-800 text-red-300 rounded-sm hover:text-red-200 cursor-pointer"
+												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-red-800 text-red-300 rounded-md hover:text-red-200 cursor-pointer"
 											>
 												Delete
 											</button>
@@ -580,7 +580,7 @@ export default function ProfileCommentsSection({
 										{comment.permissions.canPin && (
 											<button
 												onClick={() => void handlePin(comment.id)}
-												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-amber-800 text-amber-300 rounded-sm hover:text-amber-200 cursor-pointer"
+												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-amber-800 text-amber-300 rounded-md hover:text-amber-200 cursor-pointer"
 											>
 												{comment.isPinned ? "Unpin" : "Pin"}
 											</button>
@@ -588,7 +588,7 @@ export default function ProfileCommentsSection({
 										{comment.permissions.canHide && (
 											<button
 												onClick={() => void handleHideToggle(comment)}
-												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-neutral-700 text-neutral-300 rounded-sm hover:text-white cursor-pointer"
+												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-neutral-700 text-neutral-300 rounded-md hover:text-white cursor-pointer"
 											>
 												{comment.isHidden ? "Unhide" : "Hide"}
 											</button>
@@ -596,7 +596,7 @@ export default function ProfileCommentsSection({
 										{comment.permissions.canReport && (
 											<button
 												onClick={() => openReportModal(comment.id)}
-												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-neutral-700 text-neutral-400 rounded-sm hover:text-neutral-200 cursor-pointer"
+												className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-neutral-700 text-neutral-400 rounded-md hover:text-neutral-200 cursor-pointer"
 											>
 												Report
 											</button>
@@ -616,14 +616,14 @@ export default function ProfileCommentsSection({
 						<button
 							onClick={() => setPage((prev) => Math.max(1, prev - 1))}
 							disabled={!pagination.hasPreviousPage || commentsLoading}
-							className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest border border-neutral-700 text-neutral-300 rounded-sm disabled:opacity-40"
+							className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest border border-neutral-700 text-neutral-300 rounded-md disabled:opacity-40"
 						>
 							Prev
 						</button>
 						<button
 							onClick={() => setPage((prev) => prev + 1)}
 							disabled={!pagination.hasNextPage || commentsLoading}
-							className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest border border-neutral-700 text-neutral-300 rounded-sm disabled:opacity-40"
+							className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest border border-neutral-700 text-neutral-300 rounded-md disabled:opacity-40"
 						>
 							Next
 						</button>
@@ -643,7 +643,7 @@ export default function ProfileCommentsSection({
 							{historyItems.map((item) => (
 								<li
 									key={item.id}
-									className="text-xs text-neutral-400 border border-neutral-800 bg-neutral-900/30 rounded-sm p-2"
+									className="text-xs text-neutral-400 border border-neutral-800 bg-neutral-900/30 rounded-lg p-2.5"
 								>
 									<p className="text-neutral-300 line-clamp-2">{item.content}</p>
 									<p className="mt-1 text-[10px] uppercase tracking-widest text-neutral-600">

@@ -38,9 +38,9 @@ export default function ProfileAchievementsPanel({
 	totalCategoryCount,
 }: ProfileAchievementsPanelProps) {
 	return (
-		<div className="mt-4 p-4 bg-neutral-900/30 border border-neutral-800 rounded-sm">
+		<div className="mt-4 p-4 bg-neutral-900/35 border border-neutral-800 rounded-xl">
 			<div className="flex items-center justify-between gap-3 mb-3">
-				<p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">
+				<p className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.18em]">
 					Achievements
 				</p>
 				<span className="text-[10px] font-bold uppercase tracking-widest text-amber-400">
@@ -51,7 +51,7 @@ export default function ProfileAchievementsPanel({
 				{achievements.map((achievement) => (
 					<div
 						key={achievement.id}
-						className={`p-3 border rounded-sm transition-colors ${
+						className={`p-3 border rounded-lg transition-colors ${
 							achievement.unlocked
 								? "bg-amber-900/20 border-amber-700/60"
 								: "bg-neutral-900/40 border-neutral-800"
