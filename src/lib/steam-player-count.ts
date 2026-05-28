@@ -8,6 +8,19 @@ export type PlayerActivityLevel = {
 	tier: ActivityTier;
 };
 
+type SteamPlayerCountResponse = {
+	response?: {
+		player_count?: number;
+		result?: number;
+	};
+};
+
+type SteamFetchOptions = RequestInit & {
+	next?: {
+		revalidate?: number;
+	};
+};
+
 export function getPlayerActivityLevel(count: number): PlayerActivityLevel {
 	if (count >= 500) {
 		return {
@@ -37,16 +50,35 @@ export function getPlayerActivityLevel(count: number): PlayerActivityLevel {
 	};
 }
 
+function parseSteamPlayerCount(data: SteamPlayerCountResponse): number | null {
+	const result = data.response?.result;
+	const count = data.response?.player_count;
+	if (typeof result === "number" && result !== 1) return null;
+	if (typeof count !== "number" || count < 0) return null;
+	return count;
+}
+
+async function fetchSteamPlayerCount(options?: SteamFetchOptions): Promise<number | null> {
+	const res = await fetch(STEAM_CURRENT_PLAYERS_URL, options);
+	if (!res.ok) return null;
+
+	const data = (await res.json()) as SteamPlayerCountResponse;
+	return parseSteamPlayerCount(data);
+}
+
 export async function getSteamCurrentPlayerCount(): Promise<number | null> {
 	try {
-		const res = await fetch(STEAM_CURRENT_PLAYERS_URL, { next: { revalidate: 60 } });
-		if (!res.ok) return null;
+		const cachedCount = await fetchSteamPlayerCount({ next: { revalidate: 60 } });
+		if (cachedCount === null) {
+			return await fetchSteamPlayerCount({ cache: "no-store" });
+		}
 
-		const data = (await res.json()) as { response?: { player_count?: number } };
-		const count = data.response?.player_count;
-		if (typeof count !== "number" || count < 0) return null;
+		if (cachedCount === 0) {
+			const freshCount = await fetchSteamPlayerCount({ cache: "no-store" });
+			return freshCount ?? cachedCount;
+		}
 
-		return count;
+		return cachedCount;
 	} catch {
 		return null;
 	}
