@@ -40,30 +40,34 @@ export default async function DashboardPage() {
 		redirect("/login");
 	}
 
-	const [friendsResult, unlockedCosmeticsResult, pendingIncomingResult] = await Promise.all([
-		db
-			.select({ id: friendRequests.id })
-			.from(friendRequests)
-			.where(
-				and(
-					or(
-						eq(friendRequests.senderId, targetUser.id),
-						eq(friendRequests.receiverId, targetUser.id)
-					),
-					eq(friendRequests.status, "accepted")
-				)
-			),
-		db
-			.select({ id: userCosmetics.id })
-			.from(userCosmetics)
-			.where(eq(userCosmetics.userId, targetUser.id)),
-		db
-			.select({ id: friendRequests.id })
-			.from(friendRequests)
-			.where(
-				and(eq(friendRequests.receiverId, targetUser.id), eq(friendRequests.status, "pending"))
-			),
-	]);
+	const [friendsResult, unlockedCosmeticsResult, pendingIncomingResult] =
+		await Promise.all([
+			db
+				.select({ id: friendRequests.id })
+				.from(friendRequests)
+				.where(
+					and(
+						or(
+							eq(friendRequests.senderId, targetUser.id),
+							eq(friendRequests.receiverId, targetUser.id)
+						),
+						eq(friendRequests.status, "accepted")
+					)
+				),
+			db
+				.select({ id: userCosmetics.id })
+				.from(userCosmetics)
+				.where(eq(userCosmetics.userId, targetUser.id)),
+			db
+				.select({ id: friendRequests.id })
+				.from(friendRequests)
+				.where(
+					and(
+						eq(friendRequests.receiverId, targetUser.id),
+						eq(friendRequests.status, "pending")
+					)
+				),
+		]);
 
 	const friendsCount = friendsResult.length;
 	const unlockedCount = unlockedCosmeticsResult.length;
@@ -123,6 +127,12 @@ export default async function DashboardPage() {
 			icon: <FaClockRotateLeft className="h-4 w-4" />,
 		},
 		{
+			href: "/puzzles",
+			title: "Puzzles",
+			description: "Test your skills with puzzles.",
+			icon: <FaPuzzlePiece className="h-4 w-4" />,
+		},
+		{
 			href: "/puzzles/leaderboard",
 			title: "Puzzle Leaderboards",
 			description: "Global rankings for puzzle runs.",
@@ -163,8 +173,10 @@ export default async function DashboardPage() {
 								</h1>
 								<p className="mt-2 text-sm sm:text-base text-neutral-400 font-medium">
 									Welcome back,{" "}
-									<span className="text-neutral-200 font-bold">{targetUser.username}</span>. Pick
-									your next move.
+									<span className="text-neutral-200 font-bold">
+										{targetUser.username}
+									</span>
+									. Pick your next move.
 								</p>
 							</div>
 
@@ -185,7 +197,9 @@ export default async function DashboardPage() {
 								<p className="text-[10px] sm:text-[11px] font-bold text-neutral-500 uppercase tracking-[0.2em]">
 									Friends
 								</p>
-								<p className="mt-2 text-xl sm:text-2xl font-black text-white">{friendsCount}</p>
+								<p className="mt-2 text-xl sm:text-2xl font-black text-white">
+									{friendsCount}
+								</p>
 							</div>
 							<div className="rounded-2xl border border-neutral-800 bg-neutral-900/35 px-3 py-3 sm:px-4 sm:py-4">
 								<p className="text-[10px] sm:text-[11px] font-bold text-neutral-500 uppercase tracking-[0.2em]">
@@ -267,7 +281,9 @@ export default async function DashboardPage() {
 										</p>
 
 										<div className="relative mt-6 flex items-center justify-between text-xs font-bold uppercase tracking-[0.18em] text-neutral-400">
-											<span className="group-hover:text-neutral-200 transition-colors">Open</span>
+											<span className="group-hover:text-neutral-200 transition-colors">
+												Open
+											</span>
 											<span className="text-neutral-600 group-hover:text-neutral-200 transition-colors">
 												&rarr;
 											</span>

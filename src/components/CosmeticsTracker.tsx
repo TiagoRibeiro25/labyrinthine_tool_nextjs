@@ -1,12 +1,6 @@
 "use client";
 
-import {
-	useCallback,
-	useMemo,
-	useState,
-	useTransition,
-	type CSSProperties,
-} from "react";
+import { useCallback, useMemo, useState, useTransition, type CSSProperties } from "react";
 import { FaFilter, FaMagnifyingGlass, FaSliders, FaXmark } from "react-icons/fa6";
 import { categories } from "../lib/cosmetics";
 import type { CosmeticItem } from "../lib/cosmetics";
@@ -186,10 +180,17 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 				return { categoryName, filteredItems, categoryUnlockedCount };
 			})
 			.filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
-	}, [activeFilter, activeTypeFilter, normalizedSearchQuery, unlockedIds, visibilityFilter]);
+	}, [
+		activeFilter,
+		activeTypeFilter,
+		normalizedSearchQuery,
+		unlockedIds,
+		visibilityFilter,
+	]);
 
 	const visibleItemCount = useMemo(
-		() => renderableCategories.reduce((total, cat) => total + cat.filteredItems.length, 0),
+		() =>
+			renderableCategories.reduce((total, cat) => total + cat.filteredItems.length, 0),
 		[renderableCategories]
 	);
 

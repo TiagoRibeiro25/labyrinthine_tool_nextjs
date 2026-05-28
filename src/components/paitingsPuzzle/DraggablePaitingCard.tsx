@@ -28,7 +28,7 @@ export default function DraggablePaitingCard({
 				onClick
 					? (e) => {
 							if (e.key === "Enter" || e.key === " ") onClick();
-					  }
+						}
 					: undefined
 			}
 		>

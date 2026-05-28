@@ -13,7 +13,12 @@ export interface CosmeticCardProps {
 	onToggle: (id: number) => void;
 }
 
-function CosmeticCardComponent({ item, isUnlocked, isLoading, onToggle }: CosmeticCardProps) {
+function CosmeticCardComponent({
+	item,
+	isUnlocked,
+	isLoading,
+	onToggle,
+}: CosmeticCardProps) {
 	return (
 		<div
 			onClick={() => {
