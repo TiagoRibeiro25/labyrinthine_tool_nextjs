@@ -52,7 +52,7 @@ export default async function RootLayout({
 									/>
 								</div>
 							) : null}
-							<Footer />
+							<Footer isAuthenticated={isLoggedIn} />
 						</OptionalClickSpark>
 					</Background>
 				</AppProviders>
