@@ -6,3 +6,5 @@ export const LABYRINTHINE_STEAM_NEWS_URL = `https://steamcommunity.com/app/${LAB
 
 export const STEAM_NEWS_API_URL =
 	"https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/";
+
+export const STEAM_CURRENT_PLAYERS_URL = `https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${LABYRINTHINE_STEAM_APP_ID}`;

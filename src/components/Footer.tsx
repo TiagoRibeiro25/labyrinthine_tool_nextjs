@@ -2,9 +2,7 @@ import {
 	DISCORD_DEVELOPER_ADD_FRIEND_URL,
 	VALKO_DISCORD_INVITE_URL,
 } from "@/constants/discord";
-import {
-	LABYRINTHINE_STEAM_STORE_URL,
-} from "@/constants/steam";
+import { LABYRINTHINE_STEAM_STORE_URL } from "@/constants/steam";
 import { LABYRINTHINE_WIKI_URL } from "@/constants/wiki";
 import Link from "next/link";
 import {
