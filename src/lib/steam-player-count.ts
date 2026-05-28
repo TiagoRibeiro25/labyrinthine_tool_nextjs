@@ -26,13 +26,13 @@ export function getPlayerActivityLevel(count: number): PlayerActivityLevel {
 	if (count >= 150) {
 		return {
 			label: "Steady traffic",
-			hint: "A solid crowd is in-game — good time to find matches.",
+			hint: "A solid crowd is in-game, good time to find matches.",
 			tier: "steady",
 		};
 	}
 	return {
 		label: "Quieter session",
-		hint: "Fewer players online — calmer lobbies.",
+		hint: "Fewer players online, calmer lobbies.",
 		tier: "quiet",
 	};
 }

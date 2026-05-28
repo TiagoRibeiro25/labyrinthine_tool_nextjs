@@ -8,46 +8,50 @@ import {
 	type DragStartEvent,
 } from "@dnd-kit/react";
 import { useMemo, useState, type ReactNode } from "react";
+import { FaRotateLeft } from "react-icons/fa6";
 import {
 	PAITINGS_PUZZLE_PAINTING_NAMES,
 	PAITINGS_PUZZLE_SLOT_COUNT,
 } from "@/constants/paitings-puzzle";
-import { parsePaintingName, parseSlotIndex } from "@/lib/paitings-puzzle";
 import useCoarsePointer from "@/hooks/useCoarsePointer";
+import { parsePaintingName, parseSlotIndex } from "@/lib/paitings-puzzle";
 import DroppableSlot from "./DroppableSlot";
 import DraggablePaitingCard from "./DraggablePaitingCard";
 import PaitingCard from "./PaitingCard";
 
-function SlotRowWrapper({ children }: { children: ReactNode }) {
+function ExhibitionGrid({ children }: { children: ReactNode }) {
 	return (
-		<div className="w-full overflow-x-auto">
-			<div className="flex gap-3 flex-nowrap justify-center min-w-max px-1">
-				{children}
-			</div>
-		</div>
+		<div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{children}</div>
+	);
+}
+
+function RemoveButton({ onClick }: { onClick: () => void }) {
+	return (
+		<button
+			type="button"
+			onClick={(e) => {
+				e.stopPropagation();
+				onClick();
+			}}
+			className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-700 bg-black/70 text-neutral-200 transition-colors hover:border-neutral-400 hover:bg-black/90 hover:text-white"
+			aria-label="Remove painting"
+			title="Remove"
+		>
+			<span className="text-base leading-none font-black">×</span>
+		</button>
 	);
 }
 
 function TouchPaintingCard({
 	paintingName,
-	isSelected,
 	onSelect,
 }: {
 	paintingName: string;
-	isSelected: boolean;
 	onSelect: () => void;
 }) {
 	return (
-		<button
-			type="button"
-			onClick={onSelect}
-			className="w-full text-left focus:outline-none"
-			aria-pressed={isSelected}
-		>
-			<PaitingCard
-				paintingName={paintingName}
-				className={isSelected ? "ring-4 ring-emerald-400/20" : ""}
-			/>
+		<button type="button" onClick={onSelect} className="w-full text-left focus:outline-none">
+			<PaitingCard paintingName={paintingName} />
 		</button>
 	);
 }
@@ -67,51 +71,162 @@ function TouchSlotCard({
 	onTapSlot: () => void;
 	onClear: () => void;
 }) {
-	function RemoveButton({ onClick }: { onClick: () => void }) {
-		return (
-			<button
-				type="button"
-				onClick={(e) => {
-					e.stopPropagation();
-					onClick();
+	return (
+		<div className="relative w-full">
+			<span className="pointer-events-none absolute -top-2 left-3 z-20 rounded-full border border-amber-800/60 bg-black/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.16em] text-amber-200/90">
+				Frame {slotIndex + 1}
+			</span>
+
+			<div
+				role="button"
+				tabIndex={0}
+				onClick={onTapSlot}
+				onKeyDown={(e) => {
+					if (e.key === "Enter" || e.key === " ") onTapSlot();
 				}}
-				className="w-8 h-8 rounded-full bg-black/65 border border-neutral-700 text-neutral-200 hover:text-white hover:border-neutral-400 hover:bg-black/80 transition-colors flex items-center justify-center"
-				aria-label="Remove painting"
-				title="Remove"
+				className="w-full text-left focus:outline-none"
+				aria-label={`Frame ${slotIndex + 1}`}
 			>
-				<span className="text-base leading-none font-black">×</span>
-			</button>
-		);
-	}
+				{paintingName ? (
+					<PaitingCard
+						paintingName={paintingName}
+						variant="frame"
+						className={isSelected ? "ring-4 ring-amber-400/25" : ""}
+						actions={<RemoveButton onClick={onClear} />}
+					/>
+				) : (
+					<div
+						className={`relative flex aspect-square w-full flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed bg-[linear-gradient(160deg,rgba(12,10,8,0.9),rgba(20,16,12,0.75))] ${
+							canPlace
+								? "border-amber-400/50 ring-4 ring-amber-400/15"
+								: "border-amber-900/35"
+						}`}
+					>
+						<div
+							aria-hidden
+							className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(251,191,36,0.1),transparent_60%)]"
+						/>
+						<p className="relative text-[10px] font-bold uppercase tracking-[0.14em] text-amber-200/80">
+							{canPlace ? "Tap to place" : "Empty frame"}
+						</p>
+					</div>
+				)}
+			</div>
+		</div>
+	);
+}
+
+function PuzzleProgress({
+	filledCount,
+	onReset,
+}: {
+	filledCount: number;
+	onReset: () => void;
+}) {
+	const isComplete = filledCount === PAITINGS_PUZZLE_SLOT_COUNT;
 
 	return (
-		<div
-			role="button"
-			tabIndex={0}
-			onClick={onTapSlot}
-			onKeyDown={(e) => {
-				if (e.key === "Enter" || e.key === " ") onTapSlot();
-			}}
-			className="w-full text-left focus:outline-none"
-			aria-label={`Slot ${slotIndex + 1}`}
-		>
-			{paintingName ? (
-				<PaitingCard
-					paintingName={paintingName}
-					className={isSelected ? "ring-4 ring-emerald-400/20" : ""}
-					actions={<RemoveButton onClick={onClear} />}
-				/>
-			) : (
-				<div className="w-full aspect-square rounded-2xl border-2 border-dashed border-neutral-800 bg-neutral-950/20 overflow-hidden flex flex-col items-center justify-center relative">
-					<div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.06),transparent_55%)]" />
-					<p className="relative text-[11px] uppercase tracking-[0.14em] font-bold text-neutral-500">
-						{canPlace ? "Tap to place" : "Drop painting"}
+		<div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+			<div className="min-w-0 flex-1">
+				<div className="flex items-center justify-between gap-3">
+					<p className="text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-500">
+						Recorded order
 					</p>
-					<p className="relative text-[10px] uppercase tracking-[0.14em] font-semibold text-neutral-600 mt-1">
-						Slot {slotIndex + 1}
+					<p className="text-sm font-black tabular-nums text-neutral-200">
+						{filledCount}
+						<span className="text-neutral-600"> / {PAITINGS_PUZZLE_SLOT_COUNT}</span>
 					</p>
 				</div>
-			)}
+				<div className="mt-2 h-1.5 overflow-hidden rounded-full border border-neutral-800 bg-black/50">
+					<div
+						className={`h-full rounded-full transition-all duration-500 ${
+							isComplete
+								? "bg-linear-to-r from-amber-500 to-amber-300"
+								: "bg-linear-to-r from-amber-700 to-amber-500"
+						}`}
+						style={{
+							width: `${(filledCount / PAITINGS_PUZZLE_SLOT_COUNT) * 100}%`,
+						}}
+					/>
+				</div>
+				<p className="mt-2 text-xs text-neutral-500">
+					{isComplete
+						? "Full order saved, match Frame 1 through 4 on the Manor wall in-game."
+						: `Add ${PAITINGS_PUZZLE_SLOT_COUNT - filledCount} more portrait${PAITINGS_PUZZLE_SLOT_COUNT - filledCount === 1 ? "" : "s"} to complete the sequence.`}
+				</p>
+			</div>
+
+			<button
+				type="button"
+				onClick={onReset}
+				disabled={filledCount === 0}
+				className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-neutral-700 bg-black/40 px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-neutral-300 transition-all duration-300 hover:border-neutral-500 hover:bg-neutral-900 hover:text-neutral-100 disabled:cursor-not-allowed disabled:opacity-40"
+			>
+				<FaRotateLeft className="h-3.5 w-3.5" />
+				Clear order
+			</button>
+		</div>
+	);
+}
+
+function ExhibitionPanel({ children }: { children: ReactNode }) {
+	return (
+		<section className="rounded-2xl border border-amber-900/30 bg-black/35 p-4 sm:p-5">
+			<div className="mb-4 flex items-center justify-between gap-3">
+				<div>
+					<h2 className="text-sm font-black uppercase tracking-[0.14em] text-amber-100/90">
+						Your Manor order
+					</h2>
+					<p className="mt-1 text-xs text-neutral-500">Frame 1 → 4 · left to right on the wall</p>
+				</div>
+				<span className="rounded-full border border-amber-800/50 bg-amber-950/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-300/90">
+					Slots
+				</span>
+			</div>
+			{children}
+		</section>
+	);
+}
+
+function CollectionPanel({
+	children,
+	availableCount,
+}: {
+	children: ReactNode;
+	availableCount: number;
+}) {
+	return (
+		<section className="rounded-2xl border border-neutral-800 bg-black/35 p-4 sm:p-5">
+			<div className="mb-4 flex items-center justify-between gap-3">
+				<div>
+					<h2 className="text-sm font-black uppercase tracking-[0.14em] text-neutral-100">
+						Remaining portraits
+					</h2>
+					<p className="mt-1 text-xs text-neutral-500">
+						{availableCount} not in your order · {PAITINGS_PUZZLE_PAINTING_NAMES.length} in
+						the puzzle pool
+					</p>
+				</div>
+				<span className="rounded-full border border-neutral-700 bg-neutral-900/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-400">
+					Archive
+				</span>
+			</div>
+			{children}
+		</section>
+	);
+}
+
+function EmptyCollectionMessage({ touchMode }: { touchMode: boolean }) {
+	return (
+		<div className="col-span-full rounded-xl border border-dashed border-neutral-700 bg-black/25 px-4 py-10 text-center">
+			<p className="text-xs font-bold uppercase tracking-[0.16em] text-neutral-400">
+				All four slots filled
+			</p>
+			<p className="mt-2 text-[11px] font-medium text-neutral-600">
+				{touchMode
+					? "Tap a portrait in your order to adjust it, or tap another frame to swap positions."
+					: "Use × to remove a portrait from your order, or drag between frames to fix the sequence."}
+			</p>
 		</div>
 	);
 }
@@ -124,6 +239,8 @@ export default function PaitingsSlotsPuzzle() {
 	const [selectedPaintingName, setSelectedPaintingName] = useState<string | null>(null);
 	const isTouchMode = useCoarsePointer();
 
+	const filledCount = useMemo(() => slots.filter(Boolean).length, [slots]);
+
 	const availablePaintings = useMemo(() => {
 		const placed = new Set(slots.filter(Boolean) as string[]);
 		return PAITINGS_PUZZLE_PAINTING_NAMES.filter((name) => !placed.has(name));
@@ -133,6 +250,11 @@ export default function PaitingsSlotsPuzzle() {
 		() => parsePaintingName(activeDragId),
 		[activeDragId]
 	);
+
+	function resetWall() {
+		setSlots(Array.from({ length: PAITINGS_PUZZLE_SLOT_COUNT }, () => null));
+		setSelectedPaintingName(null);
+	}
 
 	function clearSlot(slotIndex: number) {
 		setSlots((prev) => {
@@ -156,10 +278,9 @@ export default function PaitingsSlotsPuzzle() {
 
 	function placeAvailablePainting(paintingName: string, markAsSelected = true) {
 		const emptyIndex = slots.findIndex((slot) => slot === null);
-		if (emptyIndex === -1) return; // all slots filled => do nothing
+		if (emptyIndex === -1) return;
 		setSlots((prev) => {
 			const next = [...prev];
-			// Available paintings should not already exist in a slot, but this keeps it consistent.
 			for (let i = 0; i < next.length; i++) {
 				if (next[i] === paintingName) next[i] = null;
 			}
@@ -171,34 +292,38 @@ export default function PaitingsSlotsPuzzle() {
 		}
 	}
 
+	const progress = (
+		<PuzzleProgress filledCount={filledCount} onReset={resetWall} />
+	);
+
 	if (isTouchMode) {
 		return (
-			<div className="w-full flex flex-col gap-8">
-				<SlotRowWrapper>
-					{Array.from({ length: PAITINGS_PUZZLE_SLOT_COUNT }, (_, slotIndex) => {
-						const paintingName = slots[slotIndex];
+			<div className="flex w-full flex-col gap-5">
+				{progress}
 
-						const canPlace = selectedPaintingName != null && paintingName == null;
-						const isSelected =
-							selectedPaintingName != null && paintingName === selectedPaintingName;
+				<ExhibitionPanel>
+					<ExhibitionGrid>
+						{Array.from({ length: PAITINGS_PUZZLE_SLOT_COUNT }, (_, slotIndex) => {
+							const paintingName = slots[slotIndex];
+							const canPlace = selectedPaintingName != null && paintingName == null;
+							const isSelected =
+								selectedPaintingName != null && paintingName === selectedPaintingName;
 
-						return (
-							<div key={slotIndex} className="flex-none w-20 sm:w-24 md:w-28 lg:w-32">
+							return (
 								<TouchSlotCard
+									key={slotIndex}
 									slotIndex={slotIndex}
 									paintingName={paintingName}
 									isSelected={isSelected}
 									canPlace={canPlace}
 									onTapSlot={() => {
 										if (paintingName) {
-											// Selecting a painting already in a slot.
 											if (selectedPaintingName === paintingName) {
 												setSelectedPaintingName(null);
 												return;
 											}
 
 											if (selectedPaintingName && selectedPaintingName !== paintingName) {
-												// Move the previously selected painting here.
 												movePaintingToSlot(selectedPaintingName, slotIndex);
 												return;
 											}
@@ -207,54 +332,41 @@ export default function PaitingsSlotsPuzzle() {
 											return;
 										}
 
-										// Placing onto an empty slot.
 										if (!selectedPaintingName) return;
 										movePaintingToSlot(selectedPaintingName, slotIndex);
 									}}
 									onClear={() => {
-										if (paintingName && paintingName === selectedPaintingName)
+										if (paintingName && paintingName === selectedPaintingName) {
 											setSelectedPaintingName(null);
+										}
 										clearSlot(slotIndex);
 									}}
 								/>
-							</div>
-						);
-					})}
-				</SlotRowWrapper>
+							);
+						})}
+					</ExhibitionGrid>
+				</ExhibitionPanel>
 
-				<div className="w-full">
-					<h2 className="text-sm uppercase tracking-[0.14em] font-bold text-neutral-300 mb-3">
-						Paitings
-					</h2>
-
-					<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
+				<CollectionPanel availableCount={availablePaintings.length}>
+					<div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
 						{availablePaintings.length === 0 ? (
-							<div className="col-span-full text-center py-10 border border-dashed border-neutral-800 rounded-2xl bg-neutral-950/20">
-								<p className="text-neutral-500 text-xs font-bold uppercase tracking-widest">
-									All slots filled.
-								</p>
-								<p className="text-neutral-600 text-[11px] font-semibold mt-2">
-									Tap a filled slot to select, then tap another slot to move.
-								</p>
-							</div>
+							<EmptyCollectionMessage touchMode />
 						) : (
 							availablePaintings.map((paintingName) => (
-								<div key={paintingName} className="w-full">
-									<TouchPaintingCard
-										paintingName={paintingName}
-										isSelected={false}
-										onSelect={() => placeAvailablePainting(paintingName)}
-									/>
-								</div>
+								<TouchPaintingCard
+									key={paintingName}
+									paintingName={paintingName}
+									onSelect={() => placeAvailablePainting(paintingName)}
+								/>
 							))
 						)}
 					</div>
-				</div>
+				</CollectionPanel>
 
 				{selectedPaintingName ? (
-					<div className="text-center text-xs text-neutral-500 font-bold uppercase tracking-widest mt-1">
+					<p className="text-center text-[11px] font-bold uppercase tracking-[0.16em] text-amber-300/80">
 						Selected: {selectedPaintingName}
-					</div>
+					</p>
 				) : null}
 			</div>
 		);
@@ -273,13 +385,9 @@ export default function PaitingsSlotsPuzzle() {
 
 		setSlots((prev) => {
 			const next = [...prev];
-
-			// Remove painting from any previous slot.
 			for (let i = 0; i < next.length; i++) {
 				if (next[i] === paintingName) next[i] = null;
 			}
-
-			// Overwrite target slot.
 			next[slotIndex] = paintingName;
 			return next;
 		});
@@ -294,34 +402,26 @@ export default function PaitingsSlotsPuzzle() {
 				setActiveDragId(typeof sourceId === "string" ? sourceId : null);
 			}}
 		>
-			<div className="w-full flex flex-col gap-8">
-				<SlotRowWrapper>
-					{Array.from({ length: PAITINGS_PUZZLE_SLOT_COUNT }, (_, slotIndex) => (
-						<div key={slotIndex} className="flex-none w-20 sm:w-24 md:w-28 lg:w-32">
+			<div className="flex w-full flex-col gap-5">
+				{progress}
+
+				<ExhibitionPanel>
+					<ExhibitionGrid>
+						{Array.from({ length: PAITINGS_PUZZLE_SLOT_COUNT }, (_, slotIndex) => (
 							<DroppableSlot
+								key={slotIndex}
 								slotIndex={slotIndex}
 								paintingName={slots[slotIndex]}
 								onClearAction={() => clearSlot(slotIndex)}
 							/>
-						</div>
-					))}
-				</SlotRowWrapper>
+						))}
+					</ExhibitionGrid>
+				</ExhibitionPanel>
 
-				<div className="w-full">
-					<h2 className="text-sm uppercase tracking-[0.14em] font-bold text-neutral-300 mb-3">
-						Paitings
-					</h2>
-
-					<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
+				<CollectionPanel availableCount={availablePaintings.length}>
+					<div className="grid max-h-[min(52vh,28rem)] grid-cols-2 gap-3 overflow-y-auto pr-1 sm:grid-cols-3 lg:max-h-[min(46vh,24rem)]">
 						{availablePaintings.length === 0 ? (
-							<div className="col-span-full text-center py-10 border border-dashed border-neutral-800 rounded-2xl bg-neutral-950/20">
-								<p className="text-neutral-500 text-xs font-bold uppercase tracking-widest">
-									All slots filled.
-								</p>
-								<p className="text-neutral-600 text-[11px] font-semibold mt-2">
-									Use the × button to remove, or drag between slots to rearrange.
-								</p>
-							</div>
+							<EmptyCollectionMessage touchMode={false} />
 						) : (
 							availablePaintings.map((paintingName) => (
 								<DraggablePaitingCard
@@ -332,16 +432,16 @@ export default function PaitingsSlotsPuzzle() {
 							))
 						)}
 					</div>
-				</div>
+				</CollectionPanel>
 			</div>
 
 			<DragOverlay>
 				{activePaintingName ? (
-					<div className="w-20 sm:w-24 md:w-28 lg:w-32">
+					<div className="w-28 sm:w-32">
 						<PaitingCard
 							paintingName={activePaintingName}
 							isGhost
-							className="pointer-events-none opacity-90"
+							className="pointer-events-none rotate-2 shadow-[0_24px_60px_rgba(0,0,0,0.65)]"
 						/>
 					</div>
 				) : null}

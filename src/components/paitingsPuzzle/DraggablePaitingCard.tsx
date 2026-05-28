@@ -8,10 +8,12 @@ export default function DraggablePaitingCard({
 	paintingName,
 	actions,
 	onClick,
+	variant = "default",
 }: {
 	paintingName: string;
 	actions?: React.ReactNode;
 	onClick?: () => void;
+	variant?: "default" | "frame";
 }) {
 	const { ref: draggableRef, isDragging } = useDraggable({
 		id: getPaintingDragId(paintingName),
@@ -20,7 +22,8 @@ export default function DraggablePaitingCard({
 	return (
 		<div
 			ref={(node) => draggableRef(node)}
-			style={{ opacity: isDragging ? 0.85 : 1 }}
+			className={onClick ? "cursor-pointer" : "cursor-grab active:cursor-grabbing"}
+			style={{ opacity: isDragging ? 0.4 : 1 }}
 			onClick={onClick}
 			role={onClick ? "button" : undefined}
 			tabIndex={onClick ? 0 : undefined}
@@ -32,7 +35,12 @@ export default function DraggablePaitingCard({
 					: undefined
 			}
 		>
-			<PaitingCard paintingName={paintingName} isGhost={isDragging} actions={actions} />
+			<PaitingCard
+				paintingName={paintingName}
+				isGhost={isDragging}
+				actions={actions}
+				variant={variant}
+			/>
 		</div>
 	);
 }

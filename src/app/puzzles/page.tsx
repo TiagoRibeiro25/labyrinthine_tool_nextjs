@@ -52,11 +52,14 @@ export default function PuzzlesPage() {
 
 						<Link
 							href="/puzzles/paitings"
-							className="group flex flex-col items-center justify-center gap-4 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-emerald-400/60 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full"
+							className="group flex flex-col items-center justify-center gap-3 px-8 py-7 rounded-2xl bg-neutral-900/75 text-neutral-100 border border-neutral-700 hover:bg-neutral-800 hover:border-emerald-400/60 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 w-full"
 						>
 							<FaPuzzlePiece className="w-12 h-12 text-neutral-400 group-hover:text-emerald-300 group-hover:scale-110 transition-all duration-300" />
 							<span className="font-bold text-xl uppercase tracking-widest text-center">
-								Painting Slots
+								Manor Paintings
+							</span>
+							<span className="max-w-xs text-center text-xs font-medium leading-relaxed text-neutral-500 group-hover:text-neutral-400">
+								Log portrait order for the Manor wall puzzle, no memorization needed.
 							</span>
 						</Link>
 					</div>
