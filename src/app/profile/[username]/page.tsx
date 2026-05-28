@@ -238,7 +238,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 					/>
 					<div className="absolute inset-0 bg-linear-to-b from-black/15 via-black/40 to-neutral-950/95" />
 
-					<div className="absolute left-4 top-4 sm:left-8 sm:top-8 z-20">
+					<div className="relative z-20 px-4 pt-[calc(env(safe-area-inset-top)+1rem)] sm:px-0 sm:pt-0 sm:absolute sm:left-8 sm:top-8">
 						<Link
 							href="/dashboard"
 							className="inline-flex items-center gap-2 rounded-full border border-neutral-600/90 bg-black/55 px-4 py-2 text-[11px] uppercase tracking-[0.16em] font-semibold text-neutral-200 hover:border-cyan-500/60 hover:text-cyan-100 transition-colors"
