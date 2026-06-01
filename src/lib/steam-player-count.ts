@@ -22,21 +22,21 @@ type SteamFetchOptions = RequestInit & {
 };
 
 export function getPlayerActivityLevel(count: number): PlayerActivityLevel {
-	if (count >= 500) {
+	if (count >= 400) {
 		return {
 			label: "Peak activity",
 			hint: "One of the busiest windows right now.",
 			tier: "peak",
 		};
 	}
-	if (count >= 300) {
+	if (count >= 200) {
 		return {
 			label: "Squads rolling",
 			hint: "Plenty of teams playing, good time to jump in.",
 			tier: "busy",
 		};
 	}
-	if (count >= 150) {
+	if (count >= 100) {
 		return {
 			label: "Steady traffic",
 			hint: "A solid crowd is in-game, good time to find matches.",
