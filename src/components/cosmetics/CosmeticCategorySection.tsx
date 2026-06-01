@@ -40,7 +40,7 @@ function CosmeticCategorySectionComponent({
 			<div className="flex flex-col gap-3 px-4 sm:px-5 py-4 border-b border-neutral-800/60 bg-neutral-900/40 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
 				<div className="min-w-0 w-full sm:flex-1">
 					<div className="flex flex-wrap items-center gap-2">
-						<h2 className="text-sm sm:text-base font-black uppercase tracking-[0.1em] text-neutral-100 break-words">
+						<h2 className="text-sm sm:text-base font-black uppercase tracking-widest text-neutral-100 wrap-break-word">
 							{categoryName}
 						</h2>
 						{catPercentage === 100 && (
