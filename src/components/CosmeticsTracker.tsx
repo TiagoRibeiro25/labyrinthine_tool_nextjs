@@ -1,6 +1,7 @@
 "use client";
 
 import {
+	memo,
 	useCallback,
 	useLayoutEffect,
 	useMemo,
@@ -429,6 +430,58 @@ interface VirtualizedCategoryListProps {
 	onToggleCategory: (items: CosmeticItem[], action: "unlock" | "lock") => void;
 }
 
+interface VirtualRowProps {
+	category: RenderableCategory;
+	offset: number;
+	paddingBottom: number;
+	dataIndex: number;
+	measureRef: (el: Element | null) => void;
+	catPercentage: number;
+	isUnlocked: (id: number) => boolean;
+	isLoading: (id: number) => boolean;
+	onToggle: (id: number) => void;
+	onToggleCategory: (items: CosmeticItem[], action: "unlock" | "lock") => void;
+}
+
+const VirtualRow = memo(function VirtualRow({
+	category,
+	offset,
+	paddingBottom,
+	dataIndex,
+	measureRef,
+	catPercentage,
+	isUnlocked,
+	isLoading,
+	onToggle,
+	onToggleCategory,
+}: VirtualRowProps) {
+	return (
+		<div
+			data-index={dataIndex}
+			ref={measureRef}
+			style={{
+				position: "absolute",
+				top: 0,
+				left: 0,
+				width: "100%",
+				transform: `translateY(${offset}px)`,
+				paddingBottom,
+			}}
+		>
+			<CosmeticCategorySection
+				categoryName={category.categoryName}
+				filteredItems={category.filteredItems}
+				categoryUnlockedCount={category.categoryUnlockedCount}
+				catPercentage={catPercentage}
+				isUnlocked={isUnlocked}
+				isLoading={isLoading}
+				onToggle={onToggle}
+				onToggleCategory={onToggleCategory}
+			/>
+		</div>
+	);
+});
+
 function VirtualizedCategoryList({
 	categories,
 	categoryPercentageByName,
@@ -521,7 +574,7 @@ function VirtualizedCategoryList({
 			const gap = index === categories.length - 1 ? 0 : sectionGap;
 			return baseSectionHeight + rows * estimateRowSize + gap;
 		},
-		overscan: 2,
+		overscan: 5,
 		scrollMargin,
 	});
 
@@ -531,7 +584,7 @@ function VirtualizedCategoryList({
 		"grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3";
 
 	return (
-		<div ref={containerRef} className="relative">
+		<div ref={containerRef} className="relative contain-paint will-change-transform">
 			<div
 				ref={gridProbeRef}
 				className={rowClassName}
@@ -548,39 +601,23 @@ function VirtualizedCategoryList({
 				{virtualRows.map((virtualRow) => {
 					const category = categories[virtualRow.index];
 					if (!category) return null;
-					const offset =
-						virtualRow.start - rowVirtualizer.options.scrollMargin;
-
-					const gap =
-						virtualRow.index === categories.length - 1 ? 0 : sectionGap;
+					const offset = virtualRow.start - rowVirtualizer.options.scrollMargin;
+					const gap = virtualRow.index === categories.length - 1 ? 0 : sectionGap;
 
 					return (
-						<div
+						<VirtualRow
 							key={virtualRow.key}
-							data-index={virtualRow.index}
-							ref={rowVirtualizer.measureElement}
-							style={{
-								position: "absolute",
-								top: 0,
-								left: 0,
-								width: "100%",
-								transform: `translateY(${offset}px)`,
-								paddingBottom: gap,
-							}}
-						>
-							<CosmeticCategorySection
-								categoryName={category.categoryName}
-								filteredItems={category.filteredItems}
-								categoryUnlockedCount={category.categoryUnlockedCount}
-								catPercentage={
-									categoryPercentageByName.get(category.categoryName) ?? 0
-								}
-								isUnlocked={isUnlocked}
-								isLoading={isLoading}
-								onToggle={onToggle}
-								onToggleCategory={onToggleCategory}
-							/>
-						</div>
+							category={category}
+							offset={offset}
+							paddingBottom={gap}
+							dataIndex={virtualRow.index}
+							measureRef={rowVirtualizer.measureElement}
+							catPercentage={categoryPercentageByName.get(category.categoryName) ?? 0}
+							isUnlocked={isUnlocked}
+							isLoading={isLoading}
+							onToggle={onToggle}
+							onToggleCategory={onToggleCategory}
+						/>
 					);
 				})}
 			</div>
