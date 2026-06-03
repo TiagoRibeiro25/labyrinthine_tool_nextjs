@@ -24,6 +24,10 @@ function CosmeticCardComponent({
 			onClick={() => {
 				if (!isLoading) onToggle(item.id);
 			}}
+			style={{
+				contentVisibility: "auto",
+				containIntrinsicSize: "260px 260px",
+			}}
 			className={`group relative flex flex-col overflow-hidden rounded-xl border cursor-pointer transition-[border-color,box-shadow,opacity] duration-200 ${
 				isUnlocked
 					? "border-teal-400/40 bg-teal-500/6 hover:border-teal-300/70 hover:shadow-[0_8px_24px_rgba(45,212,191,0.15)]"

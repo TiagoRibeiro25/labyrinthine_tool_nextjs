@@ -1,6 +1,15 @@
 "use client";
 
-import { useCallback, useMemo, useState, useTransition, type CSSProperties } from "react";
+import {
+	useCallback,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+	useTransition,
+	type CSSProperties,
+} from "react";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { FaFilter, FaMagnifyingGlass, FaSliders, FaXmark } from "react-icons/fa6";
 import { categories } from "../lib/cosmetics";
 import type { CosmeticItem } from "../lib/cosmetics";
@@ -14,6 +23,12 @@ interface CosmeticsTrackerProps {
 }
 
 type VisibilityFilter = "all" | "unlocked" | "locked";
+
+interface RenderableCategory {
+	categoryName: string;
+	filteredItems: CosmeticItem[];
+	categoryUnlockedCount: number;
+}
 
 const totalCosmetics = Object.values(categories).flat().length;
 
@@ -152,7 +167,7 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 
 	const normalizedSearchQuery = filterSearchQuery.trim().toLowerCase();
 
-	const renderableCategories = useMemo(() => {
+	const renderableCategories = useMemo<RenderableCategory[]>(() => {
 		return Object.entries(categories)
 			.map(([categoryName, items]) => {
 				if (activeFilter !== "All" && activeFilter !== categoryName) return null;
@@ -390,25 +405,184 @@ export default function CosmeticsTracker({ initialUnlockedIds }: CosmeticsTracke
 							</button>
 						</div>
 					) : (
-						<div className="space-y-6">
-							{renderableCategories.map(
-								({ categoryName, filteredItems, categoryUnlockedCount }) => (
-									<CosmeticCategorySection
-										key={categoryName}
-										categoryName={categoryName}
-										filteredItems={filteredItems}
-										categoryUnlockedCount={categoryUnlockedCount}
-										catPercentage={categoryPercentageByName.get(categoryName) ?? 0}
-										isUnlocked={isUnlocked}
-										isLoading={isLoading}
-										onToggle={toggleCosmetic}
-										onToggleCategory={toggleCategory}
-									/>
-								)
-							)}
-						</div>
+						<VirtualizedCategoryList
+							categories={renderableCategories}
+							categoryPercentageByName={categoryPercentageByName}
+							isUnlocked={isUnlocked}
+							isLoading={isLoading}
+							onToggle={toggleCosmetic}
+							onToggleCategory={toggleCategory}
+						/>
 					)}
 				</div>
+			</div>
+		</div>
+	);
+}
+
+interface VirtualizedCategoryListProps {
+	categories: RenderableCategory[];
+	categoryPercentageByName: Map<string, number>;
+	isUnlocked: (id: number) => boolean;
+	isLoading: (id: number) => boolean;
+	onToggle: (id: number) => void;
+	onToggleCategory: (items: CosmeticItem[], action: "unlock" | "lock") => void;
+}
+
+function VirtualizedCategoryList({
+	categories,
+	categoryPercentageByName,
+	isUnlocked,
+	isLoading,
+	onToggle,
+	onToggleCategory,
+}: VirtualizedCategoryListProps) {
+	const containerRef = useRef<HTMLDivElement | null>(null);
+	const gridProbeRef = useRef<HTMLDivElement | null>(null);
+	const [gridMetrics, setGridMetrics] = useState({ columns: 1, width: 0, gap: 0 });
+	const [scrollMargin, setScrollMargin] = useState(0);
+
+	useLayoutEffect(() => {
+		const element = gridProbeRef.current;
+		if (!element || typeof window === "undefined") return;
+
+		const updateMetrics = () => {
+			const style = window.getComputedStyle(element);
+			const template = style.gridTemplateColumns;
+			const repeatMatch = template.match(/repeat\((\d+),/);
+			const minmaxMatches = template.match(/minmax\(/g);
+			const columns =
+				Number(repeatMatch?.[1]) ||
+				minmaxMatches?.length ||
+				template.split(" ").filter(Boolean).length ||
+				1;
+			const width = element.clientWidth;
+			const gap = Number.parseFloat(style.columnGap || "0") || 0;
+
+			setGridMetrics((prev) => {
+				if (prev.columns === columns && prev.width === width && prev.gap === gap) {
+					return prev;
+				}
+				return { columns, width, gap };
+			});
+		};
+
+		updateMetrics();
+		if (typeof ResizeObserver === "undefined") {
+			window.addEventListener("resize", updateMetrics);
+			return () => window.removeEventListener("resize", updateMetrics);
+		}
+		const observer = new ResizeObserver(updateMetrics);
+		observer.observe(element);
+		return () => observer.disconnect();
+	}, []);
+
+	useLayoutEffect(() => {
+		const element = containerRef.current;
+		if (!element || typeof window === "undefined") return;
+
+		const updateMargin = () => {
+			const rect = element.getBoundingClientRect();
+			const next = rect.top + window.scrollY;
+			setScrollMargin((prev) => (prev === next ? prev : next));
+		};
+
+		updateMargin();
+		if (typeof ResizeObserver === "undefined") {
+			window.addEventListener("resize", updateMargin);
+			return () => window.removeEventListener("resize", updateMargin);
+		}
+
+		const observer = new ResizeObserver(updateMargin);
+		observer.observe(element);
+		window.addEventListener("resize", updateMargin);
+		return () => {
+			observer.disconnect();
+			window.removeEventListener("resize", updateMargin);
+		};
+	}, [categories]);
+
+	const columnCount = Math.max(1, gridMetrics.columns || 1);
+	const estimateRowSize = useMemo(() => {
+		if (!gridMetrics.width || columnCount <= 0) return 260;
+		const totalGap = gridMetrics.gap * (columnCount - 1);
+		const cardWidth = (gridMetrics.width - totalGap) / columnCount;
+		return Math.max(200, Math.round(cardWidth + 70 + gridMetrics.gap));
+	}, [gridMetrics, columnCount]);
+
+	const sectionGap = 24;
+	const baseSectionHeight = 150;
+
+	const rowVirtualizer = useWindowVirtualizer({
+		count: categories.length,
+		estimateSize: (index) => {
+			const items = categories[index]?.filteredItems.length ?? 0;
+			const rows = Math.ceil(items / columnCount);
+			const gap = index === categories.length - 1 ? 0 : sectionGap;
+			return baseSectionHeight + rows * estimateRowSize + gap;
+		},
+		overscan: 2,
+		scrollMargin,
+	});
+
+	const virtualRows = rowVirtualizer.getVirtualItems();
+	const totalSize = rowVirtualizer.getTotalSize();
+	const rowClassName =
+		"grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3";
+
+	return (
+		<div ref={containerRef} className="relative">
+			<div
+				ref={gridProbeRef}
+				className={rowClassName}
+				style={{
+					position: "absolute",
+					inset: 0,
+					height: 0,
+					overflow: "hidden",
+					visibility: "hidden",
+					pointerEvents: "none",
+				}}
+			/>
+			<div style={{ height: totalSize, position: "relative" }}>
+				{virtualRows.map((virtualRow) => {
+					const category = categories[virtualRow.index];
+					if (!category) return null;
+					const offset =
+						virtualRow.start - rowVirtualizer.options.scrollMargin;
+
+					const gap =
+						virtualRow.index === categories.length - 1 ? 0 : sectionGap;
+
+					return (
+						<div
+							key={virtualRow.key}
+							data-index={virtualRow.index}
+							ref={rowVirtualizer.measureElement}
+							style={{
+								position: "absolute",
+								top: 0,
+								left: 0,
+								width: "100%",
+								transform: `translateY(${offset}px)`,
+								paddingBottom: gap,
+							}}
+						>
+							<CosmeticCategorySection
+								categoryName={category.categoryName}
+								filteredItems={category.filteredItems}
+								categoryUnlockedCount={category.categoryUnlockedCount}
+								catPercentage={
+									categoryPercentageByName.get(category.categoryName) ?? 0
+								}
+								isUnlocked={isUnlocked}
+								isLoading={isLoading}
+								onToggle={onToggle}
+								onToggleCategory={onToggleCategory}
+							/>
+						</div>
+					);
+				})}
 			</div>
 		</div>
 	);
