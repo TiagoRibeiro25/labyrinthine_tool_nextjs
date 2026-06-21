@@ -1,42 +1,22 @@
 import { eq } from "drizzle-orm";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { db } from "../../../db";
 import { users } from "../../../db/schema";
-import { authOptions } from "../../../lib/auth";
+import { requireSession, parseBody } from "../../../lib/api-helpers";
 import {
 	deleteAccountBodySchema,
-	getFirstZodErrorMessage,
 	profileUpdateSchema,
 } from "../../../lib/validation";
 
 export async function PUT(req: Request) {
 	try {
-		const session = await getServerSession(authOptions);
+		const auth = await requireSession();
+		if ("error" in auth) return auth.error;
 
-		const sessionUser = session?.user as { id?: string } | undefined;
+		const userId = auth.userId;
 
-		if (!session || !sessionUser || !sessionUser.id) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-		}
-
-		const userId = sessionUser.id;
-
-		let body: unknown;
-		try {
-			body = await req.json();
-		} catch {
-			return NextResponse.json({ message: "Invalid JSON body." }, { status: 400 });
-		}
-
-		const parsed = profileUpdateSchema.safeParse(body);
-
-		if (!parsed.success) {
-			return NextResponse.json(
-				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400 }
-			);
-		}
+		const parsed = await parseBody(req, profileUpdateSchema);
+		if ("error" in parsed) return parsed.error;
 
 		const steamProfileUrl = parsed.data.steamProfileUrl?.trim();
 		const profilePictureId = parsed.data.profilePictureId?.trim() || null;
@@ -79,30 +59,13 @@ export async function PUT(req: Request) {
 
 export async function DELETE(req: Request) {
 	try {
-		const session = await getServerSession(authOptions);
-		const sessionUser = session?.user as { id?: string } | undefined;
+		const auth = await requireSession();
+		if ("error" in auth) return auth.error;
 
-		if (!session || !sessionUser || !sessionUser.id) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-		}
+		const parsed = await parseBody(req, deleteAccountBodySchema);
+		if ("error" in parsed) return parsed.error;
 
-		let body: unknown;
-		try {
-			body = await req.json();
-		} catch {
-			return NextResponse.json({ message: "Invalid JSON body." }, { status: 400 });
-		}
-
-		const parsed = deleteAccountBodySchema.safeParse(body);
-
-		if (!parsed.success) {
-			return NextResponse.json(
-				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400 }
-			);
-		}
-
-		await db.delete(users).where(eq(users.id, sessionUser.id));
+		await db.delete(users).where(eq(users.id, auth.userId));
 
 		return NextResponse.json(
 			{ message: "Account deleted successfully." },

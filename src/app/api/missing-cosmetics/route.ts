@@ -1,22 +1,16 @@
 import { and, eq, inArray, or } from "drizzle-orm";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { db } from "../../../db";
 import { friendRequests, userCosmetics, users } from "../../../db/schema";
-import { authOptions } from "../../../lib/auth";
+import { requireSession } from "../../../lib/api-helpers";
 import {
-	getFirstZodErrorMessage,
 	missingCosmeticsQuerySchema,
 } from "../../../lib/validation";
 
 export async function GET(req: Request) {
 	try {
-		const session = await getServerSession(authOptions);
-		const sessionUser = session?.user as { id?: string } | undefined;
-
-		if (!session || !sessionUser || !sessionUser.id) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-		}
+		const auth = await requireSession();
+		if ("error" in auth) return auth.error;
 
 		const url = new URL(req.url);
 		const parsedQuery = missingCosmeticsQuerySchema.safeParse({
@@ -25,13 +19,13 @@ export async function GET(req: Request) {
 
 		if (!parsedQuery.success) {
 			return NextResponse.json(
-				{ message: getFirstZodErrorMessage(parsedQuery.error) },
+				{ message: "Invalid query parameters." },
 				{ status: 400 }
 			);
 		}
 
 		const cosmeticId = parsedQuery.data.cosmeticId;
-		const userId = sessionUser.id;
+		const userId = auth.userId;
 
 		// Get all accepted friends of the current user
 		const friendsList = await db

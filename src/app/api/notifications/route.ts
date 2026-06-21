@@ -1,25 +1,19 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { REALTIME_TOPICS } from "../../../constants/realtime";
 import { db } from "../../../db";
 import { notifications, users } from "../../../db/schema";
-import { authOptions } from "../../../lib/auth";
+import { requireSession, computePagination, computeOffset, parseBody } from "../../../lib/api-helpers";
 import { emitRealtimeHint } from "../../../lib/realtime";
 import {
-	getFirstZodErrorMessage,
 	notificationsMarkReadBodySchema,
 	notificationsQuerySchema,
 } from "../../../lib/validation";
 
 export async function GET(req: Request) {
 	try {
-		const session = await getServerSession(authOptions);
-		const sessionUser = session?.user as { id?: string } | undefined;
-
-		if (!sessionUser?.id) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-		}
+		const auth = await requireSession();
+		if ("error" in auth) return auth.error;
 
 		const url = new URL(req.url);
 		const parsed = notificationsQuerySchema.safeParse({
@@ -30,7 +24,7 @@ export async function GET(req: Request) {
 
 		if (!parsed.success) {
 			return NextResponse.json(
-				{ message: getFirstZodErrorMessage(parsed.error) },
+				{ message: "Invalid query parameters." },
 				{ status: 400 }
 			);
 		}
@@ -38,8 +32,8 @@ export async function GET(req: Request) {
 		const { page, limit, unreadOnly } = parsed.data;
 
 		const baseWhere = unreadOnly
-			? and(eq(notifications.userId, sessionUser.id), eq(notifications.isRead, false))
-			: eq(notifications.userId, sessionUser.id);
+			? and(eq(notifications.userId, auth.userId), eq(notifications.isRead, false))
+			: eq(notifications.userId, auth.userId);
 
 		const totalItemsResult = await db
 			.select({ count: sql<number>`count(*)`.mapWith(Number) })
@@ -47,9 +41,8 @@ export async function GET(req: Request) {
 			.where(baseWhere);
 
 		const totalItems = totalItemsResult[0]?.count ?? 0;
-		const totalPages = Math.max(1, Math.ceil(totalItems / limit));
-		const safePage = Math.min(page, totalPages);
-		const offset = (safePage - 1) * limit;
+		const pagination = computePagination(totalItems, page, limit);
+		const offset = computeOffset(pagination.page, limit);
 
 		const rows = await db
 			.select({
@@ -70,7 +63,7 @@ export async function GET(req: Request) {
 
 		const userIds = Array.from(
 			new Set([
-				sessionUser.id,
+				auth.userId,
 				...rows
 					.map((row) => row.actorUserId)
 					.filter((value): value is string => Boolean(value)),
@@ -93,13 +86,13 @@ export async function GET(req: Request) {
 			: [];
 
 		const userMap = new Map(userRows.map((row) => [row.id, row]));
-		const recipientUser = userMap.get(sessionUser.id) ?? null;
+		const recipientUser = userMap.get(auth.userId) ?? null;
 
 		const unreadCountResult = await db
 			.select({ count: sql<number>`count(*)`.mapWith(Number) })
 			.from(notifications)
 			.where(
-				and(eq(notifications.userId, sessionUser.id), eq(notifications.isRead, false))
+				and(eq(notifications.userId, auth.userId), eq(notifications.isRead, false))
 			);
 
 		return NextResponse.json(
@@ -132,14 +125,7 @@ export async function GET(req: Request) {
 					};
 				}),
 				unreadCount: unreadCountResult[0]?.count ?? 0,
-				pagination: {
-					page: safePage,
-					limit,
-					totalItems,
-					totalPages,
-					hasNextPage: safePage < totalPages,
-					hasPreviousPage: safePage > 1,
-				},
+				pagination,
 			},
 			{ status: 200 }
 		);
@@ -154,28 +140,11 @@ export async function GET(req: Request) {
 
 export async function PATCH(req: Request) {
 	try {
-		const session = await getServerSession(authOptions);
-		const sessionUser = session?.user as { id?: string } | undefined;
+		const auth = await requireSession();
+		if ("error" in auth) return auth.error;
 
-		if (!sessionUser?.id) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-		}
-
-		let body: unknown;
-		try {
-			body = await req.json();
-		} catch {
-			return NextResponse.json({ message: "Invalid JSON body." }, { status: 400 });
-		}
-
-		const parsed = notificationsMarkReadBodySchema.safeParse(body);
-
-		if (!parsed.success) {
-			return NextResponse.json(
-				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400 }
-			);
-		}
+		const parsed = await parseBody(req, notificationsMarkReadBodySchema);
+		if ("error" in parsed) return parsed.error;
 
 		const { notificationId, markAll } = parsed.data;
 
@@ -184,12 +153,12 @@ export async function PATCH(req: Request) {
 				.update(notifications)
 				.set({ isRead: true, readAt: new Date() })
 				.where(
-					and(eq(notifications.userId, sessionUser.id), eq(notifications.isRead, false))
+					and(eq(notifications.userId, auth.userId), eq(notifications.isRead, false))
 				);
 
 			emitRealtimeHint({
 				topic: REALTIME_TOPICS.NOTIFICATIONS,
-				userIds: [sessionUser.id],
+				userIds: [auth.userId],
 			});
 
 			return NextResponse.json(
@@ -211,13 +180,13 @@ export async function PATCH(req: Request) {
 			.where(
 				and(
 					eq(notifications.id, notificationId),
-					eq(notifications.userId, sessionUser.id)
+					eq(notifications.userId, auth.userId)
 				)
 			);
 
 		emitRealtimeHint({
 			topic: REALTIME_TOPICS.NOTIFICATIONS,
-			userIds: [sessionUser.id],
+			userIds: [auth.userId],
 		});
 
 		return NextResponse.json(

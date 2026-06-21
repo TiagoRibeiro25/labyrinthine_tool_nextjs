@@ -1,24 +1,48 @@
 import { and, eq, or } from "drizzle-orm";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { db } from "../../../db";
 import { friendRequests, users } from "../../../db/schema";
-import { authOptions } from "../../../lib/auth";
+import { requireSession, parseBody } from "../../../lib/api-helpers";
 import { rateLimit, toRateLimitHeaders } from "../../../lib/rate-limit";
 import { getClientIpFromHeaders } from "../../../lib/request";
 import { createNotifications } from "../../../lib/social";
-import { friendsActionSchema, getFirstZodErrorMessage } from "../../../lib/validation";
+import { friendsActionSchema } from "../../../lib/validation";
+
+async function findUserByUsername(username: string) {
+	const result = await db
+		.select()
+		.from(users)
+		.where(eq(users.username, username))
+		.limit(1);
+	return result[0] ?? null;
+}
+
+async function findExistingFriendRequest(userId1: string, userId2: string) {
+	const result = await db
+		.select()
+		.from(friendRequests)
+		.where(
+			or(
+				and(
+					eq(friendRequests.senderId, userId1),
+					eq(friendRequests.receiverId, userId2)
+				),
+				and(
+					eq(friendRequests.senderId, userId2),
+					eq(friendRequests.receiverId, userId1)
+				)
+			)
+		)
+		.limit(1);
+	return result[0] ?? null;
+}
 
 export async function POST(req: Request) {
 	try {
-		const session = await getServerSession(authOptions);
-		const sessionUser = session?.user as { id?: string } | undefined;
+		const auth = await requireSession();
+		if ("error" in auth) return auth.error;
 
-		if (!session || !sessionUser || !sessionUser.id) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-		}
-
-		const senderId = sessionUser.id;
+		const senderId = auth.userId;
 		const currentUserResult = await db
 			.select({ username: users.username })
 			.from(users)
@@ -49,21 +73,10 @@ export async function POST(req: Request) {
 			);
 		}
 
-		let body: unknown;
-		try {
-			body = await req.json();
-		} catch {
+		const parsed = await parseBody(req, friendsActionSchema);
+		if ("error" in parsed) {
 			return NextResponse.json(
 				{ message: "Invalid JSON body." },
-				{ status: 400, headers: toRateLimitHeaders(userRateLimit) }
-			);
-		}
-
-		const parsed = friendsActionSchema.safeParse(body);
-
-		if (!parsed.success) {
-			return NextResponse.json(
-				{ message: getFirstZodErrorMessage(parsed.error) },
 				{ status: 400, headers: toRateLimitHeaders(userRateLimit) }
 			);
 		}
@@ -97,13 +110,7 @@ export async function POST(req: Request) {
 			}
 
 			// Find receiver user
-			const receiverResult = await db
-				.select()
-				.from(users)
-				.where(eq(users.username, receiverUsername))
-				.limit(1);
-
-			const receiver = receiverResult[0];
+			const receiver = await findUserByUsername(receiverUsername);
 
 			if (!receiver) {
 				return NextResponse.json({ message: "User not found." }, { status: 404 });
@@ -117,24 +124,9 @@ export async function POST(req: Request) {
 			}
 
 			// Check if request already exists
-			const existingRequest = await db
-				.select()
-				.from(friendRequests)
-				.where(
-					or(
-						and(
-							eq(friendRequests.senderId, senderId),
-							eq(friendRequests.receiverId, receiver.id)
-						),
-						and(
-							eq(friendRequests.senderId, receiver.id),
-							eq(friendRequests.receiverId, senderId)
-						)
-					)
-				)
-				.limit(1);
+			const existingRequest = await findExistingFriendRequest(senderId, receiver.id);
 
-			if (existingRequest.length > 0) {
+			if (existingRequest) {
 				return NextResponse.json(
 					{
 						message: "Friend request already exists or you are already friends.",
@@ -220,43 +212,22 @@ export async function POST(req: Request) {
 			let targetRequestId = requestId;
 
 			if (!targetRequestId && receiverUsername) {
-				const receiverResult = await db
-					.select()
-					.from(users)
-					.where(eq(users.username, receiverUsername))
-					.limit(1);
-
-				const receiver = receiverResult[0];
+				const receiver = await findUserByUsername(receiverUsername);
 
 				if (!receiver) {
 					return NextResponse.json({ message: "User not found." }, { status: 404 });
 				}
 
-				const existingRequest = await db
-					.select()
-					.from(friendRequests)
-					.where(
-						or(
-							and(
-								eq(friendRequests.senderId, senderId),
-								eq(friendRequests.receiverId, receiver.id)
-							),
-							and(
-								eq(friendRequests.senderId, receiver.id),
-								eq(friendRequests.receiverId, senderId)
-							)
-						)
-					)
-					.limit(1);
+				const existingRequest = await findExistingFriendRequest(senderId, receiver.id);
 
-				if (existingRequest.length === 0) {
+				if (!existingRequest) {
 					return NextResponse.json(
 						{ message: "Friend request not found." },
 						{ status: 404 }
 					);
 				}
 
-				targetRequestId = existingRequest[0].id;
+				targetRequestId = existingRequest.id;
 			}
 
 			if (!targetRequestId) {

@@ -37,3 +37,18 @@ export async function requireAdministrator() {
 
 	return { admin: currentUser } as const;
 }
+
+export async function requireAdminWithUserId(userId: string) {
+	const adminCheck = await requireAdministrator();
+	if ("error" in adminCheck) {
+		return adminCheck;
+	}
+
+	if (!/^[0-9a-f-]{36}$/i.test(userId)) {
+		return {
+			error: NextResponse.json({ message: "Invalid user ID format." }, { status: 400 }),
+		} as const;
+	}
+
+	return adminCheck;
+}

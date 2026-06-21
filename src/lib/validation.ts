@@ -141,19 +141,24 @@ export const searchQuerySchema = z.object({
 		.max(64, "Search query is too long."),
 });
 
-export const leaderboardPaginationQuerySchema = z.object({
-	page: z.coerce
-		.number()
-		.int("Page must be an integer.")
-		.min(1, "Page must be at least 1.")
-		.default(1),
-	limit: z.coerce
-		.number()
-		.int("Limit must be an integer.")
-		.min(1, "Limit must be at least 1.")
-		.max(50, "Limit cannot be greater than 50.")
-		.default(20),
-});
+function createPaginationSchema(maxLimit = 50, defaultLimit = 20) {
+	return z.object({
+		page: z.coerce
+			.number()
+			.int("Page must be an integer.")
+			.min(1, "Page must be at least 1.")
+			.default(1),
+		limit: z.coerce
+			.number()
+			.int("Limit must be an integer.")
+			.min(1, "Limit must be at least 1.")
+			.max(maxLimit, `Limit cannot be greater than ${maxLimit}.`)
+			.default(defaultLimit),
+	});
+}
+
+export const leaderboardPaginationQuerySchema = createPaginationSchema();
+export const activityFeedQuerySchema = createPaginationSchema();
 
 export const missingCosmeticsQuerySchema = z.object({
 	cosmeticId: z.coerce
@@ -162,32 +167,7 @@ export const missingCosmeticsQuerySchema = z.object({
 		.nonnegative("Cosmetic ID must be zero or greater."),
 });
 
-export const activityFeedQuerySchema = z.object({
-	page: z.coerce
-		.number()
-		.int("Page must be an integer.")
-		.min(1, "Page must be at least 1.")
-		.default(1),
-	limit: z.coerce
-		.number()
-		.int("Limit must be an integer.")
-		.min(1, "Limit must be at least 1.")
-		.max(50, "Limit cannot be greater than 50.")
-		.default(20),
-});
-
-export const notificationsQuerySchema = z.object({
-	page: z.coerce
-		.number()
-		.int("Page must be an integer.")
-		.min(1, "Page must be at least 1.")
-		.default(1),
-	limit: z.coerce
-		.number()
-		.int("Limit must be an integer.")
-		.min(1, "Limit must be at least 1.")
-		.max(100, "Limit cannot be greater than 100.")
-		.default(30),
+export const notificationsQuerySchema = createPaginationSchema(100, 30).extend({
 	unreadOnly: z.preprocess(
 		(value) => value === true || value === "true",
 		z.boolean().default(false)
@@ -227,19 +207,8 @@ export const puzzleScoreQuerySchema = z.object({
 	puzzleType: z.enum(PUZZLE_TYPE_VALUES).optional(),
 });
 
-export const puzzleLeaderboardQuerySchema = z.object({
+export const puzzleLeaderboardQuerySchema = createPaginationSchema().extend({
 	puzzleType: z.enum(PUZZLE_TYPE_VALUES).default(DEFAULT_PUZZLE_TYPE),
-	page: z.coerce
-		.number()
-		.int("Page must be an integer.")
-		.min(1, "Page must be at least 1.")
-		.default(1),
-	limit: z.coerce
-		.number()
-		.int("Limit must be an integer.")
-		.min(1, "Limit must be at least 1.")
-		.max(50, "Limit cannot be greater than 50.")
-		.default(20),
 });
 
 export const adminUsersQuerySchema = z.object({
@@ -274,18 +243,7 @@ export const adminCleanupBodySchema = z.object({
 		.default(ADMIN_CLEANUP_RETENTION_DAYS),
 });
 
-export const profileCommentsQuerySchema = z.object({
-	page: z.coerce
-		.number()
-		.int("Page must be an integer.")
-		.min(1, "Page must be at least 1.")
-		.default(1),
-	limit: z.coerce
-		.number()
-		.int("Limit must be an integer.")
-		.min(1, "Limit must be at least 1.")
-		.max(50, "Limit cannot be greater than 50.")
-		.default(20),
+export const profileCommentsQuerySchema = createPaginationSchema().extend({
 	sort: z.enum(["newest", "top"]).default("newest"),
 });
 

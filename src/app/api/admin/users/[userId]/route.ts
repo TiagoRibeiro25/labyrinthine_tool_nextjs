@@ -2,10 +2,10 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "../../../../../db";
 import { users } from "../../../../../db/schema";
-import { requireAdministrator } from "../../../../../lib/admin-access";
+import { requireAdminWithUserId } from "../../../../../lib/admin-access";
+import { parseBody } from "../../../../../lib/api-helpers";
 import {
 	adminDeleteUserBodySchema,
-	getFirstZodErrorMessage,
 } from "../../../../../lib/validation";
 
 export async function DELETE(
@@ -13,17 +13,9 @@ export async function DELETE(
 	context: { params: Promise<{ userId: string }> }
 ) {
 	try {
-		const adminCheck = await requireAdministrator();
-
-		if ("error" in adminCheck) {
-			return adminCheck.error;
-		}
-
 		const { userId } = await context.params;
-
-		if (!/^[0-9a-f-]{36}$/i.test(userId)) {
-			return NextResponse.json({ message: "Invalid user ID format." }, { status: 400 });
-		}
+		const adminCheck = await requireAdminWithUserId(userId);
+		if ("error" in adminCheck) return adminCheck.error;
 
 		if (userId === adminCheck.admin.id) {
 			return NextResponse.json(
@@ -32,21 +24,8 @@ export async function DELETE(
 			);
 		}
 
-		let body: unknown;
-		try {
-			body = await req.json();
-		} catch {
-			return NextResponse.json({ message: "Invalid JSON body." }, { status: 400 });
-		}
-
-		const parsed = adminDeleteUserBodySchema.safeParse(body);
-
-		if (!parsed.success) {
-			return NextResponse.json(
-				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400 }
-			);
-		}
+		const parsed = await parseBody(req, adminDeleteUserBodySchema);
+		if ("error" in parsed) return parsed.error;
 
 		const targetUserResult = await db
 			.select({

@@ -1,5 +1,4 @@
 import { and, desc, eq, or, sql } from "drizzle-orm";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import {
 	PROFILE_COMMENT_COOLDOWN_MS as COMMENT_COOLDOWN_MS,
@@ -12,7 +11,7 @@ import {
 	profileComments,
 	users,
 } from "../../../../../db/schema";
-import { authOptions } from "../../../../../lib/auth";
+import { requireSession, computePagination, computeOffset, parseBody } from "../../../../../lib/api-helpers";
 import {
 	canUserCommentOnProfile,
 	containsDisallowedCommentText,
@@ -22,7 +21,6 @@ import { rateLimit, toRateLimitHeaders } from "../../../../../lib/rate-limit";
 import { getClientIpFromHeaders } from "../../../../../lib/request";
 import { createNotifications } from "../../../../../lib/social";
 import {
-	getFirstZodErrorMessage,
 	profileCommentCreateBodySchema,
 	profileCommentsQuerySchema,
 } from "../../../../../lib/validation";
@@ -33,9 +31,8 @@ export async function GET(
 ) {
 	try {
 		const { username } = await context.params;
-		const session = await getServerSession(authOptions);
-		const sessionUser = session?.user as { id?: string } | undefined;
-		const currentUserId = sessionUser?.id ?? null;
+		const auth = await requireSession();
+		const currentUserId = "userId" in auth ? auth.userId : null;
 
 		const profileRows = await db
 			.select({
@@ -61,7 +58,7 @@ export async function GET(
 
 		if (!parsed.success) {
 			return NextResponse.json(
-				{ message: getFirstZodErrorMessage(parsed.error) },
+				{ message: "Invalid query parameters." },
 				{ status: 400 }
 			);
 		}
@@ -90,9 +87,8 @@ export async function GET(
 			.where(visibilityFilter);
 
 		const totalItems = totalItemsResult[0]?.count ?? 0;
-		const totalPages = Math.max(1, Math.ceil(totalItems / limit));
-		const safePage = Math.min(page, totalPages);
-		const offset = (safePage - 1) * limit;
+		const pagination = computePagination(totalItems, page, limit);
+		const offset = computeOffset(pagination.page, limit);
 
 		const likeCountSql = sql<number>`(
 			select count(*)::int
@@ -186,12 +182,12 @@ export async function GET(
 					canCurrentUserComment,
 				},
 				pagination: {
-					page: safePage,
-					limit,
-					totalItems,
-					totalPages,
-					hasNextPage: safePage < totalPages,
-					hasPreviousPage: safePage > 1,
+					page: pagination.page,
+					limit: pagination.limit,
+					totalItems: pagination.totalItems,
+					totalPages: pagination.totalPages,
+					hasNextPage: pagination.hasNextPage,
+					hasPreviousPage: pagination.hasPreviousPage,
 				},
 			},
 			{ status: 200 }
@@ -210,15 +206,11 @@ export async function POST(
 	context: { params: Promise<{ username: string }> }
 ) {
 	try {
-		const session = await getServerSession(authOptions);
-		const sessionUser = session?.user as { id?: string } | undefined;
-
-		if (!sessionUser?.id) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-		}
+		const auth = await requireSession();
+		if ("error" in auth) return auth.error;
 
 		const { username } = await context.params;
-		const authorUserId = sessionUser.id;
+		const authorUserId = auth.userId;
 		const clientIp = getClientIpFromHeaders(req.headers);
 
 		const userRateLimit = rateLimit({
@@ -247,25 +239,15 @@ export async function POST(
 			);
 		}
 
-		let body: unknown;
-		try {
-			body = await req.json();
-		} catch {
+		const bodyParsed = await parseBody(req, profileCommentCreateBodySchema);
+		if ("error" in bodyParsed) {
 			return NextResponse.json(
-				{ message: "Invalid JSON body." },
-				{ status: 400, headers: toRateLimitHeaders(userRateLimit) }
+				{ message: bodyParsed.error.status === 400 ? "Invalid JSON body." : "Invalid content." },
+				{ status: bodyParsed.error.status, headers: toRateLimitHeaders(userRateLimit) }
 			);
 		}
 
-		const parsed = profileCommentCreateBodySchema.safeParse(body);
-		if (!parsed.success) {
-			return NextResponse.json(
-				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400, headers: toRateLimitHeaders(userRateLimit) }
-			);
-		}
-
-		const normalizedContent = normalizeCommentContent(parsed.data.content);
+		const normalizedContent = normalizeCommentContent(bodyParsed.data.content);
 		if (containsDisallowedCommentText(normalizedContent)) {
 			return NextResponse.json(
 				{

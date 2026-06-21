@@ -6,23 +6,13 @@ import { FaArrowLeft, FaUserGroup } from "react-icons/fa6";
 import { db } from "../../../../db";
 import { friendRequests, users } from "../../../../db/schema";
 import { getUserAvatarUrl } from "../../../../lib/avatar";
+import { type FriendUser, FRIEND_USER_COLUMNS } from "../../../../lib/friends";
 
 interface ProfileFriendsPageProps {
 	params: {
 		username: string;
 	};
 }
-
-type FriendUser = {
-	id: string;
-	username: string;
-	profilePictureId: string | null;
-	steamAvatarUrl: string | null;
-	useSteamAvatar: boolean;
-	discordAvatarUrl: string | null;
-	useDiscordAvatar: boolean;
-	isAdministrator: boolean;
-};
 
 export default async function ProfileFriendsPage({ params }: ProfileFriendsPageProps) {
 	const { username } = await params;
@@ -51,30 +41,8 @@ export default async function ProfileFriendsPage({ params }: ProfileFriendsPageP
 			)
 		),
 		with: {
-			sender: {
-				columns: {
-					id: true,
-					username: true,
-					profilePictureId: true,
-					steamAvatarUrl: true,
-					useSteamAvatar: true,
-					discordAvatarUrl: true,
-					useDiscordAvatar: true,
-					isAdministrator: true,
-				},
-			},
-			receiver: {
-				columns: {
-					id: true,
-					username: true,
-					profilePictureId: true,
-					steamAvatarUrl: true,
-					useSteamAvatar: true,
-					discordAvatarUrl: true,
-					useDiscordAvatar: true,
-					isAdministrator: true,
-				},
-			},
+			sender: { columns: FRIEND_USER_COLUMNS },
+			receiver: { columns: FRIEND_USER_COLUMNS },
 		},
 	});
 

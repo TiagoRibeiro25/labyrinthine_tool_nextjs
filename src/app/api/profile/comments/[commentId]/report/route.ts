@@ -1,16 +1,14 @@
 import { and, eq } from "drizzle-orm";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { db } from "../../../../../../db";
 import { profileCommentReports, profileComments } from "../../../../../../db/schema";
-import { authOptions } from "../../../../../../lib/auth";
+import { requireSession, parseBody } from "../../../../../../lib/api-helpers";
 import {
 	createNotifications,
 	getAdministratorUserIds,
 } from "../../../../../../lib/social";
 import { rateLimit, toRateLimitHeaders } from "../../../../../../lib/rate-limit";
 import {
-	getFirstZodErrorMessage,
 	profileCommentReportBodySchema,
 } from "../../../../../../lib/validation";
 
@@ -19,14 +17,10 @@ export async function POST(
 	context: { params: Promise<{ commentId: string }> }
 ) {
 	try {
-		const session = await getServerSession(authOptions);
-		const sessionUser = session?.user as { id?: string } | undefined;
+		const auth = await requireSession();
+		if ("error" in auth) return auth.error;
 
-		if (!sessionUser?.id) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-		}
-
-		const userId = sessionUser.id;
+		const userId = auth.userId;
 		const { commentId } = await context.params;
 
 		const reportRateLimit = rateLimit({
@@ -42,20 +36,10 @@ export async function POST(
 			);
 		}
 
-		let body: unknown;
-		try {
-			body = await req.json();
-		} catch {
+		const parsed = await parseBody(req, profileCommentReportBodySchema);
+		if ("error" in parsed) {
 			return NextResponse.json(
 				{ message: "Invalid JSON body." },
-				{ status: 400, headers: toRateLimitHeaders(reportRateLimit) }
-			);
-		}
-
-		const parsed = profileCommentReportBodySchema.safeParse(body);
-		if (!parsed.success) {
-			return NextResponse.json(
-				{ message: getFirstZodErrorMessage(parsed.error) },
 				{ status: 400, headers: toRateLimitHeaders(reportRateLimit) }
 			);
 		}

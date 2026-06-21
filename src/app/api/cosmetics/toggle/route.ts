@@ -1,9 +1,8 @@
 import { and, eq, inArray } from "drizzle-orm";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { db } from "../../../../db";
 import { userCosmetics, users } from "../../../../db/schema";
-import { authOptions } from "../../../../lib/auth";
+import { requireSession, parseBody } from "../../../../lib/api-helpers";
 import { getCosmeticById } from "../../../../lib/cosmetics";
 import {
 	createNotifications,
@@ -12,19 +11,14 @@ import {
 } from "../../../../lib/social";
 import {
 	cosmeticsToggleBodySchema,
-	getFirstZodErrorMessage,
 } from "../../../../lib/validation";
 
 export async function POST(req: Request) {
 	try {
-		const session = await getServerSession(authOptions);
-		const sessionUser = session?.user as { id?: string } | undefined;
+		const auth = await requireSession();
+		if ("error" in auth) return auth.error;
 
-		if (!session || !sessionUser || !sessionUser.id) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-		}
-
-		const userId = sessionUser.id;
+		const userId = auth.userId;
 		const actorResult = await db
 			.select({ username: users.username })
 			.from(users)
@@ -37,21 +31,8 @@ export async function POST(req: Request) {
 			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
 		}
 
-		let body: unknown;
-		try {
-			body = await req.json();
-		} catch {
-			return NextResponse.json({ message: "Invalid JSON body." }, { status: 400 });
-		}
-
-		const parsed = cosmeticsToggleBodySchema.safeParse(body);
-
-		if (!parsed.success) {
-			return NextResponse.json(
-				{ message: getFirstZodErrorMessage(parsed.error) },
-				{ status: 400 }
-			);
-		}
+		const parsed = await parseBody(req, cosmeticsToggleBodySchema);
+		if ("error" in parsed) return parsed.error;
 
 		// --- BULK TOGGLE LOGIC ---
 		if ("cosmeticIds" in parsed.data) {

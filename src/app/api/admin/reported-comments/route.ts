@@ -1,6 +1,5 @@
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "../../../../lib/auth";
+import { requireSession } from "../../../../lib/api-helpers";
 import {
 	getReportedCommentsPage,
 	moderateReportedComment,
@@ -8,10 +7,9 @@ import {
 
 export async function GET(req: Request) {
 	try {
-		const session = await getServerSession(authOptions);
-		const sessionUser = session?.user as { id?: string } | undefined;
-		if (!sessionUser?.id) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
+		const authResult = await requireSession();
+		if ("error" in authResult) {
+			return authResult.error;
 		}
 
 		const url = new URL(req.url);
@@ -31,10 +29,9 @@ export async function GET(req: Request) {
 
 export async function PATCH(req: Request) {
 	try {
-		const session = await getServerSession(authOptions);
-		const sessionUser = session?.user as { id?: string } | undefined;
-		if (!sessionUser?.id) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
+		const authResult = await requireSession();
+		if ("error" in authResult) {
+			return authResult.error;
 		}
 
 		let body: unknown;

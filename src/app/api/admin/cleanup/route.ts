@@ -1,11 +1,10 @@
-import { eq, lt, sql } from "drizzle-orm";
-import { getServerSession } from "next-auth";
+import { lt, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { ADMIN_CLEANUP_RETENTION_DAYS } from "../../../../constants/admin";
 import { REALTIME_TOPICS } from "../../../../constants/realtime";
 import { db } from "../../../../db";
-import { activityEvents, notifications, users } from "../../../../db/schema";
-import { authOptions } from "../../../../lib/auth";
+import { activityEvents, notifications } from "../../../../db/schema";
+import { requireAdministrator } from "../../../../lib/admin-access";
 import { emitRealtimeHint } from "../../../../lib/realtime";
 import {
 	adminCleanupBodySchema,
@@ -14,27 +13,9 @@ import {
 
 export async function POST(req: Request) {
 	try {
-		const session = await getServerSession(authOptions);
-		const sessionUser = session?.user as { id?: string } | undefined;
-
-		if (!sessionUser?.id) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-		}
-
-		const currentUserResult = await db
-			.select({ isAdministrator: users.isAdministrator })
-			.from(users)
-			.where(eq(users.id, sessionUser.id))
-			.limit(1);
-
-		const currentUser = currentUserResult[0];
-
-		if (!currentUser) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-		}
-
-		if (!currentUser.isAdministrator) {
-			return NextResponse.json({ message: "Forbidden." }, { status: 403 });
+		const authResult = await requireAdministrator();
+		if ("error" in authResult) {
+			return authResult.error;
 		}
 
 		let body: unknown;

@@ -1,13 +1,11 @@
-import { eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import {
 	STEAM_OAUTH_RETURN_TO_COOKIE,
 	STEAM_OAUTH_STATE_COOKIE,
 } from "../../../../../constants/auth";
-import { db } from "../../../../../db";
-import { users } from "../../../../../db/schema";
 import { authOptions } from "../../../../../lib/auth";
+import { sanitizeReturnTo, createCleanupRedirect, updateUserProfile } from "../../../../../lib/oauth-utils";
 
 interface SteamPlayerSummary {
 	personaname?: string;
@@ -21,35 +19,6 @@ interface SteamPlayerSummaryResponse {
 	response?: {
 		players?: SteamPlayerSummary[];
 	};
-}
-
-function sanitizeReturnTo(returnTo: string | null | undefined): string {
-	if (!returnTo) {
-		return "/";
-	}
-
-	if (!returnTo.startsWith("/") || returnTo.startsWith("//")) {
-		return "/";
-	}
-
-	return returnTo;
-}
-
-function redirectWithCleanup(req: NextRequest, returnTo: string) {
-	const response = NextResponse.redirect(new URL(returnTo, req.nextUrl.origin));
-	response.cookies.set({
-		name: STEAM_OAUTH_STATE_COOKIE,
-		value: "",
-		path: "/",
-		maxAge: 0,
-	});
-	response.cookies.set({
-		name: STEAM_OAUTH_RETURN_TO_COOKIE,
-		value: "",
-		path: "/",
-		maxAge: 0,
-	});
-	return response;
 }
 
 function getSteamIdFromClaimedId(claimedId: string | null): string | null {
@@ -75,7 +44,7 @@ export async function GET(req: NextRequest) {
 	}
 
 	if (!expectedState || !state || expectedState !== state) {
-		return redirectWithCleanup(req, returnTo);
+		return createCleanupRedirect(req, returnTo, STEAM_OAUTH_STATE_COOKIE, STEAM_OAUTH_RETURN_TO_COOKIE);
 	}
 
 	if (!steamApiKey) {
@@ -134,18 +103,14 @@ export async function GET(req: NextRequest) {
 		const steamProfileUrl =
 			steamProfile?.profileurl || `https://steamcommunity.com/profiles/${steamId}`;
 
-		await db
-			.update(users)
-			.set({
-				steamUsername,
-				steamAvatarUrl,
-				steamProfileUrl,
-				updatedAt: new Date(),
-			})
-			.where(eq(users.id, sessionUser.id));
+		await updateUserProfile(sessionUser.id, {
+			steamUsername,
+			steamAvatarUrl,
+			steamProfileUrl,
+		});
 	} catch (error) {
 		console.error("Steam OAuth callback failed:", error);
 	}
 
-	return redirectWithCleanup(req, returnTo);
+	return createCleanupRedirect(req, returnTo, STEAM_OAUTH_STATE_COOKIE, STEAM_OAUTH_RETURN_TO_COOKIE);
 }

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { FaArrowLeft, FaBell } from "react-icons/fa6";
+import PaginationFooter from "../../components/PaginationFooter";
 import RealtimeStatusBadge from "../../components/RealtimeStatusBadge";
 import { NOTIFICATIONS_PAGE_SIZE } from "../../constants/pagination";
 import { REALTIME_TOPICS, type RealtimeStreamSnapshot } from "../../constants/realtime";
@@ -219,31 +220,14 @@ export default function NotificationsPage() {
 							return <div key={notification.id}>{card}</div>;
 						})}
 
-						<div className="mt-4 flex items-center justify-between gap-3 border-t border-neutral-800/80 pt-4">
-							<button
-								type="button"
-								onClick={() => setCurrentPage(Math.max(1, currentPageFromApi - 1))}
-								disabled={loading || !hasPreviousPage}
-								className="px-4 py-2 rounded-full bg-neutral-900 border border-neutral-700 text-neutral-300 text-xs font-bold uppercase tracking-[0.14em] hover:bg-neutral-800 hover:border-neutral-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-							>
-								Previous
-							</button>
-
-							<div className="text-xs font-bold uppercase tracking-widest text-neutral-500">
-								Page {currentPageFromApi} of {totalPages}
-							</div>
-
-							<button
-								type="button"
-								onClick={() =>
-									setCurrentPage(Math.min(totalPages, currentPageFromApi + 1))
-								}
-								disabled={loading || !hasNextPage}
-								className="px-4 py-2 rounded-full bg-neutral-900 border border-neutral-700 text-neutral-300 text-xs font-bold uppercase tracking-[0.14em] hover:bg-neutral-800 hover:border-neutral-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-							>
-								Next
-							</button>
-						</div>
+						<PaginationFooter
+							currentPage={currentPageFromApi}
+							totalPages={totalPages}
+							hasPreviousPage={hasPreviousPage}
+							hasNextPage={hasNextPage}
+							loading={loading}
+							onPageChange={setCurrentPage}
+						/>
 					</div>
 				)}
 			</div>

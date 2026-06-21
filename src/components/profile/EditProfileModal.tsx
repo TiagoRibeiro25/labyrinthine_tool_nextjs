@@ -17,24 +17,12 @@ import {
 	CLICK_SPARK_PREFERENCE_CHANGED_EVENT,
 } from "../../constants/ui";
 import { AVAILABLE_AVATARS } from "@/constants/profile-avatars";
+import type { EditProfileInitialData } from "./EditProfileData";
 
 interface EditProfileModalProps {
 	isOpen: boolean;
 	onClose: () => void;
-	initialData: {
-		bio: string | null;
-		discordUsername: string | null;
-		discordAvatarUrl: string | null;
-		useDiscordAvatar: boolean;
-		steamUsername: string | null;
-		steamAvatarUrl: string | null;
-		useSteamAvatar: boolean;
-		steamProfileUrl: string | null;
-		profileCommentVisibility: "everyone" | "friends_only" | "no_one";
-		profilePictureId: string | null;
-		profileBannerId: string | null;
-		favoriteCosmeticId: number | null;
-	};
+	initialData: EditProfileInitialData;
 }
 
 export default function EditProfileModal({

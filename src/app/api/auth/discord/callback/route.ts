@@ -1,13 +1,11 @@
-import { eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import {
 	DISCORD_OAUTH_RETURN_TO_COOKIE,
 	DISCORD_OAUTH_STATE_COOKIE,
 } from "../../../../../constants/auth";
-import { db } from "../../../../../db";
-import { users } from "../../../../../db/schema";
 import { authOptions } from "../../../../../lib/auth";
+import { sanitizeReturnTo, createCleanupRedirect, updateUserProfile } from "../../../../../lib/oauth-utils";
 import {
 	formatDiscordDisplayName,
 	getDiscordAvatarUrl,
@@ -22,35 +20,6 @@ interface DiscordUserResponse {
 	username: string;
 	discriminator: string;
 	avatar: string | null;
-}
-
-function sanitizeReturnTo(returnTo: string | null | undefined): string {
-	if (!returnTo) {
-		return "/";
-	}
-
-	if (!returnTo.startsWith("/") || returnTo.startsWith("//")) {
-		return "/";
-	}
-
-	return returnTo;
-}
-
-function redirectWithCleanup(req: NextRequest, returnTo: string) {
-	const response = NextResponse.redirect(new URL(returnTo, req.nextUrl.origin));
-	response.cookies.set({
-		name: DISCORD_OAUTH_STATE_COOKIE,
-		value: "",
-		path: "/",
-		maxAge: 0,
-	});
-	response.cookies.set({
-		name: DISCORD_OAUTH_RETURN_TO_COOKIE,
-		value: "",
-		path: "/",
-		maxAge: 0,
-	});
-	return response;
 }
 
 export async function GET(req: NextRequest) {
@@ -69,7 +38,7 @@ export async function GET(req: NextRequest) {
 	}
 
 	if (!expectedState || !state || expectedState !== state || !code) {
-		return redirectWithCleanup(req, returnTo);
+		return createCleanupRedirect(req, returnTo, DISCORD_OAUTH_STATE_COOKIE, DISCORD_OAUTH_RETURN_TO_COOKIE);
 	}
 
 	const clientId = process.env.DISCORD_CLIENT_ID;
@@ -122,18 +91,14 @@ export async function GET(req: NextRequest) {
 		const discordUsername = formatDiscordDisplayName(discordUser);
 		const discordAvatarUrl = getDiscordAvatarUrl(discordUser.id, discordUser.avatar);
 
-		await db
-			.update(users)
-			.set({
-				discordId: discordUser.id,
-				discordUsername,
-				discordAvatarUrl,
-				updatedAt: new Date(),
-			})
-			.where(eq(users.id, sessionUser.id));
+		await updateUserProfile(sessionUser.id, {
+			discordId: discordUser.id,
+			discordUsername,
+			discordAvatarUrl,
+		});
 	} catch (error) {
 		console.error("Discord OAuth callback failed:", error);
 	}
 
-	return redirectWithCleanup(req, returnTo);
+	return createCleanupRedirect(req, returnTo, DISCORD_OAUTH_STATE_COOKIE, DISCORD_OAUTH_RETURN_TO_COOKIE);
 }

@@ -9,17 +9,7 @@ import { db } from "../../db";
 import { friendRequests } from "../../db/schema";
 import { authOptions } from "../../lib/auth";
 import { getUserAvatarUrl } from "../../lib/avatar";
-
-type ConnectionUser = {
-	id: string;
-	username: string;
-	profilePictureId: string | null;
-	steamAvatarUrl: string | null;
-	useSteamAvatar: boolean;
-	discordAvatarUrl: string | null;
-	useDiscordAvatar: boolean;
-	isAdministrator: boolean;
-};
+import { type FriendUser, FRIEND_USER_COLUMNS } from "../../lib/friends";
 
 export default async function FriendsPage() {
 	const session = await getServerSession(authOptions);
@@ -31,44 +21,20 @@ export default async function FriendsPage() {
 
 	const currentUserId = sessionUser.id;
 
-	// Fetch all friend requests involving the current user
 	const allConnections = await db.query.friendRequests.findMany({
 		where: or(
 			eq(friendRequests.senderId, currentUserId),
 			eq(friendRequests.receiverId, currentUserId)
 		),
 		with: {
-			sender: {
-				columns: {
-					id: true,
-					username: true,
-					profilePictureId: true,
-					steamAvatarUrl: true,
-					useSteamAvatar: true,
-					discordAvatarUrl: true,
-					useDiscordAvatar: true,
-					isAdministrator: true,
-				},
-			},
-			receiver: {
-				columns: {
-					id: true,
-					username: true,
-					profilePictureId: true,
-					steamAvatarUrl: true,
-					useSteamAvatar: true,
-					discordAvatarUrl: true,
-					useDiscordAvatar: true,
-					isAdministrator: true,
-				},
-			},
+			sender: { columns: FRIEND_USER_COLUMNS },
+			receiver: { columns: FRIEND_USER_COLUMNS },
 		},
 	});
 
-	// Categorize connections
-	const friends: { id: string; user: ConnectionUser }[] = [];
-	const receivedRequests: { id: string; user: ConnectionUser }[] = [];
-	const sentRequests: { id: string; user: ConnectionUser }[] = [];
+	const friends: { id: string; user: FriendUser }[] = [];
+	const receivedRequests: { id: string; user: FriendUser }[] = [];
+	const sentRequests: { id: string; user: FriendUser }[] = [];
 
 	allConnections.forEach((conn) => {
 		const isSender = conn.senderId === currentUserId;
@@ -89,7 +55,7 @@ export default async function FriendsPage() {
 		user,
 		actions,
 	}: {
-		user: ConnectionUser;
+		user: FriendUser;
 		actions: React.ReactNode;
 	}) => (
 		<div className="flex items-center justify-between p-3 sm:p-4 bg-neutral-900/40 border border-neutral-800 rounded-2xl hover:bg-neutral-800/80 transition-colors group">

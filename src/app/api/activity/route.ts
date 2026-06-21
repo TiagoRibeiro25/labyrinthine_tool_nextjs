@@ -1,10 +1,9 @@
 import { desc, eq, inArray, sql } from "drizzle-orm";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { db } from "../../../db";
 import { activityEvents, users } from "../../../db/schema";
-import { authOptions } from "../../../lib/auth";
 import { getCosmeticById } from "../../../lib/cosmetics";
+import { requireSession, computePagination, computeOffset } from "../../../lib/api-helpers";
 import { getAcceptedFriendIds } from "../../../lib/social";
 import {
 	activityFeedQuerySchema,
@@ -61,12 +60,8 @@ function getEventSummary(event: {
 
 export async function GET(req: Request) {
 	try {
-		const session = await getServerSession(authOptions);
-		const sessionUser = session?.user as { id?: string } | undefined;
-
-		if (!sessionUser?.id) {
-			return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-		}
+		const auth = await requireSession();
+		if ("error" in auth) return auth.error;
 
 		const url = new URL(req.url);
 		const parsed = activityFeedQuerySchema.safeParse({
@@ -82,7 +77,7 @@ export async function GET(req: Request) {
 		}
 
 		const { page, limit } = parsed.data;
-		const friendIds = await getAcceptedFriendIds(sessionUser.id);
+		const friendIds = await getAcceptedFriendIds(auth.userId);
 
 		if (friendIds.length === 0) {
 			return NextResponse.json(
@@ -107,9 +102,8 @@ export async function GET(req: Request) {
 			.where(inArray(activityEvents.actorUserId, friendIds));
 
 		const totalItems = totalItemsResult[0]?.count ?? 0;
-		const totalPages = Math.max(1, Math.ceil(totalItems / limit));
-		const safePage = Math.min(page, totalPages);
-		const offset = (safePage - 1) * limit;
+		const pagination = computePagination(totalItems, page, limit);
+		const offset = computeOffset(pagination.page, limit);
 
 		const rows = await db
 			.select({
@@ -156,14 +150,7 @@ export async function GET(req: Request) {
 					createdAt: row.createdAt,
 					...getEventSummary(row),
 				})),
-				pagination: {
-					page: safePage,
-					limit,
-					totalItems,
-					totalPages,
-					hasNextPage: safePage < totalPages,
-					hasPreviousPage: safePage > 1,
-				},
+				pagination,
 			},
 			{ status: 200 }
 		);
