@@ -1,12 +1,9 @@
 import {
-	LIGHTS_OUT_ANIMATION_DURATION_MS,
 	LIGHTS_OUT_GRID_SIZE,
 	LIGHTS_OUT_NUM_CELLS,
 	LIGHTS_OUT_SCRAMBLE_MAX_MOVES,
 	LIGHTS_OUT_SCRAMBLE_MIN_MOVES,
 } from "../constants/lights-out";
-
-export { LIGHTS_OUT_ANIMATION_DURATION_MS };
 
 // Toggle a cell and its adjacent neighbors
 export const toggleCells = (currentBoard: boolean[], index: number): boolean[] => {

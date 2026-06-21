@@ -7,7 +7,7 @@ import { allTypes } from "../../lib/cosmetics";
 
 type VisibilityFilter = "all" | "unlocked" | "locked";
 
-export interface CategoryAnalyticsRow {
+interface CategoryAnalyticsRow {
 	categoryName: string;
 	total: number;
 	unlocked: number;
@@ -15,7 +15,7 @@ export interface CategoryAnalyticsRow {
 	percentage: number;
 }
 
-export interface WardrobeSidebarProps {
+interface WardrobeSidebarProps {
 	filterSearchQuery: string;
 	resetKey: number;
 	overallCompletion: number;

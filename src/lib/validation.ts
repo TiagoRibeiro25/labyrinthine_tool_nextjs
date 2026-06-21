@@ -329,15 +329,4 @@ export function getFirstZodErrorMessage(error: z.ZodError): string {
 	return error.issues[0]?.message ?? "Invalid request payload.";
 }
 
-export type RegisterBody = z.infer<typeof registerBodySchema>;
-export type FriendsActionBody = z.infer<typeof friendsActionSchema>;
-export type ProfileUpdateBody = z.infer<typeof profileUpdateSchema>;
-export type CosmeticsToggleBody = z.infer<typeof cosmeticsToggleBodySchema>;
-export type NotificationsMarkReadBody = z.infer<typeof notificationsMarkReadBodySchema>;
-export type PuzzleScoreBody = z.infer<typeof puzzleScoreBodySchema>;
-export type AdminDeleteUserBody = z.infer<typeof adminDeleteUserBodySchema>;
-export type AdminChangePasswordBody = z.infer<typeof adminChangePasswordBodySchema>;
-export type AdminCleanupBody = z.infer<typeof adminCleanupBodySchema>;
-export type ProfileCommentCreateBody = z.infer<typeof profileCommentCreateBodySchema>;
-export type ProfileCommentUpdateBody = z.infer<typeof profileCommentUpdateBodySchema>;
-export type ProfileCommentReportBody = z.infer<typeof profileCommentReportBodySchema>;
+

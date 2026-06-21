@@ -6,7 +6,7 @@ import Link from "next/link";
 import { FaCheck, FaLock, FaMagnifyingGlass, FaUnlockKeyhole } from "react-icons/fa6";
 import type { CosmeticItem } from "../../lib/cosmetics";
 
-export interface CosmeticCardProps {
+interface CosmeticCardProps {
 	item: CosmeticItem;
 	isUnlocked: boolean;
 	isLoading: boolean;

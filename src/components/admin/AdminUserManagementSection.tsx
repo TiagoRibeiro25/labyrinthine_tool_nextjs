@@ -16,7 +16,7 @@ import { ADMIN_USERS_LIST_LIMIT } from "../../constants/admin";
 import { useApi } from "../../hooks/useApi";
 import { useToast } from "../../hooks/useToast";
 
-export interface AdminManagedUser {
+interface AdminManagedUser {
 	id: string;
 	username: string;
 	isAdministrator: boolean;

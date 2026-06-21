@@ -20,7 +20,7 @@ export const checkSolved = (currentTiles: number[]): boolean => {
 };
 
 // Get valid adjacent moves for a tile at given index
-export const getValidAdjacentMoves = (index: number): number[] => {
+const getValidAdjacentMoves = (index: number): number[] => {
 	const moves = [];
 	const row = Math.floor(index / SLIDER_PUZZLE_GRID_SIZE);
 	const col = index % SLIDER_PUZZLE_GRID_SIZE;

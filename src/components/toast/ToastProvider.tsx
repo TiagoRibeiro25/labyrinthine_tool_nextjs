@@ -9,9 +9,9 @@ import {
 } from "react-icons/fa6";
 import { DEFAULT_TOAST_DURATION_MS, MIN_TOAST_DURATION_MS } from "../../constants/toast";
 
-export type ToastVariant = "success" | "error" | "info";
+type ToastVariant = "success" | "error" | "info";
 
-export interface ToastItem {
+interface ToastItem {
 	id: string;
 	title: string;
 	message?: string;

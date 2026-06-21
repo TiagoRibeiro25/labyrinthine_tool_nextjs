@@ -30,7 +30,7 @@ export function containsDisallowedCommentText(content: string): boolean {
 	return PROFILE_COMMENT_BANNED_PHRASES.some((phrase) => normalized.includes(phrase));
 }
 
-export async function areUsersFriends(
+async function areUsersFriends(
 	aUserId: string,
 	bUserId: string
 ): Promise<boolean> {
@@ -61,7 +61,7 @@ export async function areUsersFriends(
 	return rows.length > 0;
 }
 
-export async function areUsersBlocked(
+async function areUsersBlocked(
 	aUserId: string,
 	bUserId: string
 ): Promise<boolean> {
@@ -110,27 +110,4 @@ export async function canUserCommentOnProfile(
 	return true;
 }
 
-export async function getUserCommentSettings(userId: string): Promise<{
-	visibility: ProfileCommentVisibility;
-} | null> {
-	const rows = await db
-		.select({
-			visibility: users.profileCommentVisibility,
-		})
-		.from(users)
-		.where(eq(users.id, userId))
-		.limit(1);
 
-	const settings = rows[0];
-	if (!settings) {
-		return null;
-	}
-
-	const visibility = ["everyone", "friends_only", "no_one"].includes(settings.visibility)
-		? (settings.visibility as ProfileCommentVisibility)
-		: "everyone";
-
-	return {
-		visibility,
-	};
-}

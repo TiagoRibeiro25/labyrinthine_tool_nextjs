@@ -5,7 +5,7 @@ import { FaCheck } from "react-icons/fa6";
 import type { CosmeticItem } from "../../lib/cosmetics";
 import CosmeticCard from "./CosmeticCard";
 
-export interface CosmeticCategorySectionProps {
+interface CosmeticCategorySectionProps {
 	categoryName: string;
 	filteredItems: CosmeticItem[];
 	categoryUnlockedCount: number;
