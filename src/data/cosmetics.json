@@ -402,7 +402,6 @@
 	],
 	"Special": [
 		{ "id": 349, "name": "Meep Clothing", "type": "Clothing" },
-		{ "id": 350, "name": "Private Test", "type": "Clothing" },
 		{ "id": 351, "name": "Caesar Diadem", "type": "Hat" },
 		{ "id": 352, "name": "VR Headset Gold", "type": "Face" },
 		{ "id": 353, "name": "Anniversary Hat", "type": "Hat" },
