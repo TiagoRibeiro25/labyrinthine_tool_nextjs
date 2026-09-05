@@ -9,6 +9,7 @@ import {
 	FaKey,
 	FaMagnifyingGlass,
 	FaTrashCan,
+	FaUser,
 	FaUsers,
 } from "react-icons/fa6";
 import { useDebounce } from "use-debounce";
@@ -51,6 +52,7 @@ export default function AdminUserManagementSection({
 	const [deleteConfirmations, setDeleteConfirmations] = useState<Record<string, string>>(
 		{}
 	);
+	const [newUsernameDrafts, setNewUsernameDrafts] = useState<Record<string, string>>({});
 
 	const [debouncedQuery] = useDebounce(searchQuery, 400);
 	const isSearching = debouncedQuery.trim().length > 0;
@@ -161,6 +163,42 @@ export default function AdminUserManagementSection({
 	const canDeleteUser = (user: AdminManagedUser) =>
 		user.id !== currentUserId && !user.isAdministrator;
 
+	const handleUsernameChange = async (user: AdminManagedUser) => {
+		const newUsername = newUsernameDrafts[user.id]?.trim() ?? "";
+
+		if (!newUsername) {
+			error("Invalid username", "Username cannot be empty.");
+			return;
+		}
+
+		if (newUsername.toLowerCase() === user.username.toLowerCase()) {
+			error("No change", "The new username is the same as the current one.");
+			return;
+		}
+
+		if (
+			!window.confirm(
+				`Change username for "${user.username}" to "${newUsername}"? This will update their account immediately.`
+			)
+		) {
+			return;
+		}
+
+		try {
+			const result = await executeAction(`/api/admin/users/${user.id}/username`, {
+				method: "PATCH",
+				body: JSON.stringify({ username: newUsername }),
+			});
+
+			success("Username updated", result?.message ?? "Username updated successfully.");
+			setNewUsernameDrafts((current) => ({ ...current, [user.id]: "" }));
+			router.refresh();
+		} catch (err) {
+			const message = err instanceof Error ? err.message : "Failed to update username.";
+			error("Username update failed", message);
+		}
+	};
+
 	return (
 		<section className="mt-8 p-5 bg-black/50 border border-neutral-800 rounded-2xl">
 			<div className="mb-5 border-b border-neutral-800/50 pb-4">
@@ -266,90 +304,123 @@ export default function AdminUserManagementSection({
 								</div>
 
 								{isExpanded ? (
-									<div className="px-3 sm:px-4 pb-4 pt-0 border-t border-neutral-800/80">
-										<div
-											className={`grid grid-cols-1 gap-4 pt-4 ${user.createdViaDiscord ? "" : "xl:grid-cols-2"}`}
-										>
-											{user.createdViaDiscord ? (
-												<div className="p-4 bg-black/30 border border-neutral-800 rounded-xl">
-													<p className="text-sm text-neutral-400 leading-relaxed">
-														This account was created with Discord and signs in with
-														Discord only. There is no password to reset.
-													</p>
-												</div>
-											) : (
-												<div className="p-4 bg-black/30 border border-neutral-800 rounded-xl space-y-3">
-													<p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 flex items-center gap-2">
-														<FaKey /> Reset password
-													</p>
-													<input
-														type="password"
-														value={passwordDrafts[user.id] ?? ""}
-														onChange={(event) =>
-															setPasswordDrafts((current) => ({
-																...current,
-																[user.id]: event.target.value,
-															}))
-														}
-														placeholder="New password (min. 6 characters)"
-														className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-sm text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:border-amber-700"
-														autoComplete="new-password"
-													/>
-													<button
-														type="button"
-														onClick={() => handlePasswordChange(user)}
-														disabled={
-															actionLoading ||
-															(passwordDrafts[user.id]?.trim().length ?? 0) < 6
-														}
-														className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-sm bg-amber-950/40 text-amber-200 font-bold text-[11px] uppercase tracking-widest border border-amber-900 hover:bg-amber-900/40 hover:border-amber-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-													>
-														Update password
-													</button>
-												</div>
-											)}
+									<>
+										<div className="p-4 bg-black/30 border border-neutral-800 rounded-xl mx-4 space-y-3">
+											<p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 flex items-center gap-2">
+												<FaUser /> Change Username
+											</p>
+											<>
+												<input
+													type="text"
+													value={newUsernameDrafts[user.id] ?? ""}
+													onChange={(event) =>
+														setNewUsernameDrafts((current) => ({
+															...current,
+															[user.id]: event.target.value,
+														}))
+													}
+													placeholder="New username"
+													className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-sm text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:border-blue-800"
+													autoComplete="off"
+												/>
+												<button
+													type="button"
+													onClick={() => handleUsernameChange(user)}
+													disabled={
+														actionLoading || newUsernameDrafts[user.id]?.trim() === ""
+													}
+													className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-sm bg-blue-950/40 text-blue-200 font-bold text-[11px] uppercase tracking-widest border border-blue-900 hover:bg-blue-900/50 hover:border-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+												>
+													Change username
+												</button>
+											</>
+										</div>
 
-											<div className="p-4 bg-black/30 border border-neutral-800 rounded-xl space-y-3">
-												<p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 flex items-center gap-2">
-													<FaTrashCan /> Delete account
-												</p>
-												{deleteAllowed ? (
-													<>
+										<div className="px-3 sm:px-4 pb-4 pt-0">
+											<div
+												className={`grid grid-cols-1 gap-4 pt-4 ${user.createdViaDiscord ? "" : "xl:grid-cols-2"}`}
+											>
+												{user.createdViaDiscord ? (
+													<div className="p-4 bg-black/30 border border-neutral-800 rounded-xl">
+														<p className="text-sm text-neutral-400 leading-relaxed">
+															This account was created with Discord and signs in with
+															Discord only. There is no password to reset.
+														</p>
+													</div>
+												) : (
+													<div className="p-4 bg-black/30 border border-neutral-800 rounded-xl space-y-3">
+														<p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 flex items-center gap-2">
+															<FaKey /> Reset password
+														</p>
 														<input
-															type="text"
-															value={deleteConfirmations[user.id] ?? ""}
+															type="password"
+															value={passwordDrafts[user.id] ?? ""}
 															onChange={(event) =>
-																setDeleteConfirmations((current) => ({
+																setPasswordDrafts((current) => ({
 																	...current,
 																	[user.id]: event.target.value,
 																}))
 															}
-															placeholder={`Type ${user.username} to confirm`}
-															className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-sm text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:border-red-800"
-															autoComplete="off"
+															placeholder="New password (min. 6 characters)"
+															className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-sm text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:border-amber-700"
+															autoComplete="new-password"
 														/>
 														<button
 															type="button"
-															onClick={() => handleDeleteUser(user)}
+															onClick={() => handlePasswordChange(user)}
 															disabled={
 																actionLoading ||
-																deleteConfirmations[user.id]?.trim() !== user.username
+																(passwordDrafts[user.id]?.trim().length ?? 0) < 6
 															}
-															className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-sm bg-red-950/40 text-red-200 font-bold text-[11px] uppercase tracking-widest border border-red-900 hover:bg-red-900/50 hover:border-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+															className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-sm bg-amber-950/40 text-amber-200 font-bold text-[11px] uppercase tracking-widest border border-amber-900 hover:bg-amber-900/40 hover:border-amber-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 														>
-															Delete account
+															Update password
 														</button>
-													</>
-												) : (
-													<p className="text-sm text-neutral-500 leading-relaxed">
-														{isCurrentUser
-															? "Use your profile settings to delete your own account."
-															: "Administrator accounts cannot be deleted from this panel."}
-													</p>
+													</div>
 												)}
+
+												<div className="p-4 bg-black/30 border border-neutral-800 rounded-xl space-y-3">
+													<p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 flex items-center gap-2">
+														<FaTrashCan /> Delete account
+													</p>
+													{deleteAllowed ? (
+														<>
+															<input
+																type="text"
+																value={deleteConfirmations[user.id] ?? ""}
+																onChange={(event) =>
+																	setDeleteConfirmations((current) => ({
+																		...current,
+																		[user.id]: event.target.value,
+																	}))
+																}
+																placeholder={`Type ${user.username} to confirm`}
+																className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-sm text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:border-red-800"
+																autoComplete="off"
+															/>
+															<button
+																type="button"
+																onClick={() => handleDeleteUser(user)}
+																disabled={
+																	actionLoading ||
+																	deleteConfirmations[user.id]?.trim() !== user.username
+																}
+																className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-sm bg-red-950/40 text-red-200 font-bold text-[11px] uppercase tracking-widest border border-red-900 hover:bg-red-900/50 hover:border-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+															>
+																Delete account
+															</button>
+														</>
+													) : (
+														<p className="text-sm text-neutral-500 leading-relaxed">
+															{isCurrentUser
+																? "Use your profile settings to delete your own account."
+																: "Administrator accounts cannot be deleted from this panel."}
+														</p>
+													)}
+												</div>
 											</div>
 										</div>
-									</div>
+									</>
 								) : null}
 							</article>
 						);

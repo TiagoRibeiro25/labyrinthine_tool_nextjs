@@ -231,6 +231,10 @@ export const adminChangePasswordBodySchema = z.object({
 		.max(128, "Password must be at most 128 characters long."),
 });
 
+export const adminChangeUsernameBodySchema = z.object({
+	username: usernameSchema,
+});
+
 export const adminCleanupBodySchema = z.object({
 	retentionDays: z.coerce
 		.number()
@@ -286,5 +290,3 @@ export const profileCommentReportBodySchema = z.object({
 export function getFirstZodErrorMessage(error: z.ZodError): string {
 	return error.issues[0]?.message ?? "Invalid request payload.";
 }
-
-
