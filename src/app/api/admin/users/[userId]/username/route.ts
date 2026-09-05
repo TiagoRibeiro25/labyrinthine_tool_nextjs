@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "../../../../../../db";
 import { users } from "../../../../../../db/schema";
@@ -18,11 +18,11 @@ export async function PATCH(
 		const parsed = await parseBody(req, adminChangeUsernameBodySchema);
 		if ("error" in parsed) return parsed.error;
 
-		// Check if the new username is already taken
+		// Check if the new username is already taken (case-insensitive)
 		const existingUserResult = await db
 			.select({ id: users.id })
 			.from(users)
-			.where(eq(users.username, parsed.data.username))
+			.where(sql`lower(${users.username}) = ${parsed.data.username.toLowerCase()}`)
 			.limit(1);
 
 		if (existingUserResult.length > 0) {
