@@ -447,5 +447,28 @@
 		{ "id": 389, "name": "Orange Rose", "type": "Face" },
 		{ "id": 390, "name": "Red Bouquet Flashlight", "type": "Flashlight" },
 		{ "id": 391, "name": "Pink Rose", "type": "Face" }
+	],
+	"Lost in Sands DLC": [
+		{ "id": 418, "name": "Egyptian Headdress", "type": "Hat" },
+		{ "id": 419, "name": "Explorer Hat-Black", "type": "Hat" },
+		{ "id": 420, "name": "Explorer Hat-Blue", "type": "Hat" },
+		{ "id": 421, "name": "Explorer Hat-Green", "type": "Hat" },
+		{ "id": 422, "name": "Explorer Hat-Leather", "type": "Hat" },
+		{ "id": 423, "name": "Explorer Hat-Orange", "type": "Hat" },
+		{ "id": 424, "name": "Explorer Hat-Pink", "type": "Hat" },
+		{ "id": 425, "name": "Explorer Hat-Red", "type": "Hat" },
+		{ "id": 426, "name": "Pharaoh Headdress", "type": "Hat" },
+		{ "id": 427, "name": "Priest Headdress-Black", "type": "Hat" },
+		{ "id": 428, "name": "Priest Headdress-Blue", "type": "Hat" },
+		{ "id": 429, "name": "Explorer Suit", "type": "Clothing" },
+		{ "id": 430, "name": "Explorer Torch", "type": "Lantern" },
+		{ "id": 431, "name": "Ankh Glowstick", "type": "Glowstick" },
+		{ "id": 432, "name": "Pharaoh Mask", "type": "Face" },
+		{ "id": 433, "name": "Ra", "type": "Disc" },
+		{ "id": 434, "name": "Seth", "type": "Disc" },
+		{ "id": 435, "name": "Amon", "type": "Disc" },
+		{ "id": 436, "name": "Anubis", "type": "Disc" },
+		{ "id": 437, "name": "Osiris", "type": "Disc" },
+		{ "id": 438, "name": "Papyrus", "type": "Disc" }
 	]
 }
