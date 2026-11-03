@@ -4,7 +4,7 @@ export function filterCosmeticsByCategory(
 	data: Record<string, CosmeticItem[]>,
 	activeCategory: string,
 	activeType: string,
-	normalizedQuery: string,
+	normalizedQuery: string
 ): Record<string, CosmeticItem[]> {
 	const output: Record<string, CosmeticItem[]> = {};
 
@@ -16,8 +16,7 @@ export function filterCosmeticsByCategory(
 		const filteredItems = items.filter((item) => {
 			const matchesType = activeType === "All" || item.type === activeType;
 			const matchesSearch =
-				normalizedQuery.length === 0 ||
-				item.name.toLowerCase().includes(normalizedQuery);
+				normalizedQuery.length === 0 || item.name.toLowerCase().includes(normalizedQuery);
 			return matchesType && matchesSearch;
 		});
 

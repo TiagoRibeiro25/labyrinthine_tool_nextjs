@@ -20,9 +20,7 @@ import DraggablePaitingCard from "./DraggablePaitingCard";
 import PaitingCard from "./PaitingCard";
 
 function ExhibitionGrid({ children }: { children: ReactNode }) {
-	return (
-		<div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{children}</div>
-	);
+	return <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{children}</div>;
 }
 
 function RemoveButton({ onClick }: { onClick: () => void }) {
@@ -50,7 +48,11 @@ function TouchPaintingCard({
 	onSelect: () => void;
 }) {
 	return (
-		<button type="button" onClick={onSelect} className="w-full text-left focus:outline-none">
+		<button
+			type="button"
+			onClick={onSelect}
+			className="w-full text-left focus:outline-none"
+		>
 			<PaitingCard paintingName={paintingName} />
 		</button>
 	);
@@ -177,7 +179,9 @@ function ExhibitionPanel({ children }: { children: ReactNode }) {
 					<h2 className="text-sm font-black uppercase tracking-[0.14em] text-amber-100/90">
 						Your Manor order
 					</h2>
-					<p className="mt-1 text-xs text-neutral-500">Frame 1 → 4 · left to right on the wall</p>
+					<p className="mt-1 text-xs text-neutral-500">
+						Frame 1 → 4 · left to right on the wall
+					</p>
 				</div>
 				<span className="rounded-full border border-amber-800/50 bg-amber-950/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-300/90">
 					Slots
@@ -203,8 +207,8 @@ function CollectionPanel({
 						Remaining portraits
 					</h2>
 					<p className="mt-1 text-xs text-neutral-500">
-						{availableCount} not in your order · {PAITINGS_PUZZLE_PAINTING_NAMES.length} in
-						the puzzle pool
+						{availableCount} not in your order · {PAITINGS_PUZZLE_PAINTING_NAMES.length}{" "}
+						in the puzzle pool
 					</p>
 				</div>
 				<span className="rounded-full border border-neutral-700 bg-neutral-900/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-400">
@@ -292,9 +296,7 @@ export default function PaitingsSlotsPuzzle() {
 		}
 	}
 
-	const progress = (
-		<PuzzleProgress filledCount={filledCount} onReset={resetWall} />
-	);
+	const progress = <PuzzleProgress filledCount={filledCount} onReset={resetWall} />;
 
 	if (isTouchMode) {
 		return (

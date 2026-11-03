@@ -225,10 +225,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
 	return (
 		<main className="min-h-screen text-neutral-200 flex flex-col items-center py-5 sm:py-10 px-2 sm:px-5 relative z-10 selection:bg-cyan-400/20 selection:text-cyan-100 overflow-x-hidden">
-			<div className="w-full max-w-7xl rounded-[2rem] border border-neutral-800/90 bg-neutral-950/80 backdrop-blur-xl shadow-[0_40px_120px_rgba(0,0,0,0.55)] overflow-hidden relative">
+			<div className="w-full max-w-7xl rounded-4xl border border-neutral-800/90 bg-neutral-950/80 backdrop-blur-xl shadow-[0_40px_120px_rgba(0,0,0,0.55)] overflow-hidden relative">
 				<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_12%,rgba(16,185,129,0.12),transparent_36%),radial-gradient(circle_at_86%_16%,rgba(56,189,248,0.16),transparent_34%),radial-gradient(circle_at_50%_90%,rgba(168,85,247,0.14),transparent_38%)]" />
 
-				<section className="relative min-h-[280px] sm:min-h-[340px] border-b border-neutral-800/80">
+				<section className="relative min-h-70 sm:min-h-85 border-b border-neutral-800/80">
 					<Image
 						src={profileBannerUrl}
 						alt={`${targetUser.username}'s banner`}

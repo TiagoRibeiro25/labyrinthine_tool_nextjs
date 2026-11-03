@@ -110,7 +110,8 @@ export default function CollectionComparison({
 	const normalizedQuery = searchQuery.trim().toLowerCase();
 
 	const filteredByCategory = useMemo(
-		() => filterCosmeticsByCategory(activeData, activeCategory, activeType, normalizedQuery),
+		() =>
+			filterCosmeticsByCategory(activeData, activeCategory, activeType, normalizedQuery),
 		[activeData, activeCategory, activeType, normalizedQuery]
 	);
 
@@ -305,18 +306,18 @@ export default function CollectionComparison({
 								</span>
 							</div>
 
-						<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
-							{items.map((item) => (
-								<CosmeticItemCard
-									key={`${activeView}-${item.id}`}
-									item={item}
-									keyPrefix={activeView}
-									cardClasses={activeTheme.cardClasses}
-									bannerClasses={activeTheme.bannerClasses}
-									badgeIcon={activeTheme.icon}
-									grayscale={activeView === "bothMissing"}
-								/>
-							))}
+							<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
+								{items.map((item) => (
+									<CosmeticItemCard
+										key={`${activeView}-${item.id}`}
+										item={item}
+										keyPrefix={activeView}
+										cardClasses={activeTheme.cardClasses}
+										bannerClasses={activeTheme.bannerClasses}
+										badgeIcon={activeTheme.icon}
+										grayscale={activeView === "bothMissing"}
+									/>
+								))}
 							</div>
 						</section>
 					))}

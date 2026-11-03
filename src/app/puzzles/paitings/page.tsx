@@ -45,8 +45,8 @@ export default function PaitingsPage() {
 
 							<p className="mt-4 max-w-md text-sm leading-relaxed text-neutral-400 sm:text-base">
 								On the Manor map, case files include a puzzle where you must remember
-								which portraits hang on the wall and in what order. Use this tool to
-								log that order as you figure it out, so you can solve the puzzle in-game
+								which portraits hang on the wall and in what order. Use this tool to log
+								that order as you figure it out, so you can solve the puzzle in-game
 								without memorizing every run.
 							</p>
 
@@ -57,7 +57,9 @@ export default function PaitingsPage() {
 										className="flex items-start gap-3 rounded-xl border border-neutral-800 bg-black/35 px-3.5 py-3"
 									>
 										<span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400/90 shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
-										<span className="text-sm leading-relaxed text-neutral-300">{tip}</span>
+										<span className="text-sm leading-relaxed text-neutral-300">
+											{tip}
+										</span>
 									</li>
 								))}
 							</ul>

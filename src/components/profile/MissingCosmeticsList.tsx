@@ -25,7 +25,13 @@ export default function MissingCosmeticsList({
 	const normalizedSearch = searchQuery.trim().toLowerCase();
 
 	const filteredByCategory = useMemo(
-		() => filterCosmeticsByCategory(missingByCategory, activeFilter, activeTypeFilter, normalizedSearch),
+		() =>
+			filterCosmeticsByCategory(
+				missingByCategory,
+				activeFilter,
+				activeTypeFilter,
+				normalizedSearch
+			),
 		[activeFilter, activeTypeFilter, missingByCategory, normalizedSearch]
 	);
 
@@ -189,18 +195,18 @@ export default function MissingCosmeticsList({
 								</span>
 							</div>
 
-						<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
-							{items.map((item) => (
-								<CosmeticItemCard
-									key={item.id}
-									item={item}
-									keyPrefix="missing"
-									cardClasses="border-rose-400/30 bg-rose-500/6 hover:border-rose-300"
-									bannerClasses="bg-rose-300"
-									badgeIcon={<FaLock className="w-3 h-3" />}
-									grayscale
-								/>
-							))}
+							<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
+								{items.map((item) => (
+									<CosmeticItemCard
+										key={item.id}
+										item={item}
+										keyPrefix="missing"
+										cardClasses="border-rose-400/30 bg-rose-500/6 hover:border-rose-300"
+										bannerClasses="bg-rose-300"
+										badgeIcon={<FaLock className="w-3 h-3" />}
+										grayscale
+									/>
+								))}
 							</div>
 						</section>
 					))}

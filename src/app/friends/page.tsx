@@ -51,13 +51,7 @@ export default async function FriendsPage() {
 		}
 	});
 
-	const UserRow = ({
-		user,
-		actions,
-	}: {
-		user: FriendUser;
-		actions: React.ReactNode;
-	}) => (
+	const UserRow = ({ user, actions }: { user: FriendUser; actions: React.ReactNode }) => (
 		<div className="flex items-center justify-between p-3 sm:p-4 bg-neutral-900/40 border border-neutral-800 rounded-2xl hover:bg-neutral-800/80 transition-colors group">
 			<Link
 				href={`/profile/${user.username}`}
