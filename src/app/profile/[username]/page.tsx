@@ -335,6 +335,20 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
 								<div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
 									<Link
+										href={`/profile/${targetUser.username}/owned`}
+										className="rounded-xl border border-neutral-700 bg-neutral-900/65 px-4 py-3 hover:border-emerald-500/60 hover:bg-neutral-800/70 transition-colors group"
+									>
+										<p className="text-sm font-bold uppercase tracking-[0.13em] text-neutral-100">
+											Owned Cosmetics
+										</p>
+										<p className="text-xs text-neutral-500 mt-1">
+											Browse items already unlocked
+										</p>
+										<p className="text-xs text-emerald-300 mt-3 group-hover:translate-x-1 transition-transform">
+											Open wardrobe &rarr;
+										</p>
+									</Link>
+									<Link
 										href={`/profile/${targetUser.username}/missing`}
 										className="rounded-xl border border-neutral-700 bg-neutral-900/65 px-4 py-3 hover:border-cyan-500/60 hover:bg-neutral-800/70 transition-colors group"
 									>
@@ -348,7 +362,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 											Open collection gap &rarr;
 										</p>
 									</Link>
-									<div className="rounded-xl border border-neutral-700 bg-neutral-900/65 px-4 py-3">
+									<div className="rounded-xl border border-neutral-700 bg-neutral-900/65 px-4 py-3 lg:col-span-2">
 										<p className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500">
 											Favorite Cosmetic
 										</p>
