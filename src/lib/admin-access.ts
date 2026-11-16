@@ -5,7 +5,11 @@ import { db } from "../db";
 import { users } from "../db/schema";
 import { authOptions } from "./auth";
 
-export async function requireAdministrator() {
+type AdministratorCheck =
+	| { error: NextResponse }
+	| { admin: { id: string; isAdministrator: boolean } };
+
+export async function requireAdministrator(): Promise<AdministratorCheck> {
 	const session = await getServerSession(authOptions);
 	const sessionUser = session?.user as { id?: string } | undefined;
 
@@ -38,7 +42,9 @@ export async function requireAdministrator() {
 	return { admin: currentUser } as const;
 }
 
-export async function requireAdminWithUserId(userId: string) {
+export async function requireAdminWithUserId(
+	userId: string
+): Promise<AdministratorCheck> {
 	const adminCheck = await requireAdministrator();
 	if ("error" in adminCheck) {
 		return adminCheck;

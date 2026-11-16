@@ -9,7 +9,7 @@ import {
 	getFirstZodErrorMessage,
 } from "../../../../lib/validation";
 
-export async function GET(req: Request) {
+export async function GET(req: Request): Promise<NextResponse> {
 	try {
 		const adminCheck = await requireAdministrator();
 

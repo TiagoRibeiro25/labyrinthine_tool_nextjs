@@ -11,7 +11,7 @@ import {
 	getFirstZodErrorMessage,
 } from "../../../../lib/validation";
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<NextResponse> {
 	try {
 		const authResult = await requireAdministrator();
 		if ("error" in authResult) {

@@ -12,7 +12,7 @@ import {
 export async function PATCH(
 	req: Request,
 	context: { params: Promise<{ userId: string }> }
-) {
+): Promise<NextResponse> {
 	try {
 		const { userId } = await context.params;
 		const adminCheck = await requireAdminWithUserId(userId);
