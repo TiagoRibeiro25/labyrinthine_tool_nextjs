@@ -4,6 +4,10 @@ import { db } from "../../../db";
 import { users } from "../../../db/schema";
 import { getFirstZodErrorMessage, searchQuerySchema } from "../../../lib/validation";
 
+const PUBLIC_CACHE_HEADERS = {
+	"Cache-Control": "public, s-maxage=15, stale-while-revalidate=60",
+};
+
 export async function GET(req: Request) {
 	try {
 		const { searchParams } = new URL(req.url);
@@ -36,7 +40,10 @@ export async function GET(req: Request) {
 			.where(ilike(users.username, `%${query}%`))
 			.limit(20);
 
-		return NextResponse.json(results, { status: 200 });
+		return NextResponse.json(results, {
+			status: 200,
+			headers: PUBLIC_CACHE_HEADERS,
+		});
 	} catch (error) {
 		console.error("Error searching users:", error);
 		return NextResponse.json(

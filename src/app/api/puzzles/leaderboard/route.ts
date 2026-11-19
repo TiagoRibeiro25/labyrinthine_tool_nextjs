@@ -19,6 +19,10 @@ type LeaderboardRow = {
 	rank: number;
 };
 
+const PUBLIC_CACHE_HEADERS = {
+	"Cache-Control": "public, s-maxage=30, stale-while-revalidate=300",
+};
+
 export async function GET(req: Request) {
 	try {
 		const url = new URL(req.url);
@@ -84,29 +88,32 @@ export async function GET(req: Request) {
 			offset ${offset}
 		`);
 
-		return NextResponse.json({
-			data: rows.map((row) => ({
-				id: row.id,
-				username: row.username,
-				profilePictureId: row.profilePictureId,
-				steamAvatarUrl: row.steamAvatarUrl,
-				useSteamAvatar: row.useSteamAvatar,
-				discordAvatarUrl: row.discordAvatarUrl,
-				useDiscordAvatar: row.useDiscordAvatar,
-				moves: Number(row.moves),
-				durationMs: Number(row.durationMs),
-				rank: Number(row.rank),
-			})),
-			pagination: {
-				page: safePage,
-				limit,
-				totalItems,
-				totalPages,
-				hasNextPage: safePage < totalPages,
-				hasPreviousPage: safePage > 1,
+		return NextResponse.json(
+			{
+				data: rows.map((row) => ({
+					id: row.id,
+					username: row.username,
+					profilePictureId: row.profilePictureId,
+					steamAvatarUrl: row.steamAvatarUrl,
+					useSteamAvatar: row.useSteamAvatar,
+					discordAvatarUrl: row.discordAvatarUrl,
+					useDiscordAvatar: row.useDiscordAvatar,
+					moves: Number(row.moves),
+					durationMs: Number(row.durationMs),
+					rank: Number(row.rank),
+				})),
+				pagination: {
+					page: safePage,
+					limit,
+					totalItems,
+					totalPages,
+					hasNextPage: safePage < totalPages,
+					hasPreviousPage: safePage > 1,
+				},
+				puzzleType,
 			},
-			puzzleType,
-		});
+			{ status: 200, headers: PUBLIC_CACHE_HEADERS }
+		);
 	} catch (error) {
 		console.error("Error fetching puzzle leaderboard:", error);
 		return NextResponse.json(

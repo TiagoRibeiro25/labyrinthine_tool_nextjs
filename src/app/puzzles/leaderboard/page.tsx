@@ -59,7 +59,8 @@ export default function PuzzleLeaderboardPage() {
 
 	useEffect(() => {
 		execute(
-			`/api/puzzles/leaderboard?puzzleType=${puzzleType}&page=${currentPage}&limit=${PUZZLE_LEADERBOARD_PAGE_SIZE}`
+			`/api/puzzles/leaderboard?puzzleType=${puzzleType}&page=${currentPage}&limit=${PUZZLE_LEADERBOARD_PAGE_SIZE}`,
+			{ cacheTtlMs: 30_000 }
 		).catch(() => {});
 	}, [puzzleType, currentPage, execute]);
 

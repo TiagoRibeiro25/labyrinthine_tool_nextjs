@@ -6,18 +6,7 @@ import {
 	STEAM_OAUTH_STATE_COOKIE,
 } from "../../../../../constants/auth";
 import { authOptions } from "../../../../../lib/auth";
-
-function sanitizeReturnTo(returnTo: string | null): string {
-	if (!returnTo) {
-		return "/";
-	}
-
-	if (!returnTo.startsWith("/") || returnTo.startsWith("//")) {
-		return "/";
-	}
-
-	return returnTo;
-}
+import { sanitizeReturnTo } from "../../../../../lib/oauth-utils";
 
 export async function GET(req: NextRequest) {
 	const session = await getServerSession(authOptions);

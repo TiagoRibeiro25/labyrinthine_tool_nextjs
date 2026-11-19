@@ -7,6 +7,10 @@ import {
 	leaderboardPaginationQuerySchema,
 } from "../../../lib/validation";
 
+const PUBLIC_CACHE_HEADERS = {
+	"Cache-Control": "public, s-maxage=30, stale-while-revalidate=300",
+};
+
 export async function GET(req: Request) {
 	try {
 		const { searchParams } = new URL(req.url);
@@ -56,17 +60,20 @@ export async function GET(req: Request) {
 			.limit(limit)
 			.offset(offset);
 
-		return NextResponse.json({
-			data: leaderboard,
-			pagination: {
-				page: safePage,
-				limit,
-				totalItems,
-				totalPages,
-				hasNextPage: safePage < totalPages,
-				hasPreviousPage: safePage > 1,
+		return NextResponse.json(
+			{
+				data: leaderboard,
+				pagination: {
+					page: safePage,
+					limit,
+					totalItems,
+					totalPages,
+					hasNextPage: safePage < totalPages,
+					hasPreviousPage: safePage > 1,
+				},
 			},
-		});
+			{ status: 200, headers: PUBLIC_CACHE_HEADERS }
+		);
 	} catch (error) {
 		console.error("Error fetching leaderboard:", error);
 		return NextResponse.json(

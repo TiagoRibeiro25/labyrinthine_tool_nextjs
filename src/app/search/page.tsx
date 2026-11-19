@@ -33,7 +33,9 @@ export default function SearchPage() {
 			return;
 		}
 
-		execute(`/api/search?q=${encodeURIComponent(debouncedQuery)}`).catch(() => {
+		execute(`/api/search?q=${encodeURIComponent(debouncedQuery)}`, {
+			cacheTtlMs: 15_000,
+		}).catch(() => {
 			setResults([]);
 		});
 	}, [debouncedQuery, execute, setResults]);

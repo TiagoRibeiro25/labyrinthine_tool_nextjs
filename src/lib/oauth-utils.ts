@@ -8,11 +8,24 @@ export function sanitizeReturnTo(returnTo: string | null | undefined): string {
 		return "/";
 	}
 
-	if (!returnTo.startsWith("/") || returnTo.startsWith("//")) {
+	if (
+		!returnTo.startsWith("/") ||
+		returnTo.startsWith("//") ||
+		returnTo.includes("\\") ||
+		/[\u0000-\u001f\u007f]/.test(returnTo)
+	) {
 		return "/";
 	}
 
-	return returnTo;
+	try {
+		const resolved = new URL(returnTo, "https://oauth.local");
+		if (resolved.origin !== "https://oauth.local") {
+			return "/";
+		}
+		return `${resolved.pathname}${resolved.search}${resolved.hash}`;
+	} catch {
+		return "/";
+	}
 }
 
 export function createCleanupRedirect(
@@ -21,7 +34,14 @@ export function createCleanupRedirect(
 	stateCookie: string,
 	returnToCookie: string,
 ): NextResponse {
-	const response = NextResponse.redirect(new URL(returnTo, req.nextUrl.origin));
+	const safeReturnTo = sanitizeReturnTo(returnTo);
+	const redirectUrl = new URL(safeReturnTo, req.nextUrl.origin);
+	if (redirectUrl.origin !== req.nextUrl.origin) {
+		redirectUrl.pathname = "/";
+		redirectUrl.search = "";
+		redirectUrl.hash = "";
+	}
+	const response = NextResponse.redirect(redirectUrl);
 	response.cookies.set({
 		name: stateCookie,
 		value: "",

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireSession } from "../../../../lib/api-helpers";
+import { requireAdministrator } from "../../../../lib/admin-access";
 import {
 	getReportedCommentsPage,
 	moderateReportedComment,
@@ -7,7 +7,7 @@ import {
 
 export async function GET(req: Request) {
 	try {
-		const authResult = await requireSession();
+		const authResult = await requireAdministrator();
 		if ("error" in authResult) {
 			return authResult.error;
 		}
@@ -29,7 +29,7 @@ export async function GET(req: Request) {
 
 export async function PATCH(req: Request) {
 	try {
-		const authResult = await requireSession();
+		const authResult = await requireAdministrator();
 		if ("error" in authResult) {
 			return authResult.error;
 		}
