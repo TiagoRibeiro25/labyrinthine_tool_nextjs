@@ -468,7 +468,6 @@
 		{ "id": 434, "name": "Seth", "type": "Disc" },
 		{ "id": 435, "name": "Amon", "type": "Disc" },
 		{ "id": 436, "name": "Anubis", "type": "Disc" },
-		{ "id": 437, "name": "Osiris", "type": "Disc" },
-		{ "id": 438, "name": "Papyrus", "type": "Disc" }
+		{ "id": 437, "name": "Osiris", "type": "Disc" }
 	]
 }
